@@ -558,20 +558,26 @@ function checkAns(){
   const fb=document.getElementById('fb');
   st++; document.getElementById('st').textContent=st;
 
-  if(Math.abs(guess-targetAngle)<=tol){
+  const err = Math.abs(guess - targetAngle);
+  if(err <= tol){
     sc++; document.getElementById('sc').textContent=sc;
     fb.textContent=`✓ Correct! The answer is ${targetAngle}°`;
     fb.className='feedback correct';
+  } else if(err <= 8){
+    // Close but not within tolerance — encourage a recheck
+    const dir = guess > targetAngle ? 'a little too high' : 'a little too low';
+    fb.textContent=`Almost! ${guess}° is ${dir} — recheck your reading carefully.`;
+    fb.className='feedback wrong';
   } else {
     let hint='';
     if(diff==='reflex' && Math.abs(guess-drawnAngle)<=tol){
       hint=' That\'s the marked angle — don\'t forget to subtract from 360°!';
-    } else if(Math.abs(guess-targetAngle)>40){
+    } else if(err>40){
       hint=' Make sure ⊕ is exactly on the vertex.';
     } else if(guess>targetAngle){
-      hint=' Slightly too large — check which scale you\'re reading.';
+      hint=' Too large — check which scale you\'re reading.';
     } else {
-      hint=' Slightly too small — check which scale you\'re reading.';
+      hint=' Too small — check which scale you\'re reading.';
     }
     fb.textContent=`✗ Not quite (you said ${guess}°).${hint}`;
     fb.className='feedback wrong';
@@ -760,11 +766,10 @@ function drawProtractor(){
 
 // ── Intersection Indicators ───────────────────────────────────────────────────
 function drawIntersections(){
-  // Easy & Tricky: hide orange (student reads scale themselves)
-  // Reflex: show both (reading is needed to then do 360−x)
-  const rays = diff==='reflex'
-    ? [[r1,'#10b981'],[r2,'#f59e0b']]
-    : [[r1,'#10b981']];
+  // Reflex: no dots — student must read the scale and calculate themselves
+  // Easy & Tricky: show green alignment dot only
+  if(diff==='reflex') return;
+  const rays = [[r1,'#10b981']];
 
   rays.forEach(([rayDir,color])=>{
     const pt=arcIntersect(vx,vy,rayDir); if(!pt) return;
