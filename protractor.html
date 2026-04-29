@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Protractor</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --accent: #f59e0b;
+  --dark: #1e293b;
+  --light: #f8fafc;
+  --mid: #64748b;
+  --green: #10b981;
+  --red: #ef4444;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: var(--dark);
+  background: var(--light);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+nav {
+  background: #fff;
+  padding: 0.7rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  flex-shrink: 0;
+}
+.logo { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+.logo span { color: var(--accent); }
+nav a { text-decoration: none; color: var(--mid); font-size: 0.9rem; }
+nav a:hover { color: var(--primary); }
+
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.sidebar {
+  width: 255px;
+  flex-shrink: 0;
+  background: #fff;
+  border-right: 1px solid #e2e8f0;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  overflow-y: auto;
+}
+
+.canvas-area {
+  flex: 1;
+  position: relative;
+  background: #f8fafc;
+  min-width: 0;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: default;
+  user-select: none;
+}
+
+h1 { font-size: 1.05rem; color: var(--primary); font-weight: 700; }
+
+.mode-tabs {
+  display: flex;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.mode-tab {
+  flex: 1;
+  padding: 0.45rem;
+  text-align: center;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 500;
+  background: #fff;
+  color: var(--mid);
+  border: none;
+  transition: all 0.2s;
+}
+.mode-tab.active { background: var(--primary); color: #fff; }
+
+.instructions {
+  background: #eff6ff;
+  border-left: 3px solid var(--primary);
+  padding: 0.65rem 0.75rem;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--dark);
+}
+
+.challenge-label {
+  background: #fef3c7;
+  border-left: 3px solid var(--accent);
+  padding: 0.65rem 0.75rem;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #78350f;
+  display: none;
+  letter-spacing: 0.02em;
+}
+
+.section-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--mid);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.diff-row { display: flex; gap: 0.35rem; }
+.diff-btn {
+  flex: 1;
+  padding: 0.3rem 0.2rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.73rem;
+  font-weight: 500;
+  background: #fff;
+  color: var(--mid);
+  transition: all 0.15s;
+}
+.diff-btn.active {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: #eff6ff;
+  font-weight: 700;
+}
+
+.answer-section { display: flex; flex-direction: column; gap: 0.45rem; }
+.answer-row { display: flex; gap: 0.5rem; align-items: center; }
+.answer-input {
+  width: 75px;
+  padding: 0.5rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 7px;
+  font-size: 1.05rem;
+  text-align: center;
+  color: var(--dark);
+  font-weight: 600;
+  transition: border-color 0.15s;
+}
+.answer-input:focus { outline: none; border-color: var(--primary); }
+.degree-sym {
+  font-size: 1.1rem;
+  color: var(--mid);
+  font-weight: 600;
+}
+
+.btn {
+  padding: 0.45rem 0.9rem;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-secondary { background: #e2e8f0; color: var(--dark); }
+.btn-secondary:hover { background: #cbd5e1; }
+.btn-accent { background: var(--accent); color: #fff; }
+.btn-accent:hover { background: #d97706; }
+
+.btn-row { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+.feedback {
+  padding: 0.55rem 0.7rem;
+  border-radius: 7px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.4;
+  display: none;
+}
+.feedback.correct { background: #d1fae5; color: #065f46; display: block; }
+.feedback.wrong   { background: #fee2e2; color: #991b1b; display: block; }
+.feedback.hint    { background: #eff6ff; color: #1e40af; display: block; }
+
+.snap-badge {
+  font-size: 0.75rem;
+  color: var(--green);
+  font-weight: 700;
+  display: none;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f1f5f9;
+  border-radius: 7px;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.82rem;
+  color: var(--mid);
+}
+.score-row strong { color: var(--primary); font-size: 1rem; }
+
+.tip {
+  font-size: 0.75rem;
+  color: var(--mid);
+  line-height: 1.45;
+  padding: 0.5rem;
+  background: #f8fafc;
+  border-radius: 6px;
+}
+.tip b { color: var(--dark); }
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.73rem;
+  color: var(--mid);
+}
+.legend-item { display: flex; align-items: center; gap: 0.4rem; }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+@media (max-width: 640px) {
+  body { height: auto; overflow: auto; }
+  .main { flex-direction: column; }
+  .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #e2e8f0; }
+  .canvas-area { height: 420px; }
+}
+</style>
+</head>
+<body>
+
+<div class="main">
+  <div class="sidebar">
+    <h1>📐 Protractor Tool</h1>
+
+    <div class="mode-tabs">
+      <button class="mode-tab active" onclick="setMode('practice')">Practice</button>
+      <button class="mode-tab" onclick="setMode('challenge')">Challenge</button>
+    </div>
+
+    <div class="instructions" id="instructions">
+      <b>How to use:</b><br>
+      1. <b>Drag</b> the protractor to place ⊕ on the angle vertex<br>
+      2. <b>Drag the orange handle</b> to rotate the baseline along one ray<br>
+      3. Read where the other ray crosses the scale<br>
+      4. Type your answer &amp; click <b>Check</b>
+    </div>
+
+    <div class="challenge-label" id="challenge-label">
+      Measure: <span id="angle-notation">∠ABC</span>
+    </div>
+
+    <div>
+      <div class="section-label" style="margin-bottom:0.4rem">Difficulty</div>
+      <div class="diff-row">
+        <button class="diff-btn active" onclick="setDiff(10,this)" title="Multiples of 10°">×10°</button>
+        <button class="diff-btn" onclick="setDiff(5,this)" title="Multiples of 5°">×5°</button>
+        <button class="diff-btn" onclick="setDiff(1,this)" title="Any whole degree">×1°</button>
+      </div>
+    </div>
+
+    <div class="answer-section">
+      <div class="section-label">Your measurement</div>
+      <div class="answer-row">
+        <input type="number" class="answer-input" id="ans" placeholder="?" min="0" max="360">
+        <span class="degree-sym">°</span>
+        <button class="btn btn-primary" onclick="checkAns()">Check</button>
+      </div>
+      <div class="feedback" id="fb"></div>
+      <div class="snap-badge" id="snap-badge">✓ Snapped to vertex!</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="newQ()">New Angle</button>
+      <button class="btn btn-accent" onclick="reveal()">Reveal</button>
+      <button class="btn btn-secondary" onclick="resetProto()">Reset Proto</button>
+    </div>
+
+    <div class="score-row">
+      <span>Score</span>
+      <span><strong id="sc">0</strong> / <strong id="st">0</strong></span>
+    </div>
+
+    <div class="legend">
+      <div class="section-label" style="margin-bottom:0.2rem">Legend</div>
+      <div class="legend-item"><div class="dot" style="background:#10b981"></div> Ray 1 intersection</div>
+      <div class="legend-item"><div class="dot" style="background:#f59e0b"></div> Ray 2 intersection</div>
+      <div class="legend-item"><div class="dot" style="background:#ef4444"></div> Protractor centre ⊕</div>
+    </div>
+
+    <div class="tip">
+      <b>Tip:</b> The blue numbers are the outer scale (0→180). The red numbers inside are the inner scale (180→0). Use the scale where 0° lines up with one ray.
+    </div>
+  </div>
+
+  <div class="canvas-area">
+    <canvas id="cv"></canvas>
+  </div>
+</div>
+
+<script>
+// ── Constants ────────────────────────────────────────────────────────────────
+const PR = 148;          // protractor radius
+const TICK_SM  = 5;
+const TICK_MD  = 9;
+const TICK_LG  = 15;
+const OUTER_LBL_R = PR - TICK_LG - 10;  // ~123
+const DIVIDER_R   = PR - TICK_LG - 28;  // ~105
+const INNER_LBL_R = PR - TICK_LG - 46;  //  ~87
+const SNAP_D  = 30;
+const HDL_R   = 13;      // rotation handle radius
+
+// ── State ────────────────────────────────────────────────────────────────────
+let cv, ctx;
+let mode = 'practice';
+let diff = 10;
+let sc = 0, st = 0;
+
+let targetAngle = 0;
+let vx = 0, vy = 0;   // vertex canvas position
+let r1 = 0, r2 = 0;   // ray directions in radians (canvas CW)
+
+let shape = null;      // challenge shape
+
+let px = 0, py = 0, prot = 0;  // protractor center + rotation (radians)
+let snapped = false;
+
+let drag = null;       // null | 'move' | 'rotate'
+let dox = 0, doy = 0; // drag offset
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  cv  = document.getElementById('cv');
+  ctx = cv.getContext('2d');
+  resize();
+  window.addEventListener('resize', () => { resize(); render(); });
+  cv.addEventListener('mousedown',  e => startDrag(evPos(e)));
+  cv.addEventListener('mousemove',  e => moveDrag(evPos(e)));
+  cv.addEventListener('mouseup',    ()=> drag = null);
+  cv.addEventListener('mouseleave', ()=> drag = null);
+  cv.addEventListener('touchstart', e => { e.preventDefault(); startDrag(evPos(e.touches[0])); }, {passive:false});
+  cv.addEventListener('touchmove',  e => { e.preventDefault(); moveDrag(evPos(e.touches[0])); }, {passive:false});
+  cv.addEventListener('touchend',   ()=> drag = null, {passive:false});
+  document.getElementById('ans').addEventListener('keydown', e => { if(e.key==='Enter') checkAns(); });
+  newQ();
+});
+
+function resize() {
+  const area = cv.parentElement;
+  cv.width  = area.clientWidth  || 600;
+  cv.height = area.clientHeight || 450;
+}
+
+// ── Mode / Difficulty ─────────────────────────────────────────────────────────
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-tab').forEach((t,i)=>
+    t.classList.toggle('active', (i===0&&m==='practice')||(i===1&&m==='challenge')));
+  document.getElementById('challenge-label').style.display = m==='challenge' ? 'block' : 'none';
+  newQ();
+}
+
+function setDiff(d, btn) {
+  diff = d;
+  document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  newQ();
+}
+
+// ── Question Generation ───────────────────────────────────────────────────────
+function newQ() {
+  clrFb();
+  document.getElementById('ans').value = '';
+  if (mode==='practice') genPractice(); else genChallenge();
+  resetProto();
+  render();
+}
+
+function randAngle() {
+  const lo = Math.ceil(15/diff), hi = Math.floor(165/diff);
+  return (Math.floor(Math.random()*(hi-lo+1))+lo)*diff;
+}
+
+function genPractice() {
+  targetAngle = randAngle();
+  vx = cv.width * 0.42;
+  vy = cv.height * 0.60;
+  r1 = (Math.random()*0.6 - 0.3);          // near horizontal, slight tilt
+  r2 = r1 - targetAngle * Math.PI/180;     // CCW from r1 (opens upward)
+}
+
+function genChallenge() {
+  const w = cv.width, h = cv.height;
+  const useQuad = Math.random() < 0.4;
+  if (useQuad) makeQuad(w, h); else makeTri(w, h);
+}
+
+function makeTri(w, h) {
+  // Generate valid triangle via random points, retry until angles are sensible
+  const cx = w*0.5, cy = h*0.48;
+  const r  = Math.min(w,h)*0.30;
+  let pts, angs;
+  for (let attempt=0; attempt<80; attempt++) {
+    pts = [0,1,2].map(i=>{
+      const a = (i*2*Math.PI/3) + (Math.random()*1.0 - 0.5);
+      const d = r*(0.65 + Math.random()*0.55);
+      return { x: cx+d*Math.cos(a), y: cy+d*Math.sin(a) };
+    });
+    angs = pts.map((_,i)=> interiorAngle(pts,i,3));
+    if (angs.every(a=> a>=20 && a<=155)) break;
+  }
+  const labels = ['A','B','C'];
+  const mi = Math.floor(Math.random()*3);
+  const prev = pts[(mi+2)%3], mv = pts[mi], next = pts[(mi+1)%3];
+  const ta = Math.round(angs[mi]/diff)*diff || diff;
+
+  shape = { pts: pts.map((p,i)=>({...p,label:labels[i]})), n:3, mi, ta };
+  setAngleProblem(mv, prev, next, ta);
+  document.getElementById('angle-notation').textContent =
+    `∠${labels[(mi+2)%3]}${labels[mi]}${labels[(mi+1)%3]}`;
+}
+
+function makeQuad(w, h) {
+  const cx = w*0.5, cy = h*0.48;
+  const rx = w*0.24, ry = h*0.26;
+  const off = Math.random()*Math.PI/3;
+  let pts;
+  for (let attempt=0; attempt<60; attempt++) {
+    pts = [0,1,2,3].map(i=>{
+      const a = (i*Math.PI/2)+off+(Math.random()*0.2-0.1);
+      const rx2 = rx*(0.75+Math.random()*0.5);
+      const ry2 = ry*(0.75+Math.random()*0.5);
+      return { x: cx+rx2*Math.cos(a), y: cy+ry2*Math.sin(a) };
+    });
+    const angs = pts.map((_,i)=>interiorAngle(pts,i,4));
+    if (angs.every(a=>a>=25&&a<=165)) break;
+  }
+  const labels = ['A','B','C','D'];
+  const angs = pts.map((_,i)=>interiorAngle(pts,i,4));
+  const mi = Math.floor(Math.random()*4);
+  const prev = pts[(mi+3)%4], mv = pts[mi], next = pts[(mi+1)%4];
+  const ta = Math.round(angs[mi]/diff)*diff || diff;
+
+  shape = { pts: pts.map((p,i)=>({...p,label:labels[i]})), n:4, mi, ta };
+  setAngleProblem(mv, prev, next, ta);
+  document.getElementById('angle-notation').textContent =
+    `∠${labels[(mi+3)%4]}${labels[mi]}${labels[(mi+1)%4]}`;
+}
+
+function interiorAngle(pts, i, n) {
+  const prev = pts[(i+n-1)%n], v = pts[i], next = pts[(i+1)%n];
+  const d1 = Math.atan2(prev.y-v.y, prev.x-v.x);
+  const d2 = Math.atan2(next.y-v.y, next.x-v.x);
+  let df = d1 - d2;
+  while(df<0) df+=2*Math.PI;
+  if(df>Math.PI) df=2*Math.PI-df;
+  return df*180/Math.PI;
+}
+
+function setAngleProblem(mv, prev, next, ta) {
+  targetAngle = ta;
+  vx = mv.x; vy = mv.y;
+  r1 = Math.atan2(prev.y-mv.y, prev.x-mv.x);
+  r2 = Math.atan2(next.y-mv.y, next.x-mv.x);
+}
+
+// ── Protractor Reset ──────────────────────────────────────────────────────────
+function resetProto() {
+  px = vx + PR*0.7 + 20;
+  py = vy + PR*0.4;
+  prot = 0;
+  snapped = false;
+  document.getElementById('snap-badge').style.display = 'none';
+}
+
+// ── Input Events ──────────────────────────────────────────────────────────────
+function evPos(e) {
+  const rect = cv.getBoundingClientRect();
+  const sx = cv.width  / rect.width;
+  const sy = cv.height / rect.height;
+  return { x:(e.clientX-rect.left)*sx, y:(e.clientY-rect.top)*sy };
+}
+
+function startDrag({x,y}) {
+  // Rotation handle at local (PR,0)
+  const hx = px + PR*Math.cos(prot);
+  const hy = py + PR*Math.sin(prot);
+  if (Math.hypot(x-hx, y-hy) <= HDL_R+10) { drag='rotate'; return; }
+  // Also check the 180° handle (left end) as an alternative rotation grip
+  const hx2 = px - PR*Math.cos(prot);
+  const hy2 = py - PR*Math.sin(prot);
+  if (Math.hypot(x-hx2, y-hy2) <= HDL_R+10) { drag='rotate180'; return; }
+  if (inProto(x,y)) { drag='move'; dox=px-x; doy=py-y; }
+}
+
+function moveDrag({x,y}) {
+  if (!drag) return;
+  if (drag==='move') {
+    px = x+dox; py = y+doy;
+    const d = Math.hypot(px-vx, py-vy);
+    if (d < SNAP_D) {
+      px=vx; py=vy; snapped=true;
+      document.getElementById('snap-badge').style.display='flex';
+    } else {
+      snapped=false;
+      document.getElementById('snap-badge').style.display='none';
+    }
+  } else if (drag==='rotate') {
+    prot = Math.atan2(y-py, x-px);
+  } else if (drag==='rotate180') {
+    prot = Math.atan2(y-py, x-px) + Math.PI;
+  }
+  cv.style.cursor = drag ? 'grabbing' : 'default';
+  render();
+}
+
+function inProto(mx,my) {
+  const dx=mx-px, dy=my-py;
+  const c=Math.cos(-prot), s=Math.sin(-prot);
+  const lx=dx*c-dy*s, ly=dx*s+dy*c;
+  return Math.hypot(lx,ly)<=PR && ly<=10;
+}
+
+// ── Answer Check ──────────────────────────────────────────────────────────────
+function checkAns() {
+  const v = document.getElementById('ans').value.trim();
+  if (!v) return;
+  const guess = parseInt(v,10);
+  const tol = diff===1 ? 2 : diff===5 ? 3 : 5;
+  const fb = document.getElementById('fb');
+  st++;
+  document.getElementById('st').textContent = st;
+
+  if (Math.abs(guess-targetAngle)<=tol) {
+    sc++;
+    document.getElementById('sc').textContent = sc;
+    fb.textContent = `✓ Correct! The angle is ${targetAngle}°`;
+    fb.className = 'feedback correct';
+  } else {
+    const err = guess - targetAngle;
+    const hint = Math.abs(err)>40
+      ? ' Try placing the centre ⊕ exactly on the vertex.'
+      : err>0 ? ' Slightly too large — check which scale you\'re using.'
+               : ' Slightly too small — check which scale you\'re using.';
+    fb.textContent = `✗ Not quite (you said ${guess}°).${hint}`;
+    fb.className = 'feedback wrong';
+  }
+}
+
+function reveal() {
+  const fb = document.getElementById('fb');
+  fb.textContent = `The angle is ${targetAngle}°`;
+  fb.className = 'feedback hint';
+}
+
+function clrFb() {
+  const fb = document.getElementById('fb');
+  fb.className = 'feedback'; fb.textContent='';
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function render() {
+  ctx.clearRect(0,0,cv.width,cv.height);
+  drawGrid();
+  if (mode==='practice') drawPracticeAngle();
+  else { drawShape(); drawShapeAngleArc(); }
+  drawProtractor();
+  drawIntersections();
+}
+
+function drawGrid() {
+  ctx.strokeStyle='rgba(100,116,139,0.07)';
+  ctx.lineWidth=1;
+  const sp=30;
+  for(let x=0;x<cv.width;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,cv.height);ctx.stroke();}
+  for(let y=0;y<cv.height;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cv.width,y);ctx.stroke();}
+}
+
+function drawPracticeAngle() {
+  const len = Math.min(cv.width,cv.height)*0.37;
+  drawRay(vx,vy,r1,len,'#1e293b');
+  drawRay(vx,vy,r2,len,'#1e293b');
+  // vertex dot
+  ctx.beginPath(); ctx.arc(vx,vy,5.5,0,2*Math.PI);
+  ctx.fillStyle='#2563eb'; ctx.fill();
+  // angle arc indicator
+  drawSmallArc(vx,vy,r1,r2,36);
+}
+
+function drawRay(ox,oy,dir,len,color) {
+  const ex=ox+len*Math.cos(dir), ey=oy+len*Math.sin(dir);
+  ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(ex,ey);
+  ctx.strokeStyle=color; ctx.lineWidth=2.5; ctx.stroke();
+  // arrowhead
+  const sz=11;
+  ctx.beginPath();
+  ctx.moveTo(ex,ey);
+  ctx.lineTo(ex-sz*Math.cos(dir-0.38), ey-sz*Math.sin(dir-0.38));
+  ctx.lineTo(ex-sz*Math.cos(dir+0.38), ey-sz*Math.sin(dir+0.38));
+  ctx.closePath();
+  ctx.fillStyle=color; ctx.fill();
+}
+
+function drawSmallArc(ox,oy,a1,a2,rad) {
+  // Draw the shorter arc between a1 and a2
+  let df = a2-a1;
+  while(df<-Math.PI) df+=2*Math.PI;
+  while(df> Math.PI) df-=2*Math.PI;
+  const antiCW = df<0;
+  ctx.beginPath();
+  ctx.arc(ox,oy,rad,a1,a2,antiCW);
+  ctx.strokeStyle='rgba(37,99,235,0.55)'; ctx.lineWidth=2.2; ctx.stroke();
+}
+
+function drawShape() {
+  if(!shape) return;
+  const {pts,n,mi} = shape;
+  const cx=pts.reduce((s,p)=>s+p.x,0)/n;
+  const cy=pts.reduce((s,p)=>s+p.y,0)/n;
+
+  // Fill
+  ctx.beginPath(); ctx.moveTo(pts[0].x,pts[0].y);
+  for(let i=1;i<n;i++) ctx.lineTo(pts[i].x,pts[i].y);
+  ctx.closePath();
+  ctx.fillStyle='rgba(239,246,255,0.55)'; ctx.fill();
+  ctx.strokeStyle='#1e293b'; ctx.lineWidth=2.5; ctx.stroke();
+
+  // Labels
+  pts.forEach((v,i)=>{
+    const isTarget = i===mi;
+    const dir = Math.atan2(v.y-cy, v.x-cx);
+    const off = isTarget ? 26 : 22;
+    const lx = v.x+off*Math.cos(dir);
+    const ly = v.y+off*Math.sin(dir);
+
+    ctx.beginPath(); ctx.arc(v.x,v.y, isTarget?7:5, 0,2*Math.PI);
+    ctx.fillStyle = isTarget ? '#2563eb' : '#475569'; ctx.fill();
+
+    ctx.font = isTarget ? 'bold 17px "Segoe UI"' : '15px "Segoe UI"';
+    ctx.fillStyle = isTarget ? '#1d4ed8' : '#334155';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(v.label, lx, ly);
+  });
+}
+
+function drawShapeAngleArc() {
+  if(!shape) return;
+  const {pts,n,mi} = shape;
+  const mv=pts[mi], prev=pts[(mi+n-1)%n], next=pts[(mi+1)%n];
+  const ra1=Math.atan2(prev.y-mv.y,prev.x-mv.x);
+  const ra2=Math.atan2(next.y-mv.y,next.x-mv.x);
+  drawSmallArc(mv.x,mv.y,ra1,ra2,34);
+}
+
+// ── Protractor ────────────────────────────────────────────────────────────────
+function drawProtractor() {
+  ctx.save();
+  ctx.translate(px,py);
+  ctx.rotate(prot);
+
+  // Filled semi-circle
+  ctx.beginPath();
+  ctx.moveTo(-PR,0); ctx.lineTo(PR,0);
+  ctx.arc(0,0,PR,0,Math.PI,true);
+  ctx.closePath();
+  ctx.fillStyle='rgba(219,234,254,0.58)'; ctx.fill();
+
+  // Outer arc border
+  ctx.beginPath(); ctx.arc(0,0,PR,0,Math.PI,true);
+  ctx.strokeStyle='#2563eb'; ctx.lineWidth=2; ctx.stroke();
+
+  // Baseline
+  ctx.beginPath(); ctx.moveTo(-PR,0); ctx.lineTo(PR,0);
+  ctx.strokeStyle='#2563eb'; ctx.lineWidth=2; ctx.stroke();
+
+  // Divider arc (separates outer & inner scale)
+  ctx.beginPath(); ctx.arc(0,0,DIVIDER_R,0,Math.PI,true);
+  ctx.strokeStyle='rgba(148,163,184,0.5)'; ctx.lineWidth=1; ctx.stroke();
+
+  // Tick marks & labels
+  for(let d=0; d<=180; d++) {
+    const ang = -d*Math.PI/180;  // canvas angle for this protractor degree
+    const isLg = d%10===0;
+    const isMd = d%5===0 && !isLg;
+    const tl = isLg ? TICK_LG : (isMd ? TICK_MD : TICK_SM);
+
+    const ox2 = Math.cos(ang)*(PR-tl), oy2 = Math.sin(ang)*(PR-tl);
+    const ix2 = Math.cos(ang)*PR,      iy2 = Math.sin(ang)*PR;
+    ctx.beginPath(); ctx.moveTo(ox2,oy2); ctx.lineTo(ix2,iy2);
+    ctx.strokeStyle = isLg ? '#1e293b' : '#94a3b8';
+    ctx.lineWidth = isLg ? 1.4 : (isMd ? 0.9 : 0.5);
+    ctx.stroke();
+
+    if (isLg && d>0) {  // skip 0 (handle shows it)
+      // Outer label (0→180)
+      const olx = Math.cos(ang)*OUTER_LBL_R;
+      const oly = Math.sin(ang)*OUTER_LBL_R;
+      ctx.save();
+      ctx.translate(olx,oly);
+      ctx.rotate(-prot);
+      ctx.fillStyle='#1e293b';
+      ctx.font = d%30===0 ? 'bold 10.5px "Segoe UI"' : '9px "Segoe UI"';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(d+'', 0, 0);
+      ctx.restore();
+    }
+
+    // Inner label (180→0) for every 10°, skip d=0 and d=180 ends
+    if (isLg && d>0 && d<180) {
+      const innerD = 180-d;
+      const ilx = Math.cos(ang)*INNER_LBL_R;
+      const ily = Math.sin(ang)*INNER_LBL_R;
+      ctx.save();
+      ctx.translate(ilx,ily);
+      ctx.rotate(-prot);
+      ctx.fillStyle='#dc2626';
+      ctx.font='8px "Segoe UI"';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(innerD+'', 0, 0);
+      ctx.restore();
+    }
+  }
+
+  // 180 label at left end
+  ctx.save();
+  ctx.translate(-OUTER_LBL_R+4, 0);
+  ctx.rotate(-prot);
+  ctx.fillStyle='#1e293b'; ctx.font='bold 10.5px "Segoe UI"';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('180', 0, -1);
+  ctx.restore();
+
+  // Centre crosshair
+  ctx.strokeStyle='#ef4444'; ctx.lineWidth=1.8;
+  ctx.beginPath(); ctx.moveTo(-14,0); ctx.lineTo(14,0); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0,-14); ctx.lineTo(0,14); ctx.stroke();
+  ctx.beginPath(); ctx.arc(0,0,3,0,2*Math.PI);
+  ctx.fillStyle='#ef4444'; ctx.fill();
+
+  // Rotation handle (0° end)
+  ctx.beginPath(); ctx.arc(PR,0,HDL_R,0,2*Math.PI);
+  ctx.fillStyle='#f59e0b'; ctx.fill();
+  ctx.strokeStyle='#d97706'; ctx.lineWidth=2; ctx.stroke();
+  ctx.save();
+  ctx.translate(PR,0); ctx.rotate(-prot);
+  ctx.fillStyle='#fff'; ctx.font='bold 12px sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('↻',0,0);
+  ctx.restore();
+
+  // Small grip indicator at 180° end
+  ctx.beginPath(); ctx.arc(-PR,0,8,0,2*Math.PI);
+  ctx.fillStyle='rgba(245,158,11,0.7)'; ctx.fill();
+  ctx.strokeStyle='#d97706'; ctx.lineWidth=1.5; ctx.stroke();
+
+  // "0°" text near handle
+  ctx.save();
+  ctx.translate(PR+HDL_R+5, 0); ctx.rotate(-prot);
+  ctx.fillStyle='#1e293b'; ctx.font='bold 9px "Segoe UI"';
+  ctx.textAlign='left'; ctx.textBaseline='middle';
+  ctx.fillText('0°',0,0);
+  ctx.restore();
+
+  ctx.restore();
+}
+
+// ── Intersection Indicators ───────────────────────────────────────────────────
+function drawIntersections() {
+  [[r1,'#10b981'],[r2,'#f59e0b']].forEach(([rayDir,color])=>{
+    const pt = arcIntersect(vx,vy,rayDir);
+    if(!pt) return;
+    // Dashed guide line
+    ctx.save();
+    ctx.setLineDash([5,5]);
+    ctx.beginPath(); ctx.moveTo(vx,vy); ctx.lineTo(pt.x,pt.y);
+    ctx.strokeStyle=color.replace(')',',0.35)').replace('rgb','rgba');
+    ctx.lineWidth=1.2; ctx.stroke();
+    ctx.restore();
+    // Dot
+    ctx.beginPath(); ctx.arc(pt.x,pt.y,6,0,2*Math.PI);
+    ctx.fillStyle=color; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+  });
+}
+
+function arcIntersect(ox,oy,rayDir) {
+  // Ray-circle intersection
+  const dx=Math.cos(rayDir), dy=Math.sin(rayDir);
+  const fx=ox-px, fy=oy-py;
+  const b=2*(fx*dx+fy*dy);
+  const c=fx*fx+fy*fy-PR*PR;
+  const disc=b*b-4*c;
+  if(disc<0) return null;
+  const sq=Math.sqrt(disc);
+  const t1=(-b-sq)/2, t2=(-b+sq)/2;
+  let t=-1;
+  if(t1>3&&t2>3) t=Math.min(t1,t2);
+  else if(t1>3) t=t1;
+  else if(t2>3) t=t2;
+  if(t<0) return null;
+
+  const ix=ox+t*dx, iy=oy+t*dy;
+
+  // Check if on upper semicircle (local ly ≤ 0)
+  const cosR=Math.cos(-prot), sinR=Math.sin(-prot);
+  const lx=(ix-px)*cosR-(iy-py)*sinR;
+  const ly=(ix-px)*sinR+(iy-py)*cosR;
+  if(ly>12) return null;
+
+  const deg=Math.atan2(-ly,lx)*180/Math.PI;
+  if(deg<-3||deg>183) return null;
+  return {x:ix, y:iy, deg:Math.max(0,Math.min(180,deg))};
+}
+</script>
+</body>
+</html>
