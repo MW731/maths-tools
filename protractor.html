@@ -27,12 +27,7 @@ body {
   overflow: hidden;
 }
 
-.main {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  min-height: 0;
-}
+.main { display: flex; flex: 1; overflow: hidden; min-height: 0; }
 
 .sidebar {
   width: 255px;
@@ -46,119 +41,65 @@ body {
   overflow-y: auto;
 }
 
-.canvas-area {
-  flex: 1;
-  position: relative;
-  background: #f8fafc;
-  min-width: 0;
-}
+.canvas-area { flex: 1; position: relative; background: #f8fafc; min-width: 0; }
 
 canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  touch-action: none;
-  cursor: default;
-  user-select: none;
+  display: block; width: 100%; height: 100%;
+  touch-action: none; cursor: default; user-select: none;
 }
 
 h1 { font-size: 1.05rem; color: var(--primary); font-weight: 700; }
 
-.mode-tabs {
-  display: flex;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  overflow: hidden;
-}
+.mode-tabs { display: flex; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
 .mode-tab {
-  flex: 1;
-  padding: 0.45rem;
-  text-align: center;
-  cursor: pointer;
-  font-size: 0.82rem;
-  font-weight: 500;
-  background: #fff;
-  color: var(--mid);
-  border: none;
-  transition: all 0.2s;
+  flex: 1; padding: 0.45rem; text-align: center; cursor: pointer;
+  font-size: 0.82rem; font-weight: 500; background: #fff; color: var(--mid);
+  border: none; transition: all 0.2s;
 }
 .mode-tab.active { background: var(--primary); color: #fff; }
 
 .instructions {
-  background: #eff6ff;
-  border-left: 3px solid var(--primary);
-  padding: 0.65rem 0.75rem;
-  border-radius: 0 6px 6px 0;
-  font-size: 0.78rem;
-  line-height: 1.55;
-  color: var(--dark);
+  background: #eff6ff; border-left: 3px solid var(--primary);
+  padding: 0.65rem 0.75rem; border-radius: 0 6px 6px 0;
+  font-size: 0.78rem; line-height: 1.55; color: var(--dark);
 }
 
 .challenge-label {
-  background: #fef3c7;
-  border-left: 3px solid var(--accent);
-  padding: 0.65rem 0.75rem;
-  border-radius: 0 6px 6px 0;
-  font-size: 0.92rem;
-  font-weight: 700;
-  color: #78350f;
-  display: none;
-  letter-spacing: 0.02em;
+  background: #fef3c7; border-left: 3px solid var(--accent);
+  padding: 0.65rem 0.75rem; border-radius: 0 6px 6px 0;
+  font-size: 0.92rem; font-weight: 700; color: #78350f;
+  display: none; letter-spacing: 0.02em;
 }
 
 .section-label {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--mid);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  font-size: 0.78rem; font-weight: 600; color: var(--mid);
+  text-transform: uppercase; letter-spacing: 0.04em;
 }
 
 .diff-row { display: flex; gap: 0.35rem; }
 .diff-btn {
-  flex: 1;
-  padding: 0.3rem 0.2rem;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 0.73rem;
-  font-weight: 500;
-  background: #fff;
-  color: var(--mid);
-  transition: all 0.15s;
+  flex: 1; padding: 0.3rem 0.2rem; border: 1.5px solid #e2e8f0;
+  border-radius: 5px; cursor: pointer; font-size: 0.73rem; font-weight: 500;
+  background: #fff; color: var(--mid); transition: all 0.15s;
 }
 .diff-btn.active {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: #eff6ff;
-  font-weight: 700;
+  border-color: var(--primary); color: var(--primary);
+  background: #eff6ff; font-weight: 700;
 }
 
 .answer-section { display: flex; flex-direction: column; gap: 0.45rem; }
 .answer-row { display: flex; gap: 0.5rem; align-items: center; }
 .answer-input {
-  width: 75px;
-  padding: 0.5rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 7px;
-  font-size: 1.05rem;
-  text-align: center;
-  color: var(--dark);
-  font-weight: 600;
-  transition: border-color 0.15s;
+  width: 75px; padding: 0.5rem; border: 2px solid #e2e8f0;
+  border-radius: 7px; font-size: 1.05rem; text-align: center;
+  color: var(--dark); font-weight: 600; transition: border-color 0.15s;
 }
 .answer-input:focus { outline: none; border-color: var(--primary); }
 .degree-sym { font-size: 1.1rem; color: var(--mid); font-weight: 600; }
 
 .btn {
-  padding: 0.45rem 0.9rem;
-  border: none;
-  border-radius: 7px;
-  cursor: pointer;
-  font-size: 0.82rem;
-  font-weight: 600;
-  transition: all 0.15s;
-  white-space: nowrap;
+  padding: 0.45rem 0.9rem; border: none; border-radius: 7px; cursor: pointer;
+  font-size: 0.82rem; font-weight: 600; transition: all 0.15s; white-space: nowrap;
 }
 .btn:active { transform: scale(0.97); }
 .btn-primary { background: var(--primary); color: #fff; }
@@ -170,100 +111,52 @@ h1 { font-size: 1.05rem; color: var(--primary); font-weight: 700; }
 .btn-row { display: flex; gap: 0.4rem; flex-wrap: wrap; }
 
 .feedback {
-  padding: 0.55rem 0.7rem;
-  border-radius: 7px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  line-height: 1.4;
-  display: none;
+  padding: 0.55rem 0.7rem; border-radius: 7px;
+  font-size: 0.82rem; font-weight: 600; line-height: 1.4; display: none;
 }
 .feedback.correct { background: #d1fae5; color: #065f46; display: block; }
 .feedback.wrong   { background: #fee2e2; color: #991b1b; display: block; }
 .feedback.hint    { background: #eff6ff; color: #1e40af; display: block; }
 
 .snap-badge {
-  font-size: 0.75rem;
-  color: var(--green);
-  font-weight: 700;
-  display: none;
-  align-items: center;
-  gap: 0.3rem;
+  font-size: 0.75rem; color: var(--green); font-weight: 700;
+  display: none; align-items: center; gap: 0.3rem;
 }
 
 .score-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f1f5f9;
-  border-radius: 7px;
-  padding: 0.45rem 0.7rem;
-  font-size: 0.82rem;
-  color: var(--mid);
+  display: flex; justify-content: space-between; align-items: center;
+  background: #f1f5f9; border-radius: 7px;
+  padding: 0.45rem 0.7rem; font-size: 0.82rem; color: var(--mid);
 }
 .score-row strong { color: var(--primary); font-size: 1rem; }
 
 .tip {
-  font-size: 0.75rem;
-  color: var(--mid);
-  line-height: 1.45;
-  padding: 0.5rem;
-  background: #f8fafc;
-  border-radius: 6px;
+  font-size: 0.75rem; color: var(--mid); line-height: 1.45;
+  padding: 0.5rem; background: #f8fafc; border-radius: 6px;
 }
 .tip b { color: var(--dark); }
 
-.legend {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.73rem;
-  color: var(--mid);
-}
+.legend { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.73rem; color: var(--mid); }
 .legend-item { display: flex; align-items: center; gap: 0.4rem; }
 .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
-/* Zoom controls */
 .zoom-btns {
-  position: absolute;
-  bottom: 14px;
-  right: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  z-index: 10;
+  position: absolute; bottom: 14px; right: 14px;
+  display: flex; flex-direction: column; gap: 5px; z-index: 10;
 }
 .zoom-btn {
-  width: 38px; height: 38px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.95);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-  cursor: pointer;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--dark);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s;
-  line-height: 1;
+  width: 38px; height: 38px; border: 1px solid #e2e8f0; border-radius: 8px;
+  background: rgba(255,255,255,0.95); box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  cursor: pointer; font-size: 1.2rem; font-weight: 700; color: var(--dark);
+  display: flex; align-items: center; justify-content: center; transition: all 0.15s; line-height: 1;
 }
 .zoom-btn:hover { background: #f1f5f9; transform: scale(1.05); }
 .zoom-btn:active { transform: scale(0.97); }
 .zoom-level {
-  position: absolute;
-  bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255,255,255,0.88);
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  padding: 0.2rem 0.65rem;
-  font-size: 0.74rem;
-  color: var(--mid);
-  font-weight: 600;
-  pointer-events: none;
-  display: none;
+  position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+  background: rgba(255,255,255,0.88); border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 0.2rem 0.65rem; font-size: 0.74rem; color: var(--mid); font-weight: 600;
+  pointer-events: none; display: none;
 }
 
 @media (max-width: 640px) {
@@ -287,11 +180,11 @@ h1 { font-size: 1.05rem; color: var(--primary); font-weight: 700; }
 
     <div class="instructions" id="instructions">
       <b>How to use:</b><br>
-      1. <b>Drag</b> the protractor to place ⊕ on the vertex<br>
-      2. <b>Drag the orange handle</b> to rotate the baseline along one ray<br>
+      1. <b>Drag</b> the protractor — place ⊕ on the vertex<br>
+      2. <b>Drag the orange handle</b> to line the baseline up with one ray<br>
       3. Read where the other ray crosses the scale<br>
       4. Type your answer &amp; click <b>Check</b><br><br>
-      <b>Scroll</b> or use <b>+ −</b> buttons to zoom in
+      <b>Scroll</b> or use <b>+ −</b> to zoom in
     </div>
 
     <div class="challenge-label" id="challenge-label">
@@ -301,14 +194,14 @@ h1 { font-size: 1.05rem; color: var(--primary); font-weight: 700; }
     <div>
       <div class="section-label" style="margin-bottom:0.4rem">Difficulty</div>
       <div class="diff-row">
-        <button class="diff-btn active" onclick="setDiff(10,this)" title="Multiples of 10°">×10°</button>
-        <button class="diff-btn" onclick="setDiff(5,this)" title="Multiples of 5°">×5°</button>
-        <button class="diff-btn" onclick="setDiff(1,this)" title="Any whole degree">×1°</button>
+        <button class="diff-btn active" onclick="setDiff('easy',this)"   title="Angles ending in 0°">Easy</button>
+        <button class="diff-btn"        onclick="setDiff('tricky',this)" title="Angles not ending in 0 or 5">Tricky</button>
+        <button class="diff-btn"        onclick="setDiff('reflex',this)" title="Reflex angles">Reflex</button>
       </div>
     </div>
 
     <div class="answer-section">
-      <div class="section-label">Your measurement</div>
+      <div class="section-label" id="ans-label">Your measurement</div>
       <div class="answer-row">
         <input type="number" class="answer-input" id="ans" placeholder="?" min="0" max="360">
         <span class="degree-sym">°</span>
@@ -320,7 +213,7 @@ h1 { font-size: 1.05rem; color: var(--primary); font-weight: 700; }
 
     <div class="btn-row">
       <button class="btn btn-secondary" onclick="newQ()">New Angle</button>
-      <button class="btn btn-accent" onclick="reveal()">Reveal</button>
+      <button class="btn btn-accent"    onclick="reveal()">Reveal</button>
       <button class="btn btn-secondary" onclick="resetProto()">Reset Proto</button>
     </div>
 
@@ -332,21 +225,21 @@ h1 { font-size: 1.05rem; color: var(--primary); font-weight: 700; }
     <div class="legend">
       <div class="section-label" style="margin-bottom:0.2rem">Legend</div>
       <div class="legend-item"><div class="dot" style="background:#10b981"></div> Ray 1 (baseline ref)</div>
-      <div class="legend-item" id="legend-ray2"><div class="dot" style="background:#f59e0b"></div> Ray 2 (read the scale!)</div>
+      <div class="legend-item" id="legend-ray2"><div class="dot" style="background:#f59e0b"></div> Ray 2 — read the scale!</div>
       <div class="legend-item"><div class="dot" style="background:#ef4444"></div> Protractor centre ⊕</div>
     </div>
 
     <div class="tip">
-      <b>Tip:</b> Blue numbers = outer scale (0→180). Red numbers = inner scale (180→0). Use the scale where 0° lines up with your baseline ray.
+      <b>Tip:</b> Blue = outer scale (0→180). Red = inner scale (180→0). Use the scale where 0° lines up with your baseline ray.
     </div>
   </div>
 
   <div class="canvas-area">
     <canvas id="cv"></canvas>
     <div class="zoom-btns">
-      <button class="zoom-btn" onclick="zoomBy(1.3)" title="Zoom in">+</button>
-      <button class="zoom-btn" onclick="zoomBy(1/1.3)" title="Zoom out">−</button>
-      <button class="zoom-btn" onclick="zoomReset()" title="Reset zoom" style="font-size:0.85rem">⤢</button>
+      <button class="zoom-btn" onclick="zoomBy(1.3)"    title="Zoom in">+</button>
+      <button class="zoom-btn" onclick="zoomBy(1/1.3)"  title="Zoom out">−</button>
+      <button class="zoom-btn" onclick="zoomReset()"    title="Reset zoom" style="font-size:0.85rem">⤢</button>
     </div>
     <div class="zoom-level" id="zoom-level">100%</div>
   </div>
@@ -355,9 +248,9 @@ h1 { font-size: 1.05rem; color: var(--primary); font-weight: 700; }
 <script>
 // ── Constants ────────────────────────────────────────────────────────────────
 const PR          = 148;
-const TICK_SM     = 8;    // 1° tick height (more visible)
-const TICK_MD     = 11;   // 5° tick height
-const TICK_LG     = 17;   // 10° tick height
+const TICK_SM     = 8;
+const TICK_MD     = 11;
+const TICK_LG     = 17;
 const OUTER_LBL_R = PR - TICK_LG - 10;
 const DIVIDER_R   = PR - TICK_LG - 30;
 const INNER_LBL_R = PR - TICK_LG - 50;
@@ -367,23 +260,21 @@ const HDL_R       = 13;
 // ── State ────────────────────────────────────────────────────────────────────
 let cv, ctx;
 let mode = 'practice';
-let diff = 10;
+let diff = 'easy';   // 'easy' | 'tricky' | 'reflex'
 let sc = 0, st = 0;
 
-let targetAngle = 0;
+let targetAngle = 0;   // the answer the student must enter
+let drawnAngle  = 0;   // the acute/obtuse angle visually drawn (= targetAngle unless reflex)
 let vx = 0, vy = 0;
 let r1 = 0, r2 = 0;
 let shape = null;
 
 let px = 0, py = 0, prot = 0;
 let snapped = false;
-
-let drag = null;
-let dox = 0, doy = 0;
+let drag = null, dox = 0, doy = 0;
 
 // ── Zoom / Pan ────────────────────────────────────────────────────────────────
 let zoom = 1, panX = 0, panY = 0;
-let touchCache = [];
 let lastPinchDist = 0;
 
 // ── Init ─────────────────────────────────────────────────────────────────────
@@ -392,542 +283,510 @@ window.addEventListener('load', () => {
   ctx = cv.getContext('2d');
   resize();
   window.addEventListener('resize', () => { resize(); render(); });
-
-  cv.addEventListener('mousedown',  e => { const s=scrPos(e); startDrag(toWorld(s), s); });
-  cv.addEventListener('mousemove',  e => { const s=scrPos(e); moveDrag(toWorld(s), s); });
-  cv.addEventListener('mouseup',    () => drag = null);
-  cv.addEventListener('mouseleave', () => drag = null);
+  cv.addEventListener('mousedown',  e => { const s=scrPos(e); startDrag(toWorld(s),s); });
+  cv.addEventListener('mousemove',  e => { const s=scrPos(e); moveDrag(toWorld(s),s); });
+  cv.addEventListener('mouseup',    () => drag=null);
+  cv.addEventListener('mouseleave', () => drag=null);
   cv.addEventListener('wheel',      onWheel, {passive:false});
-
   cv.addEventListener('touchstart', onTouchStart, {passive:false});
   cv.addEventListener('touchmove',  onTouchMove,  {passive:false});
   cv.addEventListener('touchend',   onTouchEnd,   {passive:false});
-
-  document.getElementById('ans').addEventListener('keydown', e => {
-    if (e.key==='Enter') checkAns();
-  });
+  document.getElementById('ans').addEventListener('keydown', e => { if(e.key==='Enter') checkAns(); });
   newQ();
 });
 
 function resize() {
-  const area = cv.parentElement;
-  cv.width  = area.clientWidth  || 600;
-  cv.height = area.clientHeight || 450;
+  const a = cv.parentElement;
+  cv.width = a.clientWidth || 600; cv.height = a.clientHeight || 450;
 }
 
-// ── Coordinate helpers ────────────────────────────────────────────────────────
+// ── Coords ────────────────────────────────────────────────────────────────────
 function scrPos(e) {
-  const rect = cv.getBoundingClientRect();
-  return {
-    x: (e.clientX - rect.left) * (cv.width  / rect.width),
-    y: (e.clientY - rect.top)  * (cv.height / rect.height)
-  };
+  const r = cv.getBoundingClientRect();
+  return { x:(e.clientX-r.left)*(cv.width/r.width), y:(e.clientY-r.top)*(cv.height/r.height) };
 }
-function toWorld(s) {
-  return { x: (s.x - panX) / zoom, y: (s.y - panY) / zoom };
-}
+function toWorld(s) { return { x:(s.x-panX)/zoom, y:(s.y-panY)/zoom }; }
 
 // ── Zoom ──────────────────────────────────────────────────────────────────────
 function onWheel(e) {
   e.preventDefault();
-  const s = scrPos(e);
-  applyZoom(e.deltaY < 0 ? 1.12 : 1/1.12, s.x, s.y);
+  const s=scrPos(e); applyZoom(e.deltaY<0?1.12:1/1.12, s.x, s.y);
 }
-
-function applyZoom(factor, sx, sy) {
-  const newZoom = Math.max(1, Math.min(7, zoom * factor));
-  const wx = (sx - panX) / zoom;
-  const wy = (sy - panY) / zoom;
-  panX = sx - wx * newZoom;
-  panY = sy - wy * newZoom;
-  zoom = newZoom;
-  updateZoomUI();
-  render();
+function applyZoom(f, sx, sy) {
+  const nz=Math.max(1,Math.min(7,zoom*f));
+  const wx=(sx-panX)/zoom, wy=(sy-panY)/zoom;
+  panX=sx-wx*nz; panY=sy-wy*nz; zoom=nz;
+  updateZoomUI(); render();
 }
-
-function zoomBy(factor) {
-  applyZoom(factor, cv.width/2, cv.height/2);
-}
-
-function zoomReset() {
-  zoom = 1; panX = 0; panY = 0;
-  updateZoomUI();
-  render();
-}
-
+function zoomBy(f) { applyZoom(f, cv.width/2, cv.height/2); }
+function zoomReset() { zoom=1; panX=0; panY=0; updateZoomUI(); render(); }
 function updateZoomUI() {
-  const el = document.getElementById('zoom-level');
-  if (zoom > 1.05) {
-    el.textContent = Math.round(zoom*100) + '%';
-    el.style.display = 'block';
-  } else {
-    el.style.display = 'none';
-  }
+  const el=document.getElementById('zoom-level');
+  if(zoom>1.05){ el.textContent=Math.round(zoom*100)+'%'; el.style.display='block'; }
+  else el.style.display='none';
 }
 
-// ── Touch (drag + pinch-to-zoom) ──────────────────────────────────────────────
+// ── Touch ─────────────────────────────────────────────────────────────────────
 function onTouchStart(e) {
   e.preventDefault();
-  touchCache = Array.from(e.touches);
-  if (e.touches.length === 2) {
-    lastPinchDist = Math.hypot(
-      e.touches[0].clientX - e.touches[1].clientX,
-      e.touches[0].clientY - e.touches[1].clientY
-    );
-    drag = null;
-    return;
+  if(e.touches.length===2){
+    lastPinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    drag=null; return;
   }
-  if (e.touches.length === 1) {
-    const s = scrPos(e.touches[0]);
-    startDrag(toWorld(s), s);
-  }
+  const s=scrPos(e.touches[0]); startDrag(toWorld(s),s);
 }
-
 function onTouchMove(e) {
   e.preventDefault();
-  if (e.touches.length === 2) {
-    const d = Math.hypot(
-      e.touches[0].clientX - e.touches[1].clientX,
-      e.touches[0].clientY - e.touches[1].clientY
-    );
-    const rect = cv.getBoundingClientRect();
-    const scX = cv.width / rect.width, scY = cv.height / rect.height;
-    const cx = ((e.touches[0].clientX + e.touches[1].clientX)/2 - rect.left) * scX;
-    const cy = ((e.touches[0].clientY + e.touches[1].clientY)/2 - rect.top)  * scY;
-    applyZoom(d / lastPinchDist, cx, cy);
-    lastPinchDist = d;
-    return;
+  if(e.touches.length===2){
+    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    const r=cv.getBoundingClientRect(), scX=cv.width/r.width, scY=cv.height/r.height;
+    const cx=((e.touches[0].clientX+e.touches[1].clientX)/2-r.left)*scX;
+    const cy=((e.touches[0].clientY+e.touches[1].clientY)/2-r.top)*scY;
+    applyZoom(d/lastPinchDist,cx,cy); lastPinchDist=d; return;
   }
-  if (e.touches.length === 1) {
-    const s = scrPos(e.touches[0]);
-    moveDrag(toWorld(s), s);
-  }
+  const s=scrPos(e.touches[0]); moveDrag(toWorld(s),s);
 }
-
-function onTouchEnd(e) {
-  touchCache = Array.from(e.touches);
-  if (e.touches.length === 0) drag = null;
-}
+function onTouchEnd(e) { if(e.touches.length===0) drag=null; }
 
 // ── Mode / Difficulty ─────────────────────────────────────────────────────────
 function setMode(m) {
-  mode = m;
-  document.querySelectorAll('.mode-tab').forEach((t,i) =>
-    t.classList.toggle('active', (i===0&&m==='practice')||(i===1&&m==='challenge')));
-  document.getElementById('challenge-label').style.display = m==='challenge' ? 'block' : 'none';
+  mode=m;
+  document.querySelectorAll('.mode-tab').forEach((t,i)=>
+    t.classList.toggle('active',(i===0&&m==='practice')||(i===1&&m==='challenge')));
+  document.getElementById('challenge-label').style.display=m==='challenge'?'block':'none';
   newQ();
 }
 
 function setDiff(d, btn) {
-  diff = d;
-  document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+  diff=d;
+  document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  // Show/hide orange ray2 legend entry
-  document.getElementById('legend-ray2').style.opacity = d===10 ? '0.3' : '1';
+  updateDiffUI();
   newQ();
+}
+
+function updateDiffUI() {
+  // Orange ray2 dot: visible only on Reflex (where reading is needed to calculate)
+  document.getElementById('legend-ray2').style.opacity = diff==='reflex' ? '1' : '0.3';
+
+  // Instructions tweak for reflex
+  const ins = document.getElementById('instructions');
+  if(diff==='reflex') {
+    ins.innerHTML = '<b>Reflex angles:</b><br>'
+      + '1. <b>Drag</b> the protractor — place ⊕ on the vertex<br>'
+      + '2. <b>Rotate</b> the baseline along one ray<br>'
+      + '3. Read the <b>marked (smaller) angle</b><br>'
+      + '4. Calculate <b>360° − your reading</b> = reflex angle<br>'
+      + '5. Enter the <b>reflex angle</b> &amp; click <b>Check</b><br><br>'
+      + '<b>Scroll</b> or use <b>+ −</b> to zoom in';
+    document.getElementById('ans-label').textContent = 'Reflex angle (360° − reading)';
+    document.getElementById('ans').max = 360;
+  } else {
+    ins.innerHTML = '<b>How to use:</b><br>'
+      + '1. <b>Drag</b> the protractor — place ⊕ on the vertex<br>'
+      + '2. <b>Drag the orange handle</b> to line the baseline up with one ray<br>'
+      + '3. Read where the other ray crosses the scale<br>'
+      + '4. Type your answer &amp; click <b>Check</b><br><br>'
+      + '<b>Scroll</b> or use <b>+ −</b> to zoom in';
+    document.getElementById('ans-label').textContent = 'Your measurement';
+    document.getElementById('ans').max = 360;
+  }
+}
+
+// ── Angle generators ──────────────────────────────────────────────────────────
+function randEasy() {
+  // Multiples of 10°, range 20–160
+  return (Math.floor(Math.random()*15)+2)*10;   // 20,30,...,160
+}
+
+function randTricky() {
+  // Any integer NOT ending in 0 or 5, range 16–164
+  let a;
+  do { a = Math.floor(Math.random()*149)+16; }   // 16–164
+  while(a%5===0);
+  return a;
+}
+
+function randReflexBase() {
+  // Acute/obtuse angle NOT ending in 0 or 5, so reflex (360−a) also won't
+  // Range 21–159 to keep reflex between 201–339
+  let a;
+  do { a = Math.floor(Math.random()*139)+21; }   // 21–159
+  while(a%5===0);
+  return a;
+}
+
+function getRandAngle() {
+  if(diff==='easy')   return randEasy();
+  if(diff==='tricky') return randTricky();
+  return randReflexBase(); // used as drawnAngle; targetAngle = 360 − this
 }
 
 // ── Question Generation ───────────────────────────────────────────────────────
 function newQ() {
   clrFb();
-  document.getElementById('ans').value = '';
-  zoom = 1; panX = 0; panY = 0;
-  updateZoomUI();
-  if (mode==='practice') genPractice(); else genChallenge();
-  resetProto();
-  render();
-}
-
-function randAngle() {
-  const lo = Math.ceil(15/diff), hi = Math.floor(165/diff);
-  return (Math.floor(Math.random()*(hi-lo+1))+lo)*diff;
+  document.getElementById('ans').value='';
+  zoom=1; panX=0; panY=0; updateZoomUI();
+  updateDiffUI();
+  if(mode==='practice') genPractice(); else genChallenge();
+  resetProto(); render();
 }
 
 function genPractice() {
-  targetAngle = randAngle();
-  vx = cv.width * 0.42;
-  vy = cv.height * 0.60;
-  r1 = Math.random()*0.6 - 0.3;
-  r2 = r1 - targetAngle * Math.PI/180;
+  const a = getRandAngle();
+  if(diff==='reflex') {
+    drawnAngle  = a;
+    targetAngle = 360 - a;
+  } else {
+    drawnAngle  = a;
+    targetAngle = a;
+  }
+  vx = cv.width*0.45; vy = cv.height*0.58;
+  r1 = Math.random()*0.5 - 0.25;
+  r2 = r1 - drawnAngle*Math.PI/180;
 }
 
 function genChallenge() {
-  if (Math.random() < 0.4) makeQuad(cv.width, cv.height);
-  else makeTri(cv.width, cv.height);
+  // Challenge mode always uses easy/tricky angles (reflex in shapes is complex — skip for now)
+  const challengeDiff = diff==='reflex' ? 'easy' : diff;
+  const savedDiff = diff;
+  diff = challengeDiff;
+  const a = getRandAngle();
+  diff = savedDiff;
+  drawnAngle = a; targetAngle = a;
+  if(Math.random()<0.4) makeQuad(cv.width,cv.height,a);
+  else makeTri(cv.width,cv.height,a);
 }
 
 function makeTri(w, h) {
-  const cx = w*0.5, cy = h*0.48, r = Math.min(w,h)*0.30;
+  const cx=w*0.5, cy=h*0.48, r=Math.min(w,h)*0.30;
   let pts, angs;
-  for (let a=0; a<80; a++) {
-    pts = [0,1,2].map(i => {
-      const ang = (i*2*Math.PI/3) + Math.random()*1.0 - 0.5;
-      const d = r*(0.65 + Math.random()*0.55);
-      return { x: cx+d*Math.cos(ang), y: cy+d*Math.sin(ang) };
+  for(let i=0;i<80;i++){
+    pts=[0,1,2].map(j=>{
+      const a=(j*2*Math.PI/3)+Math.random()*1.0-0.5, d=r*(0.65+Math.random()*0.55);
+      return {x:cx+d*Math.cos(a),y:cy+d*Math.sin(a)};
     });
-    angs = pts.map((_,i) => interiorAngle(pts,i,3));
-    if (angs.every(a => a>=20 && a<=155)) break;
+    angs=pts.map((_,j)=>interiorAngle(pts,j,3));
+    if(angs.every(a=>a>=20&&a<=155)) break;
   }
-  const labels = ['A','B','C'];
-  const mi = Math.floor(Math.random()*3);
-  const prev = pts[(mi+2)%3], mv = pts[mi], next = pts[(mi+1)%3];
-  shape = { pts: pts.map((p,i)=>({...p,label:labels[i]})), n:3, mi };
-  setAngleProblem(mv, prev, next, Math.round(angs[mi]/diff)*diff || diff);
-  document.getElementById('angle-notation').textContent =
-    `∠${labels[(mi+2)%3]}${labels[mi]}${labels[(mi+1)%3]}`;
+  const labels=['A','B','C'];
+  const mi=Math.floor(Math.random()*3);
+  const prev=pts[(mi+2)%3], mv=pts[mi], next=pts[(mi+1)%3];
+  shape={pts:pts.map((p,i)=>({...p,label:labels[i]})),n:3,mi};
+  setAngleProblem(mv,prev,next,Math.round(angs[mi])||1);
+  document.getElementById('angle-notation').textContent=`∠${labels[(mi+2)%3]}${labels[mi]}${labels[(mi+1)%3]}`;
 }
 
 function makeQuad(w, h) {
-  const cx = w*0.5, cy = h*0.48, rx = w*0.24, ry = h*0.26;
-  const off = Math.random()*Math.PI/3;
+  const cx=w*0.5, cy=h*0.48, rx=w*0.24, ry=h*0.26;
+  const off=Math.random()*Math.PI/3;
   let pts;
-  for (let a=0; a<60; a++) {
-    pts = [0,1,2,3].map(i => {
-      const ang = (i*Math.PI/2)+off+(Math.random()*0.2-0.1);
-      return { x: cx+rx*(0.75+Math.random()*0.5)*Math.cos(ang),
-               y: cy+ry*(0.75+Math.random()*0.5)*Math.sin(ang) };
+  for(let i=0;i<60;i++){
+    pts=[0,1,2,3].map(j=>{
+      const a=(j*Math.PI/2)+off+(Math.random()*0.2-0.1);
+      return {x:cx+rx*(0.75+Math.random()*0.5)*Math.cos(a),y:cy+ry*(0.75+Math.random()*0.5)*Math.sin(a)};
     });
-    const angs = pts.map((_,i)=>interiorAngle(pts,i,4));
-    if (angs.every(a=>a>=25&&a<=165)) break;
+    const ag=pts.map((_,j)=>interiorAngle(pts,j,4));
+    if(ag.every(a=>a>=25&&a<=165)) break;
   }
-  const labels = ['A','B','C','D'];
-  const angs = pts.map((_,i)=>interiorAngle(pts,i,4));
-  const mi = Math.floor(Math.random()*4);
-  const prev = pts[(mi+3)%4], mv = pts[mi], next = pts[(mi+1)%4];
-  shape = { pts: pts.map((p,i)=>({...p,label:labels[i]})), n:4, mi };
-  setAngleProblem(mv, prev, next, Math.round(angs[mi]/diff)*diff || diff);
-  document.getElementById('angle-notation').textContent =
-    `∠${labels[(mi+3)%4]}${labels[mi]}${labels[(mi+1)%4]}`;
+  const labels=['A','B','C','D'];
+  const angs=pts.map((_,j)=>interiorAngle(pts,j,4));
+  const mi=Math.floor(Math.random()*4);
+  const prev=pts[(mi+3)%4], mv=pts[mi], next=pts[(mi+1)%4];
+  shape={pts:pts.map((p,i)=>({...p,label:labels[i]})),n:4,mi};
+  setAngleProblem(mv,prev,next,Math.round(angs[mi])||1);
+  document.getElementById('angle-notation').textContent=`∠${labels[(mi+3)%4]}${labels[mi]}${labels[(mi+1)%4]}`;
 }
 
-function interiorAngle(pts, i, n) {
-  const prev = pts[(i+n-1)%n], v = pts[i], next = pts[(i+1)%n];
-  const d1 = Math.atan2(prev.y-v.y, prev.x-v.x);
-  const d2 = Math.atan2(next.y-v.y, next.x-v.x);
-  let df = d1-d2;
-  while(df<0) df+=2*Math.PI;
+function interiorAngle(pts,i,n){
+  const prev=pts[(i+n-1)%n],v=pts[i],next=pts[(i+1)%n];
+  const d1=Math.atan2(prev.y-v.y,prev.x-v.x),d2=Math.atan2(next.y-v.y,next.x-v.x);
+  let df=d1-d2; while(df<0) df+=2*Math.PI;
   if(df>Math.PI) df=2*Math.PI-df;
   return df*180/Math.PI;
 }
 
-function setAngleProblem(mv, prev, next, ta) {
-  targetAngle = ta;
-  vx = mv.x; vy = mv.y;
-  r1 = Math.atan2(prev.y-mv.y, prev.x-mv.x);
-  r2 = Math.atan2(next.y-mv.y, next.x-mv.x);
+function setAngleProblem(mv,prev,next,ta){
+  drawnAngle=ta; targetAngle=ta;
+  vx=mv.x; vy=mv.y;
+  r1=Math.atan2(prev.y-mv.y,prev.x-mv.x);
+  r2=Math.atan2(next.y-mv.y,next.x-mv.x);
 }
 
 // ── Protractor Reset ──────────────────────────────────────────────────────────
 function resetProto() {
-  px = vx + PR*0.7 + 20;
-  py = vy + PR*0.4;
-  prot = 0;
-  snapped = false;
-  document.getElementById('snap-badge').style.display = 'none';
+  px=vx+PR*0.7+20; py=vy+PR*0.4; prot=0; snapped=false;
+  document.getElementById('snap-badge').style.display='none';
 }
 
 // ── Drag Interaction ──────────────────────────────────────────────────────────
-function startDrag(w, s) {
-  const {x,y} = w;
-  // Rotation handle (0° end)
+function startDrag(w,s){
+  const {x,y}=w;
   const hx=px+PR*Math.cos(prot), hy=py+PR*Math.sin(prot);
-  if (Math.hypot(x-hx,y-hy)<=HDL_R+10) { drag='rotate'; return; }
-  // Rotation grip (180° end)
+  if(Math.hypot(x-hx,y-hy)<=HDL_R+10){drag='rotate';return;}
   const hx2=px-PR*Math.cos(prot), hy2=py-PR*Math.sin(prot);
-  if (Math.hypot(x-hx2,y-hy2)<=HDL_R+10) { drag='rotate180'; return; }
-  // Protractor body
-  if (inProto(x,y)) { drag='move'; dox=px-x; doy=py-y; return; }
-  // Pan the view
-  drag='pan'; dox=s.x; doy=s.y;
+  if(Math.hypot(x-hx2,y-hy2)<=HDL_R+10){drag='rotate180';return;}
+  if(inProto(x,y)){drag='move';dox=px-x;doy=py-y;return;}
+  drag='pan';dox=s.x;doy=s.y;
 }
 
-function moveDrag(w, s) {
-  if (!drag) return;
-  if (drag==='pan') {
-    panX += s.x - dox; panY += s.y - doy;
-    dox=s.x; doy=s.y;
-    render(); return;
-  }
-  const {x,y} = w;
-  if (drag==='move') {
-    px=x+dox; py=y+doy;
+function moveDrag(w,s){
+  if(!drag) return;
+  if(drag==='pan'){panX+=s.x-dox;panY+=s.y-doy;dox=s.x;doy=s.y;render();return;}
+  const {x,y}=w;
+  if(drag==='move'){
+    px=x+dox;py=y+doy;
     const d=Math.hypot(px-vx,py-vy);
-    if (d<SNAP_D) { px=vx; py=vy; snapped=true; document.getElementById('snap-badge').style.display='flex'; }
-    else { snapped=false; document.getElementById('snap-badge').style.display='none'; }
-  } else if (drag==='rotate') {
-    prot=Math.atan2(y-py,x-px);
-  } else if (drag==='rotate180') {
-    prot=Math.atan2(y-py,x-px)+Math.PI;
-  }
-  cv.style.cursor = drag==='pan' ? 'grabbing' : drag ? 'grabbing' : 'default';
+    if(d<SNAP_D){px=vx;py=vy;snapped=true;document.getElementById('snap-badge').style.display='flex';}
+    else{snapped=false;document.getElementById('snap-badge').style.display='none';}
+  }else if(drag==='rotate'){prot=Math.atan2(y-py,x-px);}
+  else if(drag==='rotate180'){prot=Math.atan2(y-py,x-px)+Math.PI;}
   render();
 }
 
-function inProto(mx,my) {
-  const dx=mx-px, dy=my-py;
-  const c=Math.cos(-prot), s=Math.sin(-prot);
-  const lx=dx*c-dy*s, ly=dx*s+dy*c;
-  return Math.hypot(lx,ly)<=PR && ly<=10;
+function inProto(mx,my){
+  const dx=mx-px,dy=my-py,c=Math.cos(-prot),s=Math.sin(-prot);
+  const lx=dx*c-dy*s,ly=dx*s+dy*c;
+  return Math.hypot(lx,ly)<=PR&&ly<=10;
 }
 
-// ── Answer ────────────────────────────────────────────────────────────────────
-function checkAns() {
-  const v=document.getElementById('ans').value.trim();
-  if (!v) return;
+// ── Answer Check ──────────────────────────────────────────────────────────────
+function checkAns(){
+  const v=document.getElementById('ans').value.trim(); if(!v) return;
   const guess=parseInt(v,10);
-  const tol=diff===1?2:diff===5?3:5;
+  const tol = diff==='tricky' ? 2 : 3;   // easy & reflex: ±3°, tricky: ±2°
   const fb=document.getElementById('fb');
   st++; document.getElementById('st').textContent=st;
-  if (Math.abs(guess-targetAngle)<=tol) {
+
+  if(Math.abs(guess-targetAngle)<=tol){
     sc++; document.getElementById('sc').textContent=sc;
-    fb.textContent=`✓ Correct! The angle is ${targetAngle}°`;
+    fb.textContent=`✓ Correct! The answer is ${targetAngle}°`;
     fb.className='feedback correct';
   } else {
-    const err=guess-targetAngle;
-    const hint=Math.abs(err)>40
-      ? ' Make sure ⊕ is exactly on the vertex.'
-      : err>0 ? ' Slightly too large — check which scale you\'re reading.'
-               : ' Slightly too small — check which scale you\'re reading.';
+    let hint='';
+    if(diff==='reflex' && Math.abs(guess-drawnAngle)<=tol){
+      hint=' That\'s the marked angle — don\'t forget to subtract from 360°!';
+    } else if(Math.abs(guess-targetAngle)>40){
+      hint=' Make sure ⊕ is exactly on the vertex.';
+    } else if(guess>targetAngle){
+      hint=' Slightly too large — check which scale you\'re reading.';
+    } else {
+      hint=' Slightly too small — check which scale you\'re reading.';
+    }
     fb.textContent=`✗ Not quite (you said ${guess}°).${hint}`;
     fb.className='feedback wrong';
   }
 }
 
-function reveal() {
+function reveal(){
   const fb=document.getElementById('fb');
-  fb.textContent=`The angle is ${targetAngle}°`;
+  if(diff==='reflex')
+    fb.textContent=`The marked angle is ${drawnAngle}°, so the reflex angle = 360° − ${drawnAngle}° = ${targetAngle}°`;
+  else
+    fb.textContent=`The angle is ${targetAngle}°`;
   fb.className='feedback hint';
 }
 
-function clrFb() {
-  const fb=document.getElementById('fb');
-  fb.className='feedback'; fb.textContent='';
+function clrFb(){
+  const fb=document.getElementById('fb'); fb.className='feedback'; fb.textContent='';
 }
 
 // ── Render ────────────────────────────────────────────────────────────────────
-function render() {
-  // Reset to screen space
+function render(){
   ctx.setTransform(1,0,0,1,0,0);
   ctx.clearRect(0,0,cv.width,cv.height);
   drawGrid();
-
-  // Switch to world space (zoom/pan)
-  ctx.setTransform(zoom, 0, 0, zoom, panX, panY);
-
-  if (mode==='practice') drawPracticeAngle();
+  ctx.setTransform(zoom,0,0,zoom,panX,panY);
+  if(mode==='practice') drawPracticeAngle();
   else { drawShape(); drawShapeAngleArc(); }
   drawProtractor();
   drawIntersections();
-
   ctx.setTransform(1,0,0,1,0,0);
 }
 
-function drawGrid() {
-  ctx.strokeStyle='rgba(100,116,139,0.07)';
-  ctx.lineWidth=1;
+function drawGrid(){
+  ctx.strokeStyle='rgba(100,116,139,0.07)'; ctx.lineWidth=1;
   const sp=30;
   for(let x=0;x<cv.width;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,cv.height);ctx.stroke();}
   for(let y=0;y<cv.height;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cv.width,y);ctx.stroke();}
 }
 
-function drawPracticeAngle() {
+function drawPracticeAngle(){
   const len=Math.min(cv.width,cv.height)*0.37;
+
+  if(diff==='reflex'){
+    // Shade the reflex region (large sector going the OTHER way)
+    let df=r2-r1; while(df<-Math.PI)df+=2*Math.PI; while(df>Math.PI)df-=2*Math.PI;
+    const reflexAntiCW = df>=0; // reflex goes opposite direction to the drawn arc
+    ctx.beginPath();
+    ctx.moveTo(vx,vy);
+    ctx.arc(vx,vy,55,r1,r2,reflexAntiCW);
+    ctx.closePath();
+    ctx.fillStyle='rgba(239,68,68,0.1)'; ctx.fill();
+    ctx.beginPath();
+    ctx.arc(vx,vy,55,r1,r2,reflexAntiCW);
+    ctx.strokeStyle='rgba(239,68,68,0.55)'; ctx.lineWidth=2; ctx.stroke();
+
+    // "?" label in the reflex region
+    const midReflex = r1 + (reflexAntiCW ? -(2*Math.PI-Math.abs(df))/2 : (2*Math.PI-Math.abs(df))/2);
+    ctx.fillStyle='#ef4444'; ctx.font='bold 15px "Segoe UI"';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('?', vx+80*Math.cos(midReflex), vy+80*Math.sin(midReflex));
+  }
+
+  // Draw the two rays
   drawRay(vx,vy,r1,len,'#1e293b');
   drawRay(vx,vy,r2,len,'#1e293b');
+
+  // Vertex dot
   ctx.beginPath(); ctx.arc(vx,vy,5.5,0,2*Math.PI);
   ctx.fillStyle='#2563eb'; ctx.fill();
+
+  // Small arc marking the drawn (acute/obtuse) angle
   drawSmallArc(vx,vy,r1,r2,36);
+
+  // For reflex: label the small angle
+  if(diff==='reflex'){
+    let df=r2-r1; while(df<-Math.PI)df+=2*Math.PI; while(df>Math.PI)df-=2*Math.PI;
+    const midAcute = r1 + df/2;
+    ctx.fillStyle='#1e293b'; ctx.font='bold 12px "Segoe UI"';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('Measure this', vx+72*Math.cos(midAcute), vy+72*Math.sin(midAcute));
+  }
 }
 
-function drawRay(ox,oy,dir,len,color) {
-  const ex=ox+len*Math.cos(dir), ey=oy+len*Math.sin(dir);
-  ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(ex,ey);
-  ctx.strokeStyle=color; ctx.lineWidth=2.5; ctx.stroke();
+function drawRay(ox,oy,dir,len,color){
+  const ex=ox+len*Math.cos(dir),ey=oy+len*Math.sin(dir);
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ex,ey);
+  ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.stroke();
   const sz=11;
   ctx.beginPath();
   ctx.moveTo(ex,ey);
   ctx.lineTo(ex-sz*Math.cos(dir-0.38),ey-sz*Math.sin(dir-0.38));
   ctx.lineTo(ex-sz*Math.cos(dir+0.38),ey-sz*Math.sin(dir+0.38));
-  ctx.closePath();
-  ctx.fillStyle=color; ctx.fill();
+  ctx.closePath();ctx.fillStyle=color;ctx.fill();
 }
 
-function drawSmallArc(ox,oy,a1,a2,rad) {
-  let df=a2-a1;
-  while(df<-Math.PI) df+=2*Math.PI;
-  while(df> Math.PI) df-=2*Math.PI;
-  ctx.beginPath();
-  ctx.arc(ox,oy,rad,a1,a2,df<0);
-  ctx.strokeStyle='rgba(37,99,235,0.55)'; ctx.lineWidth=2.2; ctx.stroke();
+function drawSmallArc(ox,oy,a1,a2,rad){
+  let df=a2-a1; while(df<-Math.PI)df+=2*Math.PI; while(df>Math.PI)df-=2*Math.PI;
+  ctx.beginPath();ctx.arc(ox,oy,rad,a1,a2,df<0);
+  ctx.strokeStyle='rgba(37,99,235,0.55)';ctx.lineWidth=2.2;ctx.stroke();
 }
 
-function drawShape() {
+function drawShape(){
   if(!shape) return;
   const {pts,n,mi}=shape;
-  const cx=pts.reduce((s,p)=>s+p.x,0)/n;
-  const cy=pts.reduce((s,p)=>s+p.y,0)/n;
-  ctx.beginPath(); ctx.moveTo(pts[0].x,pts[0].y);
+  const cx=pts.reduce((s,p)=>s+p.x,0)/n, cy=pts.reduce((s,p)=>s+p.y,0)/n;
+  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
   for(let i=1;i<n;i++) ctx.lineTo(pts[i].x,pts[i].y);
   ctx.closePath();
-  ctx.fillStyle='rgba(239,246,255,0.55)'; ctx.fill();
-  ctx.strokeStyle='#1e293b'; ctx.lineWidth=2.5; ctx.stroke();
+  ctx.fillStyle='rgba(239,246,255,0.55)';ctx.fill();
+  ctx.strokeStyle='#1e293b';ctx.lineWidth=2.5;ctx.stroke();
   pts.forEach((v,i)=>{
-    const isT=i===mi;
-    const dir=Math.atan2(v.y-cy,v.x-cx);
-    const off=isT?26:22;
-    ctx.beginPath(); ctx.arc(v.x,v.y,isT?7:5,0,2*Math.PI);
-    ctx.fillStyle=isT?'#2563eb':'#475569'; ctx.fill();
+    const isT=i===mi, dir=Math.atan2(v.y-cy,v.x-cx), off=isT?26:22;
+    ctx.beginPath();ctx.arc(v.x,v.y,isT?7:5,0,2*Math.PI);
+    ctx.fillStyle=isT?'#2563eb':'#475569';ctx.fill();
     ctx.font=isT?'bold 17px "Segoe UI"':'15px "Segoe UI"';
     ctx.fillStyle=isT?'#1d4ed8':'#334155';
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(v.label, v.x+off*Math.cos(dir), v.y+off*Math.sin(dir));
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(v.label,v.x+off*Math.cos(dir),v.y+off*Math.sin(dir));
   });
 }
 
-function drawShapeAngleArc() {
+function drawShapeAngleArc(){
   if(!shape) return;
-  const {pts,n,mi}=shape;
-  const mv=pts[mi],prev=pts[(mi+n-1)%n],next=pts[(mi+1)%n];
-  drawSmallArc(mv.x,mv.y,
-    Math.atan2(prev.y-mv.y,prev.x-mv.x),
-    Math.atan2(next.y-mv.y,next.x-mv.x),34);
+  const {pts,n,mi}=shape,mv=pts[mi],prev=pts[(mi+n-1)%n],next=pts[(mi+1)%n];
+  drawSmallArc(mv.x,mv.y,Math.atan2(prev.y-mv.y,prev.x-mv.x),Math.atan2(next.y-mv.y,next.x-mv.x),34);
 }
 
 // ── Protractor ────────────────────────────────────────────────────────────────
-function drawProtractor() {
-  ctx.save();
-  ctx.translate(px,py);
-  ctx.rotate(prot);
+function drawProtractor(){
+  ctx.save();ctx.translate(px,py);ctx.rotate(prot);
 
-  // Fill
-  ctx.beginPath();
-  ctx.moveTo(-PR,0); ctx.lineTo(PR,0);
-  ctx.arc(0,0,PR,0,Math.PI,true);
-  ctx.closePath();
-  ctx.fillStyle='rgba(219,234,254,0.58)'; ctx.fill();
+  ctx.beginPath();ctx.moveTo(-PR,0);ctx.lineTo(PR,0);ctx.arc(0,0,PR,0,Math.PI,true);ctx.closePath();
+  ctx.fillStyle='rgba(219,234,254,0.58)';ctx.fill();
 
-  // Outer arc
-  ctx.beginPath(); ctx.arc(0,0,PR,0,Math.PI,true);
-  ctx.strokeStyle='#2563eb'; ctx.lineWidth=2; ctx.stroke();
+  ctx.beginPath();ctx.arc(0,0,PR,0,Math.PI,true);ctx.strokeStyle='#2563eb';ctx.lineWidth=2;ctx.stroke();
+  ctx.beginPath();ctx.moveTo(-PR,0);ctx.lineTo(PR,0);ctx.strokeStyle='#2563eb';ctx.lineWidth=2;ctx.stroke();
+  ctx.beginPath();ctx.arc(0,0,DIVIDER_R,0,Math.PI,true);ctx.strokeStyle='rgba(148,163,184,0.45)';ctx.lineWidth=1;ctx.stroke();
 
-  // Baseline
-  ctx.beginPath(); ctx.moveTo(-PR,0); ctx.lineTo(PR,0);
-  ctx.strokeStyle='#2563eb'; ctx.lineWidth=2; ctx.stroke();
-
-  // Divider between scales
-  ctx.beginPath(); ctx.arc(0,0,DIVIDER_R,0,Math.PI,true);
-  ctx.strokeStyle='rgba(148,163,184,0.45)'; ctx.lineWidth=1; ctx.stroke();
-
-  // Tick marks & labels
-  for(let d=0; d<=180; d++) {
+  for(let d=0;d<=180;d++){
     const ang=-d*Math.PI/180;
-    const isLg=d%10===0, isMd=d%5===0&&!isLg;
-    const tl=isLg?TICK_LG:isMd?TICK_MD:TICK_SM;
-
+    const isLg=d%10===0,isMd=d%5===0&&!isLg,tl=isLg?TICK_LG:isMd?TICK_MD:TICK_SM;
     ctx.beginPath();
-    ctx.moveTo(Math.cos(ang)*(PR-tl), Math.sin(ang)*(PR-tl));
-    ctx.lineTo(Math.cos(ang)*PR,      Math.sin(ang)*PR);
+    ctx.moveTo(Math.cos(ang)*(PR-tl),Math.sin(ang)*(PR-tl));
+    ctx.lineTo(Math.cos(ang)*PR,Math.sin(ang)*PR);
     ctx.strokeStyle=isLg?'#1e293b':isMd?'#64748b':'#94a3b8';
-    ctx.lineWidth=isLg?1.5:isMd?1.0:0.8;
-    ctx.stroke();
+    ctx.lineWidth=isLg?1.5:isMd?1.0:0.8;ctx.stroke();
 
-    if (isLg && d>0) {
-      const olx=Math.cos(ang)*OUTER_LBL_R, oly=Math.sin(ang)*OUTER_LBL_R;
-      ctx.save();
-      ctx.translate(olx,oly); ctx.rotate(-prot);
-      ctx.fillStyle='#1e293b';
-      ctx.font=d%30===0?'bold 11px "Segoe UI"':'9.5px "Segoe UI"';
-      ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillText(d+'',0,0);
-      ctx.restore();
+    if(isLg&&d>0){
+      const olx=Math.cos(ang)*OUTER_LBL_R,oly=Math.sin(ang)*OUTER_LBL_R;
+      ctx.save();ctx.translate(olx,oly);ctx.rotate(-prot);
+      ctx.fillStyle='#1e293b';ctx.font=d%30===0?'bold 11px "Segoe UI"':'9.5px "Segoe UI"';
+      ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(d+'',0,0);ctx.restore();
     }
-    if (isLg && d>0 && d<180) {
-      const ilx=Math.cos(ang)*INNER_LBL_R, ily=Math.sin(ang)*INNER_LBL_R;
-      ctx.save();
-      ctx.translate(ilx,ily); ctx.rotate(-prot);
-      ctx.fillStyle='#dc2626';
-      ctx.font='8.5px "Segoe UI"';
-      ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillText((180-d)+'',0,0);
-      ctx.restore();
+    if(isLg&&d>0&&d<180){
+      const ilx=Math.cos(ang)*INNER_LBL_R,ily=Math.sin(ang)*INNER_LBL_R;
+      ctx.save();ctx.translate(ilx,ily);ctx.rotate(-prot);
+      ctx.fillStyle='#dc2626';ctx.font='8.5px "Segoe UI"';
+      ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText((180-d)+'',0,0);ctx.restore();
     }
   }
 
   // 180 label
-  ctx.save();
-  ctx.translate(-OUTER_LBL_R+4,0); ctx.rotate(-prot);
-  ctx.fillStyle='#1e293b'; ctx.font='bold 11px "Segoe UI"';
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('180',0,-1);
-  ctx.restore();
+  ctx.save();ctx.translate(-OUTER_LBL_R+4,0);ctx.rotate(-prot);
+  ctx.fillStyle='#1e293b';ctx.font='bold 11px "Segoe UI"';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('180',0,-1);ctx.restore();
 
   // Centre crosshair
-  ctx.strokeStyle='#ef4444'; ctx.lineWidth=1.8;
-  ctx.beginPath(); ctx.moveTo(-14,0); ctx.lineTo(14,0); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(0,-14); ctx.lineTo(0,14); ctx.stroke();
-  ctx.beginPath(); ctx.arc(0,0,3,0,2*Math.PI);
-  ctx.fillStyle='#ef4444'; ctx.fill();
+  ctx.strokeStyle='#ef4444';ctx.lineWidth=1.8;
+  ctx.beginPath();ctx.moveTo(-14,0);ctx.lineTo(14,0);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(0,-14);ctx.lineTo(0,14);ctx.stroke();
+  ctx.beginPath();ctx.arc(0,0,3,0,2*Math.PI);ctx.fillStyle='#ef4444';ctx.fill();
 
-  // Orange rotation handle (0° end)
-  ctx.beginPath(); ctx.arc(PR,0,HDL_R,0,2*Math.PI);
-  ctx.fillStyle='#f59e0b'; ctx.fill();
-  ctx.strokeStyle='#d97706'; ctx.lineWidth=2; ctx.stroke();
-  ctx.save();
-  ctx.translate(PR,0); ctx.rotate(-prot);
-  ctx.fillStyle='#fff'; ctx.font='bold 13px sans-serif';
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('↻',0,0);
-  ctx.restore();
+  // Orange handle (0° end)
+  ctx.beginPath();ctx.arc(PR,0,HDL_R,0,2*Math.PI);
+  ctx.fillStyle='#f59e0b';ctx.fill();ctx.strokeStyle='#d97706';ctx.lineWidth=2;ctx.stroke();
+  ctx.save();ctx.translate(PR,0);ctx.rotate(-prot);
+  ctx.fillStyle='#fff';ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('↻',0,0);ctx.restore();
 
-  // Small grip at 180° end
-  ctx.beginPath(); ctx.arc(-PR,0,8,0,2*Math.PI);
-  ctx.fillStyle='rgba(245,158,11,0.7)'; ctx.fill();
-  ctx.strokeStyle='#d97706'; ctx.lineWidth=1.5; ctx.stroke();
+  // Small grip (180° end)
+  ctx.beginPath();ctx.arc(-PR,0,8,0,2*Math.PI);
+  ctx.fillStyle='rgba(245,158,11,0.7)';ctx.fill();ctx.strokeStyle='#d97706';ctx.lineWidth=1.5;ctx.stroke();
 
   ctx.restore();
 }
 
 // ── Intersection Indicators ───────────────────────────────────────────────────
-function drawIntersections() {
-  // On ×10° difficulty: only show the Ray 1 (green) alignment dot.
-  // Students must read Ray 2 from the scale themselves.
-  const rays = diff===10
-    ? [[r1,'#10b981']]
-    : [[r1,'#10b981'],[r2,'#f59e0b']];
+function drawIntersections(){
+  // Easy & Tricky: hide orange (student reads scale themselves)
+  // Reflex: show both (reading is needed to then do 360−x)
+  const rays = diff==='reflex'
+    ? [[r1,'#10b981'],[r2,'#f59e0b']]
+    : [[r1,'#10b981']];
 
   rays.forEach(([rayDir,color])=>{
-    const pt=arcIntersect(vx,vy,rayDir);
-    if(!pt) return;
-    ctx.save();
-    ctx.setLineDash([5,5]);
-    ctx.beginPath(); ctx.moveTo(vx,vy); ctx.lineTo(pt.x,pt.y);
-    ctx.strokeStyle=color+'88';
-    ctx.lineWidth=1.2; ctx.stroke();
-    ctx.restore();
-    ctx.beginPath(); ctx.arc(pt.x,pt.y,6,0,2*Math.PI);
-    ctx.fillStyle=color; ctx.fill();
-    ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+    const pt=arcIntersect(vx,vy,rayDir); if(!pt) return;
+    ctx.save();ctx.setLineDash([5,5]);
+    ctx.beginPath();ctx.moveTo(vx,vy);ctx.lineTo(pt.x,pt.y);
+    ctx.strokeStyle=color+'88';ctx.lineWidth=1.2;ctx.stroke();ctx.restore();
+    ctx.beginPath();ctx.arc(pt.x,pt.y,6,0,2*Math.PI);
+    ctx.fillStyle=color;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
   });
 }
 
-function arcIntersect(ox,oy,rayDir) {
-  const dx=Math.cos(rayDir), dy=Math.sin(rayDir);
-  const fx=ox-px, fy=oy-py;
-  const b=2*(fx*dx+fy*dy);
-  const c=fx*fx+fy*fy-PR*PR;
-  const disc=b*b-4*c;
+function arcIntersect(ox,oy,rayDir){
+  const dx=Math.cos(rayDir),dy=Math.sin(rayDir),fx=ox-px,fy=oy-py;
+  const b=2*(fx*dx+fy*dy),c=fx*fx+fy*fy-PR*PR,disc=b*b-4*c;
   if(disc<0) return null;
-  const sq=Math.sqrt(disc);
-  const t1=(-b-sq)/2, t2=(-b+sq)/2;
+  const sq=Math.sqrt(disc),t1=(-b-sq)/2,t2=(-b+sq)/2;
   let t=-1;
-  if(t1>3&&t2>3) t=Math.min(t1,t2);
-  else if(t1>3) t=t1;
-  else if(t2>3) t=t2;
+  if(t1>3&&t2>3) t=Math.min(t1,t2); else if(t1>3) t=t1; else if(t2>3) t=t2;
   if(t<0) return null;
-  const ix=ox+t*dx, iy=oy+t*dy;
-  const cosR=Math.cos(-prot), sinR=Math.sin(-prot);
-  const lx=(ix-px)*cosR-(iy-py)*sinR;
-  const ly=(ix-px)*sinR+(iy-py)*cosR;
+  const ix=ox+t*dx,iy=oy+t*dy;
+  const cosR=Math.cos(-prot),sinR=Math.sin(-prot);
+  const lx=(ix-px)*cosR-(iy-py)*sinR,ly=(ix-px)*sinR+(iy-py)*cosR;
   if(ly>12) return null;
   const deg=Math.atan2(-ly,lx)*180/Math.PI;
   if(deg<-3||deg>183) return null;
