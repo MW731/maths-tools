@@ -441,8 +441,16 @@ function genPractice() {
     drawnAngle  = a;
     targetAngle = a;
   }
-  vx = cv.width*0.45; vy = cv.height*0.58;
-  r1 = Math.random()*0.5 - 0.25;
+  vy = cv.height*0.55;
+  // 50/50: outer scale (ray1 points right) or inner scale (ray1 points left)
+  const useInner = Math.random() < 0.5;
+  if(useInner){
+    vx = cv.width*0.62;
+    r1 = Math.PI + (Math.random()*0.4 - 0.2); // points left
+  } else {
+    vx = cv.width*0.38;
+    r1 = Math.random()*0.4 - 0.2;             // points right
+  }
   r2 = r1 - drawnAngle*Math.PI/180;
 }
 
@@ -515,7 +523,9 @@ function setAngleProblem(mv,prev,next,ta){
 
 // ── Protractor Reset ──────────────────────────────────────────────────────────
 function resetProto() {
-  px=vx+PR*0.7+20; py=vy+PR*0.4; prot=0; snapped=false;
+  // Place protractor on the opposite side of the vertex from the rays
+  const offX = vx > cv.width*0.5 ? -(PR+30) : (PR+30);
+  px=vx+offX; py=vy-PR*0.3; prot=0; snapped=false;
   document.getElementById('snap-badge').style.display='none';
 }
 
@@ -651,14 +661,6 @@ function drawPracticeAngle(){
   // Small arc marking the drawn (acute/obtuse) angle
   drawSmallArc(vx,vy,r1,r2,36);
 
-  // For reflex: label the small angle
-  if(diff==='reflex'){
-    let df=r2-r1; while(df<-Math.PI)df+=2*Math.PI; while(df>Math.PI)df-=2*Math.PI;
-    const midAcute = r1 + df/2;
-    ctx.fillStyle='#1e293b'; ctx.font='bold 12px "Segoe UI"';
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('Measure this', vx+72*Math.cos(midAcute), vy+72*Math.sin(midAcute));
-  }
 }
 
 function drawRay(ox,oy,dir,len,color){
@@ -725,24 +727,35 @@ function drawProtractor(){
     ctx.strokeStyle=isLg?'#1e293b':isMd?'#64748b':'#94a3b8';
     ctx.lineWidth=isLg?1.5:isMd?1.0:0.8;ctx.stroke();
 
-    if(isLg&&d>0){
+    // Outer scale label (0→180), include 0 and 180
+    if(isLg){
       const olx=Math.cos(ang)*OUTER_LBL_R,oly=Math.sin(ang)*OUTER_LBL_R;
       ctx.save();ctx.translate(olx,oly);ctx.rotate(-prot);
-      ctx.fillStyle='#1e293b';ctx.font=d%30===0?'bold 11px "Segoe UI"':'9.5px "Segoe UI"';
+      ctx.fillStyle='#1e293b';
+      ctx.font=(d===0||d===180||d%30===0)?'bold 12px "Segoe UI"':'9.5px "Segoe UI"';
       ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(d+'',0,0);ctx.restore();
     }
+    // Inner scale: red ticks (inward from divider) + labels, skip 0 and 180 ends
     if(isLg&&d>0&&d<180){
-      const ilx=Math.cos(ang)*INNER_LBL_R,ily=Math.sin(ang)*INNER_LBL_R;
+      // Red tick going inward from divider
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(ang)*DIVIDER_R,Math.sin(ang)*DIVIDER_R);
+      ctx.lineTo(Math.cos(ang)*(DIVIDER_R-10),Math.sin(ang)*(DIVIDER_R-10));
+      ctx.strokeStyle='#dc2626';ctx.lineWidth=1.3;ctx.stroke();
+      // Red label just below the tick
+      const ilx=Math.cos(ang)*(DIVIDER_R-18),ily=Math.sin(ang)*(DIVIDER_R-18);
       ctx.save();ctx.translate(ilx,ily);ctx.rotate(-prot);
-      ctx.fillStyle='#dc2626';ctx.font='8.5px "Segoe UI"';
+      ctx.fillStyle='#dc2626';ctx.font='9px "Segoe UI"';
       ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText((180-d)+'',0,0);ctx.restore();
     }
+    // Inner scale medium ticks (5°, no label)
+    if(isMd){
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(ang)*DIVIDER_R,Math.sin(ang)*DIVIDER_R);
+      ctx.lineTo(Math.cos(ang)*(DIVIDER_R-6),Math.sin(ang)*(DIVIDER_R-6));
+      ctx.strokeStyle='#dc2626';ctx.lineWidth=0.8;ctx.stroke();
+    }
   }
-
-  // 180 label
-  ctx.save();ctx.translate(-OUTER_LBL_R+4,0);ctx.rotate(-prot);
-  ctx.fillStyle='#1e293b';ctx.font='bold 11px "Segoe UI"';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText('180',0,-1);ctx.restore();
 
   // Centre crosshair
   ctx.strokeStyle='#ef4444';ctx.lineWidth=1.8;
@@ -766,10 +779,11 @@ function drawProtractor(){
 
 // ── Intersection Indicators ───────────────────────────────────────────────────
 function drawIntersections(){
-  // Reflex: no dots — student must read the scale and calculate themselves
-  // Easy & Tricky: show green alignment dot only
+  // Reflex: no dots at all
+  // Easy: both dots (green Ray1 + orange Ray2)
+  // Tricky: only green Ray1 alignment dot
   if(diff==='reflex') return;
-  const rays = [[r1,'#10b981']];
+  const rays = diff==='easy' ? [[r1,'#10b981'],[r2,'#f59e0b']] : [[r1,'#10b981']];
 
   rays.forEach(([rayDir,color])=>{
     const pt=arcIntersect(vx,vy,rayDir); if(!pt) return;
