@@ -175,12 +175,16 @@ h1 { font-size: 1.05rem; color: var(--primary); font-weight: 700; }
   <div class="modal-box">
     <div class="modal-icon">📐</div>
     <h2>Protractor Practice</h2>
-    <p>Enter your name to start.<br>Your teacher can see your progress live.</p>
+    <p>Enter your name and the class code<br>your teacher gave you.</p>
     <input type="text" class="modal-input" id="name-input"
            placeholder="First name &amp; surname"
            maxlength="50" autocomplete="name" spellcheck="false">
+    <input type="text" class="modal-input" id="code-input"
+           placeholder="Class code (e.g. 7A)"
+           maxlength="20" spellcheck="false" autocomplete="off"
+           style="text-transform:uppercase">
     <button class="modal-btn" id="start-btn">Start →</button>
-    <div class="modal-err" id="name-err">Please enter your name first</div>
+    <div class="modal-err" id="name-err">Please enter both your name and class code</div>
   </div>
 </div>
 
@@ -191,6 +195,8 @@ h1 { font-size: 1.05rem; color: var(--primary); font-weight: 700; }
 
     <div class="student-badge" id="student-badge">
       👤 <span id="student-name-display"></span>
+      <span style="opacity:0.55">·</span>
+      <span id="student-code-display" style="background:rgba(37,99,235,0.12);padding:0.1rem 0.4rem;border-radius:4px;font-size:0.75rem"></span>
     </div>
 
     <div class="mode-tabs">
@@ -281,21 +287,24 @@ const SESSION_DATE = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 
 let studentRef  = null;
 let studentName = '';
+let classCode   = '';
 
 function startSession() {
-  const nm = document.getElementById('name-input').value.trim();
-  if (!nm) { document.getElementById('name-err').style.display = 'block'; return; }
+  const nm   = document.getElementById('name-input').value.trim();
+  const code = document.getElementById('code-input').value.trim().toUpperCase();
+  if (!nm || !code) { document.getElementById('name-err').style.display = 'block'; return; }
   studentName = nm;
+  classCode   = code;
   localStorage.setItem('protractorStudentName', nm);
+  localStorage.setItem('protractorClassCode',   code);
 
-  const slug = nm.toLowerCase()
-    .replace(/\s+/g, '_')
-    .replace(/[^a-z0-9_]/g, '')
-    .slice(0, 40) || 'student';
-  studentRef = db.ref(`classroom/${SESSION_DATE}/${slug}`);
+  const slug    = nm.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '').slice(0, 40) || 'student';
+  const codeKey = code.toLowerCase().replace(/[^a-z0-9]/g, '') || 'general';
+  studentRef = db.ref(`classroom/${SESSION_DATE}/${codeKey}/${slug}`);
 
   studentRef.update({
     name:          studentName,
+    classCode:     classCode,
     score:         0,
     total:         0,
     diff:          'easy',
@@ -313,6 +322,7 @@ function startSession() {
   document.getElementById('app-main').style.display   = 'flex';
   document.getElementById('student-badge').style.display = 'flex';
   document.getElementById('student-name-display').textContent = nm;
+  document.getElementById('student-code-display').textContent = code;
 
   // Wait one frame so the flex layout can compute canvas dimensions
   requestAnimationFrame(() => { resize(); newQ(); });
@@ -375,10 +385,13 @@ window.addEventListener('load', () => {
   cv.addEventListener('touchend',   onTouchEnd,   {passive:false});
   document.getElementById('ans').addEventListener('keydown', e => { if(e.key==='Enter') checkAns(); });
 
-  // Pre-fill name from last session
-  const saved = localStorage.getItem('protractorStudentName');
-  if (saved) document.getElementById('name-input').value = saved;
-  document.getElementById('name-input').addEventListener('keydown', e => { if(e.key==='Enter') startSession(); });
+  // Pre-fill name and class code from last session
+  const saved     = localStorage.getItem('protractorStudentName');
+  const savedCode = localStorage.getItem('protractorClassCode');
+  if (saved)     document.getElementById('name-input').value = saved;
+  if (savedCode) document.getElementById('code-input').value = savedCode;
+  document.getElementById('name-input').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('code-input').focus(); });
+  document.getElementById('code-input').addEventListener('keydown', e => { if(e.key==='Enter') startSession(); });
   document.getElementById('start-btn').addEventListener('click', startSession);
 });
 

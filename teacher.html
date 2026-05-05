@@ -71,6 +71,13 @@ body {
 .pill-online  { background: #d1fae5; color: #065f46; }
 .pill-offline { background: #f1f5f9; color: var(--mid); }
 
+.class-nav { display: flex; align-items: center; gap: 0.5rem; }
+.class-nav input {
+  padding: 0.3rem 0.6rem; border: 2px solid var(--primary); border-radius: 7px;
+  font-size: 0.82rem; font-family: inherit; color: var(--dark);
+  width: 160px; font-weight: 600; letter-spacing: 0.05em;
+}
+.class-nav input:focus { outline: none; border-color: var(--primary-dark); }
 .date-nav { display: flex; align-items: center; gap: 0.5rem; }
 .date-nav input[type=date] {
   padding: 0.3rem 0.6rem; border: 1px solid #e2e8f0; border-radius: 7px;
@@ -212,6 +219,14 @@ body {
       <div class="pill pill-online">🟢 <span id="stat-online">0</span> online</div>
       <div class="pill pill-offline">⚫ <span id="stat-offline">0</span> away</div>
     </div>
+    <div class="class-nav">
+      <input type="text" id="class-input"
+             placeholder="Class code (e.g. 7A)"
+             maxlength="20" autocomplete="off" spellcheck="false"
+             style="text-transform:uppercase"
+             title="Type your class code and press Enter">
+      <button class="nav-btn" id="class-btn">View class →</button>
+    </div>
     <div class="date-nav">
       <input type="date" id="date-picker" title="View another day">
       <button class="nav-btn" onclick="goToday()">Today</button>
@@ -221,8 +236,8 @@ body {
   <div class="content">
     <div id="no-students" class="no-students" style="display:none">
       <div class="big-icon">📭</div>
-      <h3>No students yet today</h3>
-      <p>Share <b>classroom.html</b> with your class.<br>Students appear here as soon as they enter their name.</p>
+      <h3>Enter your class code above</h3>
+      <p>Type the class code (e.g. 7A) in the box at the top and click "View class →"</p>
     </div>
     <div class="student-grid" id="student-grid"></div>
   </div>
@@ -250,9 +265,10 @@ firebase.initializeApp({
 const db = firebase.database();
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let currentDateKey = todayKey();
-let unsubscribe    = null;  // holds the off() function for the current listener
-let studentsCache  = {};
+let currentDateKey  = todayKey();
+let currentClassKey = '';
+let unsubscribe     = null;  // holds the off() function for the current listener
+let studentsCache   = {};
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function todayKey() {
@@ -384,22 +400,43 @@ function escHtml(str) {
 }
 
 // ── Firebase listener ─────────────────────────────────────────────────────────
-function listenToDate(dateKey) {
+function listenToClass(dateKey, classKey) {
   if (unsubscribe) unsubscribe();      // detach old listener
-  currentDateKey = dateKey;
+  currentDateKey  = dateKey;
+  currentClassKey = classKey;
   document.getElementById('topbar-date').textContent = fmtDateKey(dateKey);
 
-  const ref = db.ref(`classroom/${dateKey}`);
+  if (!classKey) {
+    // No class code entered yet — show prompt
+    studentsCache = {};
+    renderDashboard({});
+    const ns = document.getElementById('no-students');
+    ns.style.display = 'flex';
+    ns.querySelector('h3').textContent = 'Enter your class code above';
+    ns.querySelector('p').textContent  = 'Type the class code (e.g. 7A) in the box at the top and click "View class →"';
+    return;
+  }
+
+  const ref = db.ref(`classroom/${dateKey}/${classKey}`);
   const handler = snap => renderDashboard(snap.val());
   ref.on('value', handler);
   unsubscribe = () => ref.off('value', handler);
+}
+
+function applyClassCode() {
+  const raw = document.getElementById('class-input').value.trim().toUpperCase();
+  const key = raw.toLowerCase().replace(/[^a-z0-9]/g, '');
+  // Update topbar to show the class code next to the date
+  document.getElementById('topbar-date').textContent =
+    (key ? `Class ${raw} — ` : '') + fmtDateKey(currentDateKey);
+  listenToClass(currentDateKey, key);
 }
 
 // ── Date navigation ───────────────────────────────────────────────────────────
 function goToday() {
   const key = todayKey();
   document.getElementById('date-picker').value = `${key.slice(0,4)}-${key.slice(4,6)}-${key.slice(6,8)}`;
-  listenToDate(key);
+  listenToClass(key, currentClassKey);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -409,8 +446,14 @@ document.addEventListener('DOMContentLoaded', () => {
   dp.value = `${key.slice(0,4)}-${key.slice(4,6)}-${key.slice(6,8)}`;
   dp.addEventListener('change', () => {
     const v = dp.value.replace(/-/g, '');
-    if (v.length === 8) listenToDate(v);
+    if (v.length === 8) listenToClass(v, currentClassKey);
   });
+
+  // Class code input
+  document.getElementById('class-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') applyClassCode();
+  });
+  document.getElementById('class-btn').addEventListener('click', applyClassCode);
 
   // Password modal
   document.getElementById('pw-input').addEventListener('keydown', e => {
@@ -424,9 +467,11 @@ function checkPassword() {
   if (val === TEACHER_PASSWORD) {
     document.getElementById('pw-modal').style.display  = 'none';
     document.getElementById('dashboard').style.display = 'flex';
-    listenToDate(todayKey());
+    listenToClass(todayKey(), '');   // show prompt to enter class code
     // Refresh "X mins ago" labels every 30 s without re-fetching Firebase
     setInterval(() => renderDashboard(studentsCache), 30000);
+    // Focus the class code box
+    setTimeout(() => document.getElementById('class-input').focus(), 100);
   } else {
     document.getElementById('pw-err').style.display = 'block';
     document.getElementById('pw-input').value = '';
