@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Dashboard — Protractor</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #2563eb; --primary-dark: #1d4ed8;
+  --dark: #1e293b; --mid: #64748b; --light: #f8fafc;
+  --green: #10b981; --yellow: #f59e0b; --red: #ef4444;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--light); color: var(--dark);
+  min-height: 100vh;
+}
+
+/* ── Password modal ──────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.72);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center; z-index: 999;
+}
+.modal-box {
+  background: #fff; border-radius: 18px; padding: 2.4rem 2.2rem;
+  max-width: 360px; width: 92%;
+  box-shadow: 0 28px 72px rgba(0,0,0,0.35); text-align: center;
+}
+.modal-icon { font-size: 2.8rem; margin-bottom: 0.6rem; line-height: 1; }
+.modal-box h2 { font-size: 1.35rem; color: var(--primary); margin-bottom: 0.3rem; }
+.modal-box p { color: var(--mid); font-size: 0.87rem; margin-bottom: 1.5rem; line-height: 1.5; }
+.modal-input {
+  width: 100%; padding: 0.72rem 1rem; border: 2px solid #e2e8f0;
+  border-radius: 10px; font-size: 1rem; text-align: center;
+  margin-bottom: 1rem; transition: border-color 0.15s; font-family: inherit;
+}
+.modal-input:focus { outline: none; border-color: var(--primary); }
+.modal-btn {
+  width: 100%; padding: 0.74rem; background: var(--primary); color: #fff;
+  border: none; border-radius: 10px; font-size: 1rem; font-weight: 600;
+  cursor: pointer; transition: background 0.15s; font-family: inherit;
+}
+.modal-btn:hover { background: var(--primary-dark); }
+.modal-err { color: var(--red); font-size: 0.82rem; margin-top: 0.55rem; display: none; }
+
+/* ── Dashboard ───────────────────────────────────────────────────────── */
+.dashboard { display: none; flex-direction: column; min-height: 100vh; }
+
+.topbar {
+  background: #fff; border-bottom: 1px solid #e2e8f0;
+  padding: 0.9rem 1.6rem;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 0.75rem;
+}
+.topbar-left { display: flex; align-items: center; gap: 1rem; }
+.topbar-title { font-size: 1.15rem; font-weight: 700; color: var(--primary); }
+.topbar-date { font-size: 0.82rem; color: var(--mid); background: #f1f5f9; padding: 0.28rem 0.7rem; border-radius: 6px; }
+
+.stat-pills { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.pill {
+  padding: 0.3rem 0.85rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+  display: flex; align-items: center; gap: 0.35rem;
+}
+.pill-total   { background: #eff6ff; color: var(--primary); }
+.pill-online  { background: #d1fae5; color: #065f46; }
+.pill-offline { background: #f1f5f9; color: var(--mid); }
+
+.date-nav { display: flex; align-items: center; gap: 0.5rem; }
+.date-nav input[type=date] {
+  padding: 0.3rem 0.6rem; border: 1px solid #e2e8f0; border-radius: 7px;
+  font-size: 0.82rem; font-family: inherit; cursor: pointer; color: var(--dark);
+}
+.nav-btn {
+  padding: 0.3rem 0.7rem; background: #e2e8f0; border: none; border-radius: 7px;
+  font-size: 0.82rem; font-weight: 600; cursor: pointer; color: var(--dark);
+  transition: background 0.15s;
+}
+.nav-btn:hover { background: #cbd5e1; }
+
+.content { flex: 1; padding: 1.4rem 1.6rem; }
+
+.no-students {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 5rem 2rem; text-align: center; color: var(--mid);
+}
+.no-students .big-icon { font-size: 3.5rem; margin-bottom: 1rem; opacity: 0.5; }
+.no-students h3 { font-size: 1.1rem; margin-bottom: 0.4rem; color: var(--dark); }
+.no-students p { font-size: 0.87rem; line-height: 1.55; }
+
+/* ── Student grid ────────────────────────────────────────────────────── */
+.student-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.student-card {
+  background: #fff; border-radius: 14px;
+  border: 2px solid #e2e8f0;
+  padding: 1.1rem 1.2rem;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  position: relative; overflow: hidden;
+}
+.student-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+.student-card.online  { border-color: #86efac; }
+.student-card.recent  { border-color: #fde68a; }
+.student-card.offline { border-color: #e2e8f0; opacity: 0.75; }
+
+.card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.7rem; }
+.card-name { font-size: 1.05rem; font-weight: 700; color: var(--dark); line-height: 1.25; }
+.status-dot {
+  width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; margin-top: 3px;
+  box-shadow: 0 0 0 2px #fff;
+}
+.status-dot.online  { background: var(--green); animation: pulse 2s infinite; }
+.status-dot.recent  { background: var(--yellow); }
+.status-dot.offline { background: #94a3b8; }
+
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(16,185,129,0); }
+  50%      { box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(16,185,129,0.35); }
+}
+
+.card-score-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
+.score-big { font-size: 1.5rem; font-weight: 800; color: var(--primary); line-height: 1; }
+.score-sep { font-size: 1.1rem; color: var(--mid); font-weight: 600; }
+.score-total { font-size: 1.1rem; font-weight: 600; color: var(--mid); }
+.accuracy-badge {
+  margin-left: auto; padding: 0.22rem 0.65rem; border-radius: 20px;
+  font-size: 0.78rem; font-weight: 700;
+}
+.acc-high   { background: #d1fae5; color: #065f46; }
+.acc-mid    { background: #fef3c7; color: #92400e; }
+.acc-low    { background: #fee2e2; color: #991b1b; }
+.acc-none   { background: #f1f5f9; color: var(--mid); }
+
+.diff-badge {
+  display: inline-flex; align-items: center; padding: 0.22rem 0.6rem;
+  border-radius: 6px; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.55rem;
+}
+.diff-easy   { background: #d1fae5; color: #065f46; }
+.diff-tricky { background: #eff6ff; color: #1e40af; }
+.diff-reflex { background: #fce7f3; color: #9d174d; }
+.mode-badge {
+  display: inline-flex; align-items: center; padding: 0.22rem 0.6rem;
+  border-radius: 6px; font-size: 0.73rem; font-weight: 600;
+  background: #f1f5f9; color: var(--mid); margin-left: 0.35rem;
+}
+
+.card-activity {
+  font-size: 0.8rem; color: var(--dark); background: #f8fafc;
+  border-radius: 7px; padding: 0.4rem 0.6rem; line-height: 1.45;
+  margin-bottom: 0.5rem; min-height: 2.4rem;
+  border-left: 3px solid #e2e8f0;
+}
+.card-activity.correct { border-left-color: var(--green); }
+.card-activity.wrong   { border-left-color: var(--red); }
+.card-activity.close   { border-left-color: var(--yellow); }
+
+.card-footer { display: flex; justify-content: space-between; align-items: center; }
+.last-seen { font-size: 0.73rem; color: var(--mid); }
+
+/* ── Progress bar ────────────────────────────────────────────────────── */
+.progress-bar-wrap {
+  height: 5px; background: #e2e8f0; border-radius: 3px; margin-bottom: 0.6rem; overflow: hidden;
+}
+.progress-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; background: var(--primary); }
+
+/* ── Footer ──────────────────────────────────────────────────────────── */
+.footer {
+  background: #fff; border-top: 1px solid #e2e8f0;
+  padding: 0.6rem 1.6rem; font-size: 0.75rem; color: var(--mid);
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.4rem;
+}
+.live-dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green); margin-right: 5px; animation: pulse 2s infinite;
+}
+</style>
+</head>
+<body>
+
+<!-- ── Password modal ────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="pw-modal">
+  <div class="modal-box">
+    <div class="modal-icon">🔒</div>
+    <h2>Teacher Dashboard</h2>
+    <p>Enter the teacher password<br>to view live student progress.</p>
+    <input type="password" class="modal-input" id="pw-input"
+           placeholder="Password" autocomplete="current-password">
+    <button class="modal-btn" id="pw-btn">Enter Dashboard →</button>
+    <div class="modal-err" id="pw-err">Incorrect password — try again</div>
+  </div>
+</div>
+
+<!-- ── Dashboard ─────────────────────────────────────────────────────────── -->
+<div class="dashboard" id="dashboard">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title">📊 Live Classroom</span>
+      <span class="topbar-date" id="topbar-date"></span>
+    </div>
+    <div class="stat-pills">
+      <div class="pill pill-total">👥 <span id="stat-total">0</span> students</div>
+      <div class="pill pill-online">🟢 <span id="stat-online">0</span> online</div>
+      <div class="pill pill-offline">⚫ <span id="stat-offline">0</span> away</div>
+    </div>
+    <div class="date-nav">
+      <input type="date" id="date-picker" title="View another day">
+      <button class="nav-btn" onclick="goToday()">Today</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div id="no-students" class="no-students" style="display:none">
+      <div class="big-icon">📭</div>
+      <h3>No students yet today</h3>
+      <p>Share <b>classroom.html</b> with your class.<br>Students appear here as soon as they enter their name.</p>
+    </div>
+    <div class="student-grid" id="student-grid"></div>
+  </div>
+
+  <div class="footer">
+    <span><span class="live-dot"></span>Live — updates automatically via Firebase</span>
+    <span id="footer-updated">—</span>
+  </div>
+</div>
+
+<script>
+// ── ⚠️ Change this password before sharing teacher.html ──────────────────────
+const TEACHER_PASSWORD = 'maths';
+
+// ── Firebase ──────────────────────────────────────────────────────────────────
+firebase.initializeApp({
+  apiKey:            "AIzaSyDoh8S2K7buNoa-m0dkuxlQbgLREbrfNsk",
+  authDomain:        "maths-tools-f072b.firebaseapp.com",
+  databaseURL:       "https://maths-tools-f072b-default-rtdb.firebaseio.com",
+  projectId:         "maths-tools-f072b",
+  storageBucket:     "maths-tools-f072b.firebasestorage.app",
+  messagingSenderId: "349267874238",
+  appId:             "1:349267874238:web:644ebb1361d5c3b8e869ef"
+});
+const db = firebase.database();
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let currentDateKey = todayKey();
+let unsubscribe    = null;  // holds the off() function for the current listener
+let studentsCache  = {};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function todayKey() {
+  return new Date().toISOString().slice(0, 10).replace(/-/g, '');
+}
+
+function fmtDateKey(k) {
+  // "20260505" → "5 May 2026"
+  const y=k.slice(0,4), m=k.slice(4,6), d=k.slice(6,8);
+  return new Date(`${y}-${m}-${d}`).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+}
+
+function minsAgo(ts) {
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1)  return 'just now';
+  if (mins === 1) return '1 min ago';
+  if (mins < 60) return `${mins} mins ago`;
+  const hrs = Math.floor(mins / 60);
+  return hrs === 1 ? '1 hr ago' : `${hrs} hrs ago`;
+}
+
+function statusClass(s) {
+  if (s.online) return 'online';
+  const mins = (Date.now() - (s.lastUpdated || 0)) / 60000;
+  return mins < 10 ? 'recent' : 'offline';
+}
+
+function activityClass(activity) {
+  if (!activity) return '';
+  if (activity.startsWith('✓')) return 'correct';
+  if (activity.startsWith('↺')) return 'close';
+  if (activity.startsWith('✗')) return 'wrong';
+  return '';
+}
+
+function accuracyBadge(score, total) {
+  if (!total) return '<span class="accuracy-badge acc-none">No answers yet</span>';
+  const pct = Math.round(score / total * 100);
+  const cls = pct >= 80 ? 'acc-high' : pct >= 50 ? 'acc-mid' : 'acc-low';
+  return `<span class="accuracy-badge ${cls}">${pct}%</span>`;
+}
+
+function diffBadgeHtml(d) {
+  const map = { easy:'Easy', tricky:'Tricky', reflex:'Reflex' };
+  const cls = { easy:'diff-easy', tricky:'diff-tricky', reflex:'diff-reflex' };
+  const label = map[d] || d || '—';
+  const c = cls[d] || 'diff-easy';
+  return `<span class="diff-badge ${c}">${label}</span>`;
+}
+
+function progressBarHtml(score, total) {
+  const pct = total ? Math.min(100, Math.round(score / total * 100)) : 0;
+  return `<div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>`;
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────────
+function renderDashboard(data) {
+  studentsCache = data || {};
+  const students = Object.values(studentsCache);
+  const online  = students.filter(s => s.online).length;
+  const offline = students.length - online;
+
+  document.getElementById('stat-total').textContent   = students.length;
+  document.getElementById('stat-online').textContent  = online;
+  document.getElementById('stat-offline').textContent = offline;
+
+  const grid = document.getElementById('student-grid');
+  const noStu = document.getElementById('no-students');
+
+  if (!students.length) {
+    noStu.style.display = 'flex';
+    grid.innerHTML = '';
+    return;
+  }
+  noStu.style.display = 'none';
+
+  // Sort: online first, then by lastUpdated desc
+  students.sort((a, b) => {
+    if (a.online !== b.online) return a.online ? -1 : 1;
+    return (b.lastUpdated || 0) - (a.lastUpdated || 0);
+  });
+
+  grid.innerHTML = students.map(s => {
+    const status  = statusClass(s);
+    const actCls  = activityClass(s.lastActivity);
+    const modeBadge = s.mode && s.mode !== 'practice'
+      ? `<span class="mode-badge">${s.mode}</span>` : '';
+
+    return `
+    <div class="student-card ${status}">
+      <div class="card-header">
+        <div class="card-name">${escHtml(s.name || 'Unknown')}</div>
+        <div class="status-dot ${status}" title="${status}"></div>
+      </div>
+
+      <div class="card-score-row">
+        <span class="score-big">${s.score ?? 0}</span>
+        <span class="score-sep">/</span>
+        <span class="score-total">${s.total ?? 0}</span>
+        ${accuracyBadge(s.score ?? 0, s.total ?? 0)}
+      </div>
+
+      ${progressBarHtml(s.score ?? 0, s.total ?? 0)}
+
+      <div style="margin-bottom:0.5rem">
+        ${diffBadgeHtml(s.diff)}${modeBadge}
+      </div>
+
+      <div class="card-activity ${actCls}">
+        ${escHtml(s.lastActivity || '—')}
+      </div>
+
+      <div class="card-footer">
+        <span class="last-seen">⏱ ${s.lastUpdated ? minsAgo(s.lastUpdated) : '—'}</span>
+        ${s.joinedAt ? `<span class="last-seen">Joined ${minsAgo(s.joinedAt)}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('footer-updated').textContent =
+    'Last updated: ' + new Date().toLocaleTimeString();
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Firebase listener ─────────────────────────────────────────────────────────
+function listenToDate(dateKey) {
+  if (unsubscribe) unsubscribe();      // detach old listener
+  currentDateKey = dateKey;
+  document.getElementById('topbar-date').textContent = fmtDateKey(dateKey);
+
+  const ref = db.ref(`classroom/${dateKey}`);
+  const handler = snap => renderDashboard(snap.val());
+  ref.on('value', handler);
+  unsubscribe = () => ref.off('value', handler);
+}
+
+// ── Date navigation ───────────────────────────────────────────────────────────
+function goToday() {
+  const key = todayKey();
+  document.getElementById('date-picker').value = `${key.slice(0,4)}-${key.slice(4,6)}-${key.slice(6,8)}`;
+  listenToDate(key);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Date picker init
+  const dp = document.getElementById('date-picker');
+  const key = todayKey();
+  dp.value = `${key.slice(0,4)}-${key.slice(4,6)}-${key.slice(6,8)}`;
+  dp.addEventListener('change', () => {
+    const v = dp.value.replace(/-/g, '');
+    if (v.length === 8) listenToDate(v);
+  });
+
+  // Password modal
+  document.getElementById('pw-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkPassword();
+  });
+  document.getElementById('pw-btn').addEventListener('click', checkPassword);
+});
+
+function checkPassword() {
+  const val = document.getElementById('pw-input').value;
+  if (val === TEACHER_PASSWORD) {
+    document.getElementById('pw-modal').style.display  = 'none';
+    document.getElementById('dashboard').style.display = 'flex';
+    listenToDate(todayKey());
+    // Refresh "X mins ago" labels every 30 s without re-fetching Firebase
+    setInterval(() => renderDashboard(studentsCache), 30000);
+  } else {
+    document.getElementById('pw-err').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+</script>
+</body>
+</html>
