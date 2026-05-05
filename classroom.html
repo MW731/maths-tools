@@ -258,6 +258,9 @@ h1 { font-size: 1.05rem; color: var(--primary); font-weight: 700; }
     <div class="tip">
       <b>Tip:</b> Blue = outer scale (0→180). Red = inner scale (180→0). Use the scale where 0° lines up with your baseline ray.
     </div>
+
+    <button class="btn btn-secondary" style="font-size:0.75rem;padding:0.35rem 0.7rem;opacity:0.7"
+            onclick="showRejoinPrompt()">↩ Change name / class</button>
   </div>
 
   <div class="canvas-area">
@@ -318,6 +321,13 @@ function startSession() {
   // Automatically mark offline if the tab/browser closes
   studentRef.onDisconnect().update({ online: false, lastUpdated: Date.now() });
 
+  // Watch for teacher removing this student — prompt to rejoin
+  let recordExisted = false;
+  studentRef.on('value', snap => {
+    if (snap.val() !== null) { recordExisted = true; return; }
+    if (recordExisted) showRejoinPrompt();
+  });
+
   document.getElementById('name-modal').style.display = 'none';
   document.getElementById('app-main').style.display   = 'flex';
   document.getElementById('student-badge').style.display = 'flex';
@@ -326,6 +336,28 @@ function startSession() {
 
   // Wait one frame so the flex layout can compute canvas dimensions
   requestAnimationFrame(() => { resize(); newQ(); });
+}
+
+function showRejoinPrompt() {
+  // Stop the old Firebase listener before resetting
+  if (studentRef) studentRef.off();
+  studentRef  = null;
+  studentName = '';
+  classCode   = '';
+  sc = 0; st = 0;
+  document.getElementById('sc').textContent = '0';
+  document.getElementById('st').textContent = '0';
+  localStorage.removeItem('protractorStudentName');
+  localStorage.removeItem('protractorClassCode');
+  // Update modal text and show it
+  document.querySelector('#name-modal p').textContent =
+    'Your teacher has removed you. Please enter a new name and class code to rejoin.';
+  document.getElementById('name-input').value = '';
+  document.getElementById('code-input').value = '';
+  document.getElementById('name-err').style.display = 'none';
+  document.getElementById('name-modal').style.display = 'flex';
+  document.getElementById('app-main').style.display   = 'none';
+  setTimeout(() => document.getElementById('name-input').focus(), 100);
 }
 
 function logToFirebase(activity) {
