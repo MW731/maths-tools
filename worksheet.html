@@ -115,6 +115,25 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--light);
 .opt.wrong   { background: #fee2e2; border-color: var(--red);   color: #991b1b; font-weight: 600; cursor: default; }
 .opt.done    { cursor: default; }
 
+/* ── Explanation box (shown on wrong answer) ── */
+.q-explanation {
+  margin-top: 0.85rem;
+  padding: 0.8rem 1rem;
+  background: #fffbeb;
+  border-left: 3px solid var(--yellow);
+  border-radius: 0 10px 10px 0;
+  font-size: 0.85rem;
+  line-height: 1.75;
+  color: var(--dark);
+  display: none;
+}
+.q-explanation .exp-title {
+  font-weight: 700; color: #92400e; font-size: 0.78rem;
+  text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem;
+}
+.q-explanation strong { color: var(--primary-dark); }
+.q-explanation .step { margin-top: 0.3rem; }
+
 /* Fraction display */
 .frac {
   display: inline-flex; flex-direction: column; align-items: center;
@@ -248,10 +267,16 @@ function genOrderDecimals() {
     if (s !== correct) wrongs.add(s);
   }
   const opts = shuffle([correct, ...[...wrongs].slice(0,3)]);
+  const aligned = nums.map(n => n.toFixed(2)).join('&emsp;');
   return {
     topic: 'Ordering Decimals',
     q: `Order these decimals from <strong>smallest to largest</strong>:<br><br><span class="q-highlight">${nums.join('&emsp;&emsp;')}</span>`,
-    options: opts, answer: opts.indexOf(correct)
+    options: opts, answer: opts.indexOf(correct),
+    explanation: `<div class="exp-title">How to order decimals</div>
+      Write each number with the same number of decimal places so they line up:<br><br>
+      <span style="font-family:monospace">${aligned}</span><br><br>
+      Compare digit by digit from the left. The correct order is:<br>
+      <strong>${correct}</strong>`
   };
 }
 
@@ -264,7 +289,12 @@ function genImproperToMixed() {
   return {
     topic: 'Fractions',
     q: `Convert to a mixed number:<br><br><span style="font-size:1.4em">${frac(n,d)}</span>`,
-    options: opts, answer: opts.indexOf(correct)
+    options: opts, answer: opts.indexOf(correct),
+    explanation: `<div class="exp-title">Improper fraction → mixed number</div>
+      Divide the numerator by the denominator:<br><br>
+      <span class="step"><strong>${n} ÷ ${d} = ${w}</strong> remainder <strong>${r}</strong></span><br><br>
+      The whole number is <strong>${w}</strong>, the remainder <strong>${r}</strong> stays over <strong>${d}</strong>.<br>
+      Answer: <strong>${w} and ${r}/${d}</strong>`
   };
 }
 
@@ -277,20 +307,27 @@ function genMixedToImproper() {
   return {
     topic: 'Fractions',
     q: `Convert to an improper fraction:<br><br><span style="font-size:1.3em;font-weight:700">${w} ${frac(r,d)}</span>`,
-    options: opts, answer: opts.indexOf(correct)
+    options: opts, answer: opts.indexOf(correct),
+    explanation: `<div class="exp-title">Mixed number → improper fraction</div>
+      Multiply the whole number by the denominator, then add the numerator:<br><br>
+      <span class="step">${w} × ${d} = <strong>${w*d}</strong></span><br>
+      <span class="step">${w*d} + ${r} = <strong>${n}</strong></span><br><br>
+      Keep the same denominator: <strong>${n}/${d}</strong>`
   };
 }
 
 function genFracAdd() {
   const d = ri(3,12), n1 = ri(1,d-1), n2 = ri(1,d-1);
   const sum = n1 + n2;
-  let correct;
+  let correct, simplifyNote = '';
   if (sum >= d) {
     const wh = Math.floor(sum/d), rem = sum%d;
-    if (rem === 0) correct = `${wh}`;
-    else { const [sn,sd] = simplify(rem,d); correct = `${wh} and ${sn}/${sd}`; }
+    if (rem === 0) { correct = `${wh}`; simplifyNote = `${sum}/${d} = <strong>${wh}</strong> (a whole number)`; }
+    else { const [sn,sd] = simplify(rem,d); correct = `${wh} and ${sn}/${sd}`; simplifyNote = `${sum}/${d} = <strong>${wh} and ${sn}/${sd}</strong>`; }
   } else {
-    const [sn,sd] = simplify(sum,d); correct = `${sn}/${sd}`;
+    const [sn,sd] = simplify(sum,d);
+    correct = `${sn}/${sd}`;
+    simplifyNote = sn===sum&&sd===d ? `<strong>${sn}/${sd}</strong> (already simplified)` : `Simplify ${sum}/${d}: <strong>${sn}/${sd}</strong>`;
   }
   const wrongs = [`${n1+n2}/${d+d}`, `${sum+1}/${d}`, `${Math.abs(n1-n2)+1}/${d}`].filter(x=>x!==correct);
   while (wrongs.length < 3) wrongs.push(`${sum+wrongs.length+1}/${d+1}`);
@@ -298,7 +335,12 @@ function genFracAdd() {
   return {
     topic: 'Fraction Calculations',
     q: `Calculate: <span style="font-size:1.2em">${frac(n1,d)} + ${frac(n2,d)}</span><br><small style="color:var(--mid)">Give your answer in its simplest form.</small>`,
-    options: opts, answer: opts.indexOf(correct)
+    options: opts, answer: opts.indexOf(correct),
+    explanation: `<div class="exp-title">Adding fractions (same denominator)</div>
+      The denominators are both <strong>${d}</strong>, so just add the numerators:<br><br>
+      <span class="step">${n1} + ${n2} = <strong>${sum}</strong></span><br>
+      <span class="step">= ${sum}/${d}</span><br><br>
+      ${simplifyNote}`
   };
 }
 
@@ -307,13 +349,19 @@ function genFracSubtract() {
   const diff = n1 - n2;
   const [sn,sd] = simplify(diff,d);
   const correct = `${sn}/${sd}`;
+  const simplifyNote = sn===diff&&sd===d ? `<strong>${sn}/${sd}</strong> (already simplified)` : `Simplify ${diff}/${d}: <strong>${sn}/${sd}</strong>`;
   const wrongs = [`${n1+n2}/${d}`, `${diff+1}/${d}`, `${diff}/${d+1}`].filter(x=>x!==correct);
   while (wrongs.length < 3) wrongs.push(`${diff+wrongs.length+1}/${d}`);
   const opts = shuffle([correct, ...wrongs.slice(0,3)]);
   return {
     topic: 'Fraction Calculations',
     q: `Calculate: <span style="font-size:1.2em">${frac(n1,d)} &minus; ${frac(n2,d)}</span><br><small style="color:var(--mid)">Give your answer in its simplest form.</small>`,
-    options: opts, answer: opts.indexOf(correct)
+    options: opts, answer: opts.indexOf(correct),
+    explanation: `<div class="exp-title">Subtracting fractions (same denominator)</div>
+      The denominators are both <strong>${d}</strong>, so just subtract the numerators:<br><br>
+      <span class="step">${n1} − ${n2} = <strong>${diff}</strong></span><br>
+      <span class="step">= ${diff}/${d}</span><br><br>
+      ${simplifyNote}`
   };
 }
 
@@ -321,13 +369,20 @@ function genFracMultiply() {
   const n1=ri(1,5), d1=ri(2,8), n2=ri(1,5), d2=ri(2,8);
   const [sn,sd] = simplify(n1*n2, d1*d2);
   const correct = `${sn}/${sd}`;
+  const simplifyNote = sn===n1*n2&&sd===d1*d2 ? `<strong>${sn}/${sd}</strong> (already simplified)` : `Simplify ${n1*n2}/${d1*d2}: <strong>${sn}/${sd}</strong>`;
   const wrongs = [`${n1+n2}/${d1+d2}`, `${n1*n2}/${d1+d2}`, `${n1+n2}/${d1*d2}`].filter(x=>x!==correct);
   while (wrongs.length < 3) wrongs.push(`${n1*n2+wrongs.length}/${d1*d2}`);
   const opts = shuffle([correct, ...wrongs.slice(0,3)]);
   return {
     topic: 'Fraction Calculations',
     q: `Calculate: <span style="font-size:1.2em">${frac(n1,d1)} &times; ${frac(n2,d2)}</span><br><small style="color:var(--mid)">Give your answer in its simplest form.</small>`,
-    options: opts, answer: opts.indexOf(correct)
+    options: opts, answer: opts.indexOf(correct),
+    explanation: `<div class="exp-title">Multiplying fractions</div>
+      Multiply numerators together, then denominators together:<br><br>
+      <span class="step">Numerator: ${n1} × ${n2} = <strong>${n1*n2}</strong></span><br>
+      <span class="step">Denominator: ${d1} × ${d2} = <strong>${d1*d2}</strong></span><br>
+      <span class="step">= ${n1*n2}/${d1*d2}</span><br><br>
+      ${simplifyNote}`
   };
 }
 
@@ -341,7 +396,12 @@ function genPolygonSum() {
   return {
     topic: 'Angles in Polygons',
     q: `What is the sum of the interior angles of a <strong>${names[sides]}</strong>?`,
-    options: opts, answer: opts.indexOf(`${sum}°`)
+    options: opts, answer: opts.indexOf(`${sum}°`),
+    explanation: `<div class="exp-title">Sum of interior angles</div>
+      Use the formula: <strong>(n − 2) × 180°</strong><br><br>
+      <span class="step">n = ${sides} sides</span><br>
+      <span class="step">(${sides} − 2) × 180° = ${sides-2} × 180°</span><br>
+      <span class="step">= <strong>${sum}°</strong></span>`
   };
 }
 
@@ -355,7 +415,10 @@ function genRegularPolygon() {
   return {
     topic: 'Angles in Polygons',
     q: `Find each interior angle of a <strong>${names[sides]}</strong>.`,
-    options: opts, answer: opts.indexOf(`${each}°`)
+    options: opts, answer: opts.indexOf(`${each}°`),
+    explanation: `<div class="exp-title">Interior angle of a regular polygon</div>
+      <span class="step">Step 1 — sum of all angles: (${sides} − 2) × 180° = <strong>${(sides-2)*180}°</strong></span><br>
+      <span class="step">Step 2 — divide by number of sides: ${(sides-2)*180}° ÷ ${sides} = <strong>${each}°</strong></span>`
   };
 }
 
@@ -372,7 +435,10 @@ function genExteriorAngle() {
   return {
     topic: 'Angles in Polygons',
     q: `Find the <strong>exterior angle</strong> of a <strong>${name}</strong>.`,
-    options: opts, answer: opts.indexOf(correct)
+    options: opts, answer: opts.indexOf(correct),
+    explanation: `<div class="exp-title">Exterior angle of a regular polygon</div>
+      All exterior angles of any regular polygon always add up to <strong>360°</strong>.<br><br>
+      <span class="step">360° ÷ ${s} sides = <strong>${ext}°</strong></span>`
   };
 }
 
@@ -387,7 +453,11 @@ function genSidesFromExterior() {
   return {
     topic: 'Angles in Polygons',
     q: `A regular polygon has an exterior angle of <strong>${ext}°</strong>.<br>How many sides does the polygon have?`,
-    options: opts, answer: opts.indexOf(correct)
+    options: opts, answer: opts.indexOf(correct),
+    explanation: `<div class="exp-title">Finding sides from exterior angle</div>
+      All exterior angles add up to 360°, so:<br><br>
+      <span class="step">Number of sides = 360° ÷ exterior angle</span><br>
+      <span class="step">= 360° ÷ ${ext}° = <strong>${sides}</strong></span>`
   };
 }
 
@@ -395,6 +465,7 @@ function genSidesFromInterior() {
   const validSides = [3,4,5,6,8,9,10,12,15,18,20];
   const s = validSides[ri(0, validSides.length-1)];
   const interior = Math.round((s-2)*180/s);
+  const exterior = 180 - interior;
   const correct = `${s}`;
   const wrongs = [s+1, s-1, s+2].filter(x=>x>2&&x!==s);
   while (wrongs.length < 3) wrongs.push(s + (wrongs.length+1));
@@ -402,7 +473,10 @@ function genSidesFromInterior() {
   return {
     topic: 'Angles in Polygons',
     q: `A regular polygon has an interior angle of <strong>${interior}°</strong>.<br>How many sides does the polygon have?`,
-    options: opts, answer: opts.indexOf(correct)
+    options: opts, answer: opts.indexOf(correct),
+    explanation: `<div class="exp-title">Finding sides from interior angle</div>
+      <span class="step">Step 1 — find the exterior angle:<br>180° − ${interior}° = <strong>${exterior}°</strong></span><br><br>
+      <span class="step">Step 2 — divide 360° by the exterior angle:<br>360° ÷ ${exterior}° = <strong>${s} sides</strong></span>`
   };
 }
 
@@ -410,9 +484,24 @@ function genParallelLines() {
   const angle = ri(35,145);
   const kind = ri(0,2);
   const typeData = [
-    { label: 'alternate angles', ans: angle, rule: 'Alternate angles are equal.' },
-    { label: 'corresponding angles', ans: angle, rule: 'Corresponding angles are equal.' },
-    { label: 'co-interior (allied) angles', ans: 180-angle, rule: 'Co-interior angles add up to 180°.' },
+    {
+      label: 'alternate angles', ans: angle,
+      explanation: `<div class="exp-title">Alternate angles (Z-angles)</div>
+        Alternate angles are <strong>equal</strong> — they sit on opposite sides of the transversal between the parallel lines.<br><br>
+        <span class="step">Angle p = ${angle}°, so angle q = <strong>${angle}°</strong></span>`
+    },
+    {
+      label: 'corresponding angles', ans: angle,
+      explanation: `<div class="exp-title">Corresponding angles (F-angles)</div>
+        Corresponding angles are <strong>equal</strong> — they sit on the same side of the transversal, one at each parallel line.<br><br>
+        <span class="step">Angle p = ${angle}°, so angle q = <strong>${angle}°</strong></span>`
+    },
+    {
+      label: 'co-interior (allied) angles', ans: 180-angle,
+      explanation: `<div class="exp-title">Co-interior angles (C-angles)</div>
+        Co-interior angles <strong>add up to 180°</strong> — they sit on the same side of the transversal between the parallel lines.<br><br>
+        <span class="step">Angle q = 180° − ${angle}° = <strong>${180-angle}°</strong></span>`
+    },
   ];
   const t = typeData[kind];
   const wrongs = [180-t.ans, t.ans+20, Math.abs(t.ans-20)].filter(x=>x>0&&x<181&&x!==t.ans);
@@ -421,7 +510,8 @@ function genParallelLines() {
   return {
     topic: 'Parallel Lines',
     q: `Two parallel lines are cut by a transversal. Angle <em>p</em> = <strong>${angle}°</strong>.<br>Angles <em>p</em> and <em>q</em> are <strong>${t.label}</strong>. Find angle <em>q</em>.`,
-    options: opts, answer: opts.indexOf(`${t.ans}°`)
+    options: opts, answer: opts.indexOf(`${t.ans}°`),
+    explanation: t.explanation
   };
 }
 
@@ -475,7 +565,12 @@ function genConversionGraph() {
   return {
     topic: 'Conversion Graphs',
     q: `Use the conversion graph to convert <strong>${xVal} ${cfg.from}</strong> to ${cfg.to}.${svg}`,
-    options: opts, answer: opts.indexOf(correct)
+    options: opts, answer: opts.indexOf(correct),
+    explanation: `<div class="exp-title">Reading a conversion graph</div>
+      <span class="step">1. Find <strong>${xVal}</strong> on the x-axis (${cfg.from})</span><br>
+      <span class="step">2. Go straight <strong>up</strong> to the blue line</span><br>
+      <span class="step">3. Read <strong>across</strong> to the y-axis (${cfg.to})</span><br><br>
+      The reading gives <strong>${yVal} ${cfg.to}</strong>`
   };
 }
 
@@ -535,7 +630,12 @@ function genConversionGraphOffScale() {
   return {
     topic: 'Conversion Graphs',
     q: `The graph shows that <strong>${refX} ${cfg.from} = ${refY} ${cfg.to}</strong>.<br>Use this to work out <strong>${askX} ${cfg.from}</strong> in ${cfg.to}.<br><small style="color:var(--mid)">(${askX} ${cfg.from} is not shown on the graph)</small>${svg}`,
-    options: opts, answer: opts.indexOf(correct)
+    options: opts, answer: opts.indexOf(correct),
+    explanation: `<div class="exp-title">Off-scale conversion</div>
+      ${askX} ${cfg.from} is not on the graph, but you can use the value that is:<br><br>
+      <span class="step">From the graph: ${refX} ${cfg.from} = ${refY} ${cfg.to}</span><br>
+      <span class="step">${askX} = ${refX} × <strong>${mult}</strong>, so multiply the answer by ${mult} too:</span><br>
+      <span class="step">${refY} × ${mult} = <strong>${answerY} ${cfg.to}</strong></span>`
   };
 }
 
@@ -551,7 +651,13 @@ function genSimplifyRatio() {
   return {
     topic: 'Ratio',
     q: `Simplify the ratio:<br><br><span class="q-highlight">${a} : ${b}</span>`,
-    options: opts, answer: opts.indexOf(correct)
+    options: opts, answer: opts.indexOf(correct),
+    explanation: `<div class="exp-title">Simplifying a ratio</div>
+      Find the highest common factor (HCF) of ${a} and ${b}:<br><br>
+      <span class="step">HCF = <strong>${g}</strong></span><br>
+      <span class="step">${a} ÷ ${g} = <strong>${p}</strong></span><br>
+      <span class="step">${b} ÷ ${g} = <strong>${q}</strong></span><br><br>
+      Simplified ratio: <strong>${p} : ${q}</strong>`
   };
 }
 
@@ -559,6 +665,7 @@ function genShareRatio() {
   const a = ri(1,5), b = ri(1,6);
   const parts = (a+b) * ri(2,10);
   const shareA = a*parts/(a+b), shareB = b*parts/(a+b);
+  const onePart = parts/(a+b);
   const correct = `£${shareA} and £${shareB}`;
   const wrongs = [
     `£${shareA+a} and £${shareB-a}`,
@@ -570,7 +677,13 @@ function genShareRatio() {
   return {
     topic: 'Ratio',
     q: `Share <strong>£${parts}</strong> in the ratio <strong>${a} : ${b}</strong>.<br><small style="color:var(--mid)">Give the amount for each part.</small>`,
-    options: opts, answer: opts.indexOf(correct)
+    options: opts, answer: opts.indexOf(correct),
+    explanation: `<div class="exp-title">Sharing in a ratio</div>
+      <span class="step">Step 1 — total parts: ${a} + ${b} = <strong>${a+b}</strong></span><br>
+      <span class="step">Step 2 — one part: £${parts} ÷ ${a+b} = <strong>£${onePart}</strong></span><br>
+      <span class="step">Step 3 — multiply each share:<br>
+        ${a} × £${onePart} = <strong>£${shareA}</strong><br>
+        ${b} × £${onePart} = <strong>£${shareB}</strong></span>`
   };
 }
 
@@ -582,10 +695,14 @@ function genRatioAsFraction() {
   const wrongs = [`${a}/${b}`, `${b}/${total}`, `${a}/${total+1}`].filter(x=>x!==correct);
   while (wrongs.length < 3) wrongs.push(`${sn+1}/${sd}`);
   const opts = shuffle([correct, ...wrongs.slice(0,3)]);
+  const simplifyNote = (sn===a && sd===total) ? '' : `<br><span class="step">Simplify ${a}/${total}: <strong>${sn}/${sd}</strong></span>`;
   return {
     topic: 'Ratio',
     q: `In a class, the ratio of boys to girls is <strong>${a} : ${b}</strong>.<br>What <strong>fraction</strong> of the class are boys?`,
-    options: opts, answer: opts.indexOf(correct)
+    options: opts, answer: opts.indexOf(correct),
+    explanation: `<div class="exp-title">Ratio as a fraction</div>
+      <span class="step">Total parts: ${a} + ${b} = <strong>${total}</strong></span><br>
+      <span class="step">Boys make up ${a} out of ${total} parts = <strong>${a}/${total}</strong></span>${simplifyNote}`
   };
 }
 
@@ -630,6 +747,7 @@ function renderWorksheet() {
           <button class="opt" onclick="selectAnswer(${i},${j})" id="ob-${i}-${j}">${opt}</button>
         `).join('')}
       </div>
+      ${q.explanation ? `<div class="q-explanation" id="exp-${i}">${q.explanation}</div>` : ''}
     </div>
   `).join('');
 
@@ -649,6 +767,10 @@ function selectAnswer(qi, oi) {
     else if (j === oi) btn.classList.add('wrong');
   });
   document.getElementById(`qc-${qi}`).classList.add(oi === q.answer ? 'ok' : 'bad');
+  if (oi !== q.answer) {
+    const exp = document.getElementById(`exp-${qi}`);
+    if (exp) exp.style.display = 'block';
+  }
   updateProgress();
 }
 
