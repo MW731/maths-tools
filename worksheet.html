@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maths Worksheet</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #2563eb; --primary-dark: #1d4ed8;
+  --dark: #1e293b; --mid: #64748b; --light: #f8fafc;
+  --green: #10b981; --red: #ef4444; --yellow: #f59e0b;
+}
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--light); color: var(--dark); min-height: 100vh; }
+
+/* ── Screens ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── Login ── */
+.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+.login-card {
+  background: #fff; border-radius: 20px; padding: 2.5rem;
+  max-width: 420px; width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12); text-align: center;
+}
+.login-icon { font-size: 3rem; margin-bottom: 1rem; line-height: 1; }
+.login-card h1 { font-size: 1.6rem; color: var(--primary); margin-bottom: 0.3rem; }
+.login-card .sub { color: var(--mid); font-size: 0.9rem; margin-bottom: 1.8rem; line-height: 1.5; }
+.form-group { text-align: left; margin-bottom: 1.1rem; }
+.form-group label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--mid); margin-bottom: 0.4rem; }
+.form-group input {
+  width: 100%; padding: 0.75rem 1rem;
+  border: 2px solid #e2e8f0; border-radius: 10px;
+  font-size: 1rem; font-family: inherit; color: var(--dark);
+  transition: border-color 0.15s;
+}
+.form-group input:focus { outline: none; border-color: var(--primary); }
+.start-btn {
+  width: 100%; padding: 0.9rem;
+  background: var(--primary); color: #fff;
+  border: none; border-radius: 10px; font-size: 1.05rem;
+  font-weight: 600; cursor: pointer; margin-top: 0.5rem;
+  font-family: inherit; transition: background 0.15s;
+}
+.start-btn:hover { background: var(--primary-dark); }
+.err-msg { color: var(--red); font-size: 0.82rem; margin-top: 0.6rem; display: none; }
+
+/* ── Progress bar (sticky) ── */
+.progress-wrap {
+  position: sticky; top: 0; z-index: 50;
+  background: #fff; border-bottom: 1px solid #e2e8f0;
+  padding: 0.65rem 1.4rem;
+  display: flex; align-items: center; gap: 0.9rem;
+}
+.prog-title { font-weight: 700; color: var(--primary); font-size: 0.92rem; white-space: nowrap; }
+.prog-bar-bg { flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+.prog-bar-fill { height: 100%; background: var(--primary); border-radius: 4px; transition: width 0.3s; width: 0%; }
+.prog-label { font-size: 0.8rem; color: var(--mid); white-space: nowrap; }
+.submit-btn {
+  padding: 0.42rem 1rem; background: var(--primary); color: #fff;
+  border: none; border-radius: 8px; font-size: 0.83rem; font-weight: 600;
+  cursor: pointer; white-space: nowrap; font-family: inherit; transition: background 0.15s;
+}
+.submit-btn:hover:not(:disabled) { background: var(--primary-dark); }
+.submit-btn:disabled { background: #93c5fd; cursor: default; }
+
+/* ── Questions ── */
+.worksheet-body { max-width: 800px; margin: 0 auto; padding: 1.4rem; }
+
+.q-card {
+  background: #fff; border-radius: 14px; border: 2px solid #e2e8f0;
+  padding: 1.2rem 1.4rem; margin-bottom: 1rem;
+  transition: border-color 0.25s;
+}
+.q-card.ok  { border-color: #86efac; }
+.q-card.bad { border-color: #fca5a5; }
+
+.q-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.8rem; }
+.q-num {
+  width: 26px; height: 26px; background: var(--primary); color: #fff;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 0.76rem; font-weight: 700; flex-shrink: 0;
+}
+.q-tag {
+  font-size: 0.7rem; font-weight: 700; color: var(--primary);
+  background: #eff6ff; padding: 0.16rem 0.6rem; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+
+.q-text { font-size: 0.94rem; line-height: 1.65; margin-bottom: 0.9rem; }
+.q-text strong { font-weight: 700; }
+
+.q-highlight {
+  display: inline-block; font-family: 'Courier New', monospace;
+  font-size: 1.1rem; font-weight: 700;
+  background: #f1f5f9; padding: 0.4rem 0.9rem; border-radius: 8px;
+  margin: 0.4rem 0;
+}
+
+.q-opts { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.opt {
+  flex: 1 1 calc(50% - 0.5rem); min-width: 140px;
+  padding: 0.6rem 0.9rem;
+  border: 2px solid #e2e8f0; border-radius: 10px;
+  background: #fff; cursor: pointer; text-align: left;
+  font-size: 0.87rem; font-family: 'Courier New', monospace;
+  color: var(--dark); line-height: 1.45;
+  transition: border-color 0.15s, background 0.15s;
+}
+.opt:hover:not(.done) { border-color: #93c5fd; background: #eff6ff; }
+.opt.correct { background: #d1fae5; border-color: var(--green); color: #065f46; font-weight: 600; cursor: default; }
+.opt.wrong   { background: #fee2e2; border-color: var(--red);   color: #991b1b; font-weight: 600; cursor: default; }
+.opt.done    { cursor: default; }
+
+/* Fraction display */
+.frac {
+  display: inline-flex; flex-direction: column; align-items: center;
+  vertical-align: middle; margin: 0 2px; line-height: 1.15; font-size: 0.92em;
+}
+.frac .fn { border-bottom: 1.5px solid currentColor; padding: 0 3px; font-weight: 700; }
+.frac .fd { padding: 0 3px; }
+
+/* ── Results ── */
+.results-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+.results-card {
+  background: #fff; border-radius: 20px; padding: 2.4rem;
+  max-width: 520px; width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12); text-align: center;
+}
+.score-ring {
+  width: 110px; height: 110px; border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  margin: 0 auto 1.4rem;
+}
+.score-ring .sn { font-size: 2.1rem; font-weight: 800; color: #fff; line-height: 1; }
+.score-ring .sd { font-size: 0.82rem; color: rgba(255,255,255,0.75); }
+.results-card h2 { font-size: 1.4rem; margin-bottom: 0.3rem; }
+.results-card .rsub { color: var(--mid); font-size: 0.88rem; margin-bottom: 1.6rem; }
+
+.breakdown h3 { font-size: 0.75rem; font-weight: 700; color: var(--mid); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.8rem; }
+.brow { display: flex; align-items: center; gap: 0.7rem; padding: 0.48rem 0; border-bottom: 1px solid #f1f5f9; }
+.brow:last-child { border-bottom: none; }
+.bname { flex: 1; font-size: 0.84rem; color: var(--dark); font-weight: 500; text-align: left; }
+.mini { flex: 2; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
+.minifill { height: 100%; border-radius: 3px; }
+.minifill.g { background: var(--green); }
+.minifill.y { background: var(--yellow); }
+.minifill.r { background: var(--red); }
+.bscore { font-size: 0.82rem; font-weight: 700; color: var(--primary); min-width: 36px; text-align: right; }
+</style>
+</head>
+<body>
+
+<!-- ── Login ─────────────────────────────────────────────────────────────── -->
+<div id="screen-login" class="screen active">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-icon">📝</div>
+      <h1>Maths Worksheet</h1>
+      <p class="sub">Topics: Decimals · Fractions · Angles · Conversion Graphs · Ratio</p>
+      <div class="form-group">
+        <label>Your full name</label>
+        <input type="text" id="inp-name" placeholder="e.g. Alex Smith" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label>Class code</label>
+        <input type="text" id="inp-class" placeholder="e.g. 7A" autocomplete="off"
+               style="text-transform:uppercase" maxlength="20">
+      </div>
+      <button class="start-btn" id="start-btn">Start Worksheet →</button>
+      <div class="err-msg" id="start-err">Please enter your name and class code.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Worksheet ──────────────────────────────────────────────────────────── -->
+<div id="screen-worksheet" class="screen">
+  <div class="progress-wrap">
+    <span class="prog-title">📝 Worksheet</span>
+    <div class="prog-bar-bg"><div class="prog-bar-fill" id="prog-fill"></div></div>
+    <span class="prog-label" id="prog-label">0 / 0</span>
+    <button class="submit-btn" id="submit-btn" disabled>Submit answers</button>
+  </div>
+  <div class="worksheet-body" id="q-container"></div>
+</div>
+
+<!-- ── Results ────────────────────────────────────────────────────────────── -->
+<div id="screen-done" class="screen">
+  <div class="results-wrap">
+    <div class="results-card">
+      <div class="score-ring">
+        <span class="sn" id="res-score">—</span>
+        <span class="sd" id="res-total">/ 0</span>
+      </div>
+      <h2 id="res-heading">Well done!</h2>
+      <p class="rsub" id="res-sub">Your results have been sent to your teacher.</p>
+      <div class="breakdown" id="res-breakdown"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+firebase.initializeApp({
+  apiKey:            "AIzaSyDoh8S2K7buNoa-m0dkuxlQbgLREbrfNsk",
+  authDomain:        "maths-tools-f072b.firebaseapp.com",
+  databaseURL:       "https://maths-tools-f072b-default-rtdb.firebaseio.com",
+  projectId:         "maths-tools-f072b",
+  storageBucket:     "maths-tools-f072b.firebasestorage.app",
+  messagingSenderId: "349267874238",
+  appId:             "1:349267874238:web:644ebb1361d5c3b8e869ef"
+});
+const db = firebase.database();
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let studentName = '', classCode = '';
+let questions = [], userAnswers = [], submitted = false;
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const ri = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+const simplify = (n, d) => { const g = gcd(Math.abs(n), Math.abs(d)); return [n/g, d/g]; };
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) { const j = ri(0, i); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+const frac = (n, d) => `<span class="frac"><span class="fn">${n}</span><span class="fd">${d}</span></span>`;
+const todayKey = () => new Date().toISOString().slice(0,10).replace(/-/g,'');
+
+// ── Question generators ───────────────────────────────────────────────────────
+
+function genOrderDecimals() {
+  const pool = new Set();
+  while (pool.size < 5) {
+    const dp = Math.random() < 0.55 ? 2 : 1;
+    pool.add(parseFloat((Math.random() * 8 + 0.5).toFixed(dp)));
+  }
+  const nums = [...pool];
+  const sorted = [...nums].sort((a,b) => a - b);
+  const correct = sorted.join(',  ');
+  const wrongs = new Set();
+  for (let t = 0; t < 300 && wrongs.size < 3; t++) {
+    const s = shuffle(nums).join(',  ');
+    if (s !== correct) wrongs.add(s);
+  }
+  const opts = shuffle([correct, ...[...wrongs].slice(0,3)]);
+  return {
+    topic: 'Ordering Decimals',
+    q: `Order these decimals from <strong>smallest to largest</strong>:<br><br><span class="q-highlight">${nums.join('&emsp;&emsp;')}</span>`,
+    options: opts, answer: opts.indexOf(correct)
+  };
+}
+
+function genImproperToMixed() {
+  const d = ri(2,9), w = ri(1,5), r = ri(1, d-1);
+  const n = w*d + r;
+  const correct = `${w} and ${r}/${d}`;
+  const wrongs = [`${w+1} and ${r}/${d}`, `${w} and ${Math.min(r+1,d-1)}/${d}`, `${n}/${d}`].filter(x => x !== correct);
+  const opts = shuffle([correct, ...wrongs.slice(0,3)]);
+  return {
+    topic: 'Fractions',
+    q: `Convert to a mixed number:<br><br><span style="font-size:1.4em">${frac(n,d)}</span>`,
+    options: opts, answer: opts.indexOf(correct)
+  };
+}
+
+function genMixedToImproper() {
+  const d = ri(2,9), w = ri(1,5), r = ri(1, d-1);
+  const n = w*d + r;
+  const correct = `${n}/${d}`;
+  const wrongs = [`${n+1}/${d}`, `${n-1}/${d}`, `${w*d}/${d}`].filter(x => x !== correct);
+  const opts = shuffle([correct, ...wrongs.slice(0,3)]);
+  return {
+    topic: 'Fractions',
+    q: `Convert to an improper fraction:<br><br><span style="font-size:1.3em;font-weight:700">${w} ${frac(r,d)}</span>`,
+    options: opts, answer: opts.indexOf(correct)
+  };
+}
+
+function genFracAdd() {
+  const d = ri(3,12), n1 = ri(1,d-1), n2 = ri(1,d-1);
+  const sum = n1 + n2;
+  let correct;
+  if (sum >= d) {
+    const wh = Math.floor(sum/d), rem = sum%d;
+    if (rem === 0) correct = `${wh}`;
+    else { const [sn,sd] = simplify(rem,d); correct = `${wh} and ${sn}/${sd}`; }
+  } else {
+    const [sn,sd] = simplify(sum,d); correct = `${sn}/${sd}`;
+  }
+  const wrongs = [`${n1+n2}/${d+d}`, `${sum+1}/${d}`, `${Math.abs(n1-n2)+1}/${d}`].filter(x=>x!==correct);
+  while (wrongs.length < 3) wrongs.push(`${sum+wrongs.length+1}/${d+1}`);
+  const opts = shuffle([correct, ...wrongs.slice(0,3)]);
+  return {
+    topic: 'Fraction Calculations',
+    q: `Calculate: <span style="font-size:1.2em">${frac(n1,d)} + ${frac(n2,d)}</span><br><small style="color:var(--mid)">Give your answer in its simplest form.</small>`,
+    options: opts, answer: opts.indexOf(correct)
+  };
+}
+
+function genFracSubtract() {
+  const d = ri(3,12), n1 = ri(2,d-1), n2 = ri(1,n1-1);
+  const diff = n1 - n2;
+  const [sn,sd] = simplify(diff,d);
+  const correct = `${sn}/${sd}`;
+  const wrongs = [`${n1+n2}/${d}`, `${diff+1}/${d}`, `${diff}/${d+1}`].filter(x=>x!==correct);
+  while (wrongs.length < 3) wrongs.push(`${diff+wrongs.length+1}/${d}`);
+  const opts = shuffle([correct, ...wrongs.slice(0,3)]);
+  return {
+    topic: 'Fraction Calculations',
+    q: `Calculate: <span style="font-size:1.2em">${frac(n1,d)} &minus; ${frac(n2,d)}</span><br><small style="color:var(--mid)">Give your answer in its simplest form.</small>`,
+    options: opts, answer: opts.indexOf(correct)
+  };
+}
+
+function genFracMultiply() {
+  const n1=ri(1,5), d1=ri(2,8), n2=ri(1,5), d2=ri(2,8);
+  const [sn,sd] = simplify(n1*n2, d1*d2);
+  const correct = `${sn}/${sd}`;
+  const wrongs = [`${n1+n2}/${d1+d2}`, `${n1*n2}/${d1+d2}`, `${n1+n2}/${d1*d2}`].filter(x=>x!==correct);
+  while (wrongs.length < 3) wrongs.push(`${n1*n2+wrongs.length}/${d1*d2}`);
+  const opts = shuffle([correct, ...wrongs.slice(0,3)]);
+  return {
+    topic: 'Fraction Calculations',
+    q: `Calculate: <span style="font-size:1.2em">${frac(n1,d1)} &times; ${frac(n2,d2)}</span><br><small style="color:var(--mid)">Give your answer in its simplest form.</small>`,
+    options: opts, answer: opts.indexOf(correct)
+  };
+}
+
+function genPolygonSum() {
+  const sides = ri(4,8);
+  const names = {4:'quadrilateral',5:'pentagon',6:'hexagon',7:'heptagon',8:'octagon'};
+  const sum = (sides-2)*180;
+  const wrongs = [sum-180, sum+180, sides*180].filter(x=>x>0&&x!==sum);
+  while (wrongs.length < 3) wrongs.push(sum + (wrongs.length+1)*90);
+  const opts = shuffle([`${sum}°`, ...wrongs.slice(0,3).map(x=>`${x}°`)]);
+  return {
+    topic: 'Angles in Polygons',
+    q: `What is the sum of the interior angles of a <strong>${names[sides]}</strong>?`,
+    options: opts, answer: opts.indexOf(`${sum}°`)
+  };
+}
+
+function genRegularPolygon() {
+  const sides = ri(3,8);
+  const names = {3:'equilateral triangle',4:'square',5:'regular pentagon',6:'regular hexagon',7:'regular heptagon',8:'regular octagon'};
+  const each = Math.round((sides-2)*180/sides);
+  const wrongs = [each-15, each+15, Math.round(360/sides)].filter(x=>x>0&&x!==each);
+  while (wrongs.length < 3) wrongs.push(each + (wrongs.length+1)*10);
+  const opts = shuffle([`${each}°`, ...wrongs.slice(0,3).map(x=>`${x}°`)]);
+  return {
+    topic: 'Angles in Polygons',
+    q: `Find each interior angle of a <strong>${names[sides]}</strong>.`,
+    options: opts, answer: opts.indexOf(`${each}°`)
+  };
+}
+
+function genParallelLines() {
+  const angle = ri(35,145);
+  const kind = ri(0,2);
+  const typeData = [
+    { label: 'alternate angles', ans: angle, rule: 'Alternate angles are equal.' },
+    { label: 'corresponding angles', ans: angle, rule: 'Corresponding angles are equal.' },
+    { label: 'co-interior (allied) angles', ans: 180-angle, rule: 'Co-interior angles add up to 180°.' },
+  ];
+  const t = typeData[kind];
+  const wrongs = [180-t.ans, t.ans+20, Math.abs(t.ans-20)].filter(x=>x>0&&x<181&&x!==t.ans);
+  while (wrongs.length < 3) wrongs.push(t.ans + (wrongs.length+1)*5);
+  const opts = shuffle([`${t.ans}°`, ...wrongs.slice(0,3).map(x=>`${x}°`)]);
+  return {
+    topic: 'Parallel Lines',
+    q: `Two parallel lines are cut by a transversal. Angle <em>p</em> = <strong>${angle}°</strong>.<br>Angles <em>p</em> and <em>q</em> are <strong>${t.label}</strong>. Find angle <em>q</em>.`,
+    options: opts, answer: opts.indexOf(`${t.ans}°`)
+  };
+}
+
+function genConversionGraph() {
+  const configs = [
+    { from:'miles', to:'km',   rate:1.6,  maxX:10, xStep:2 },
+    { from:'£',     to:'€',    rate:1.18, maxX:20, xStep:5 },
+    { from:'kg',    to:'lb',   rate:2.2,  maxX:10, xStep:2 },
+  ];
+  const cfg = configs[ri(0, configs.length-1)];
+  const steps = Math.floor(cfg.maxX / cfg.xStep);
+  const xVal = ri(1, steps) * cfg.xStep;
+  const yVal = parseFloat((xVal * cfg.rate).toFixed(1));
+
+  const W=280, H=200, PL=45, PB=35, PT=12, PR=15;
+  const GW=W-PL-PR, GH=H-PB-PT;
+  const maxY = cfg.maxX * cfg.rate;
+  const tx = v => PL + (v/cfg.maxX)*GW;
+  const ty = v => H - PB - (v/maxY)*GH;
+
+  let g = '';
+  for (let x = 0; x <= cfg.maxX; x += cfg.xStep) {
+    const sx = tx(x);
+    g += `<line x1="${sx}" y1="${PT}" x2="${sx}" y2="${H-PB}" stroke="#e2e8f0" stroke-width="1"/>`;
+    g += `<text x="${sx}" y="${H-PB+13}" text-anchor="middle" font-size="9" fill="#94a3b8">${x}</text>`;
+  }
+  const yTicks = 5;
+  for (let i = 0; i <= yTicks; i++) {
+    const yv = (maxY/yTicks)*i, sy = ty(yv);
+    g += `<line x1="${PL}" y1="${sy}" x2="${W-PR}" y2="${sy}" stroke="#e2e8f0" stroke-width="1"/>`;
+    g += `<text x="${PL-4}" y="${sy+3.5}" text-anchor="end" font-size="9" fill="#94a3b8">${Math.round(yv)}</text>`;
+  }
+  g += `<line x1="${PL}" y1="${PT}" x2="${PL}" y2="${H-PB}" stroke="#cbd5e1" stroke-width="1.5"/>`;
+  g += `<line x1="${PL}" y1="${H-PB}" x2="${W-PR}" y2="${H-PB}" stroke="#cbd5e1" stroke-width="1.5"/>`;
+  g += `<line x1="${tx(0)}" y1="${ty(0)}" x2="${tx(cfg.maxX)}" y2="${ty(maxY)}" stroke="#2563eb" stroke-width="2.5"/>`;
+  const rx=tx(xVal), ry=ty(yVal);
+  g += `<line x1="${rx}" y1="${H-PB}" x2="${rx}" y2="${ry}" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>`;
+  g += `<line x1="${PL}" y1="${ry}" x2="${rx}" y2="${ry}" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>`;
+  g += `<circle cx="${rx}" cy="${ry}" r="4" fill="#ef4444"/>`;
+  g += `<text x="${PL+GW/2}" y="${H}" text-anchor="middle" font-size="10" fill="#64748b">${cfg.from}</text>`;
+  g += `<text x="10" y="${PT+GH/2}" text-anchor="middle" font-size="10" fill="#64748b" transform="rotate(-90,10,${PT+GH/2})">${cfg.to}</text>`;
+  const svg = `<svg width="${W}" height="${H}" style="border:1px solid #e2e8f0;border-radius:10px;background:#fafafa;display:block;margin:0.8rem 0">${g}</svg>`;
+
+  const correct = `${yVal} ${cfg.to}`;
+  const alt1 = parseFloat((yVal + cfg.rate*cfg.xStep).toFixed(1));
+  const alt2 = parseFloat((yVal - cfg.rate*cfg.xStep*0.5).toFixed(1));
+  const wrongs = [`${alt1} ${cfg.to}`, alt2 > 0 ? `${alt2} ${cfg.to}` : `${alt1+1} ${cfg.to}`, `${xVal} ${cfg.from}`]
+    .filter(x => x !== correct);
+  while (wrongs.length < 3) wrongs.push(`${yVal + wrongs.length + 1} ${cfg.to}`);
+  const opts = shuffle([correct, ...wrongs.slice(0,3)]);
+  return {
+    topic: 'Conversion Graphs',
+    q: `Use the conversion graph to convert <strong>${xVal} ${cfg.from}</strong> to ${cfg.to}.${svg}`,
+    options: opts, answer: opts.indexOf(correct)
+  };
+}
+
+function genSimplifyRatio() {
+  const pairs = [[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5],[1,6],[5,6],[1,7],[2,7],[3,7],[4,7],[5,7]];
+  const [p,q] = pairs[ri(0,pairs.length-1)];
+  const g = ri(2,7);
+  const a = p*g, b = q*g;
+  const correct = `${p} : ${q}`;
+  const wrongs = [`${a} : ${b}`, `${p+1} : ${q}`, `${p} : ${q+1}`].filter(x=>x!==correct);
+  while (wrongs.length < 3) wrongs.push(`${p+wrongs.length+1} : ${q}`);
+  const opts = shuffle([correct, ...wrongs.slice(0,3)]);
+  return {
+    topic: 'Ratio',
+    q: `Simplify the ratio:<br><br><span class="q-highlight">${a} : ${b}</span>`,
+    options: opts, answer: opts.indexOf(correct)
+  };
+}
+
+function genShareRatio() {
+  const a = ri(1,5), b = ri(1,6);
+  const parts = (a+b) * ri(2,10);
+  const shareA = a*parts/(a+b), shareB = b*parts/(a+b);
+  const correct = `£${shareA} and £${shareB}`;
+  const wrongs = [
+    `£${shareA+a} and £${shareB-a}`,
+    `£${Math.round(parts/2)} and £${parts - Math.round(parts/2)}`,
+    `£${shareB} and £${shareA}`,
+  ].filter(x=>x!==correct&&!x.includes('-'));
+  while (wrongs.length < 3) wrongs.push(`£${shareA+wrongs.length+1} and £${shareB-wrongs.length-1}`);
+  const opts = shuffle([correct, ...wrongs.slice(0,3)]);
+  return {
+    topic: 'Ratio',
+    q: `Share <strong>£${parts}</strong> in the ratio <strong>${a} : ${b}</strong>.<br><small style="color:var(--mid)">Give the amount for each part.</small>`,
+    options: opts, answer: opts.indexOf(correct)
+  };
+}
+
+function genRatioAsFraction() {
+  const a = ri(1,7), b = ri(1,7);
+  const total = a+b;
+  const [sn,sd] = simplify(a, total);
+  const correct = `${sn}/${sd}`;
+  const wrongs = [`${a}/${b}`, `${b}/${total}`, `${a}/${total+1}`].filter(x=>x!==correct);
+  while (wrongs.length < 3) wrongs.push(`${sn+1}/${sd}`);
+  const opts = shuffle([correct, ...wrongs.slice(0,3)]);
+  return {
+    topic: 'Ratio',
+    q: `In a class, the ratio of boys to girls is <strong>${a} : ${b}</strong>.<br>What <strong>fraction</strong> of the class are boys?`,
+    options: opts, answer: opts.indexOf(correct)
+  };
+}
+
+// ── Assemble questions ────────────────────────────────────────────────────────
+function generateQuestions() {
+  const qs = [];
+  // Ordering decimals (3)
+  for (let i=0;i<3;i++) qs.push(genOrderDecimals());
+  // Fractions (7: improper/mixed + operations)
+  qs.push(genImproperToMixed()); qs.push(genImproperToMixed());
+  qs.push(genMixedToImproper()); qs.push(genMixedToImproper());
+  qs.push(genFracAdd()); qs.push(genFracSubtract()); qs.push(genFracMultiply());
+  // Angles polygons (3)
+  qs.push(genPolygonSum()); qs.push(genPolygonSum()); qs.push(genRegularPolygon());
+  // Parallel lines (3)
+  qs.push(genParallelLines()); qs.push(genParallelLines()); qs.push(genParallelLines());
+  // Conversion graphs (2)
+  qs.push(genConversionGraph()); qs.push(genConversionGraph());
+  // Ratio (5)
+  qs.push(genSimplifyRatio()); qs.push(genSimplifyRatio());
+  qs.push(genShareRatio()); qs.push(genShareRatio());
+  qs.push(genRatioAsFraction());
+  return shuffle(qs);
+}
+
+// ── Render worksheet ──────────────────────────────────────────────────────────
+function renderWorksheet() {
+  questions = generateQuestions();
+  userAnswers = new Array(questions.length).fill(-1);
+
+  document.getElementById('q-container').innerHTML = questions.map((q, i) => `
+    <div class="q-card" id="qc-${i}">
+      <div class="q-header">
+        <div class="q-num">${i+1}</div>
+        <span class="q-tag">${q.topic}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      <div class="q-opts" id="qo-${i}">
+        ${q.options.map((opt, j) => `
+          <button class="opt" onclick="selectAnswer(${i},${j})" id="ob-${i}-${j}">${opt}</button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  updateProgress();
+  showScreen('worksheet');
+  window.scrollTo(0,0);
+}
+
+function selectAnswer(qi, oi) {
+  if (userAnswers[qi] !== -1 || submitted) return;
+  userAnswers[qi] = oi;
+  const q = questions[qi];
+  q.options.forEach((_, j) => {
+    const btn = document.getElementById(`ob-${qi}-${j}`);
+    btn.classList.add('done');
+    if (j === q.answer) btn.classList.add('correct');
+    else if (j === oi) btn.classList.add('wrong');
+  });
+  document.getElementById(`qc-${qi}`).classList.add(oi === q.answer ? 'ok' : 'bad');
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = userAnswers.filter(a => a !== -1).length;
+  const total = questions.length;
+  document.getElementById('prog-fill').style.width = (total ? answered/total*100 : 0) + '%';
+  document.getElementById('prog-label').textContent = `${answered} / ${total}`;
+  document.getElementById('submit-btn').disabled = answered < total;
+}
+
+// ── Submit ────────────────────────────────────────────────────────────────────
+function submitWorksheet() {
+  if (submitted) return;
+  submitted = true;
+  document.getElementById('submit-btn').disabled = true;
+
+  let score = 0;
+  const correct = [];
+  const topicScores = {};
+  questions.forEach((q, i) => {
+    const ok = userAnswers[i] === q.answer;
+    if (ok) score++;
+    correct.push(ok);
+    if (!topicScores[q.topic]) topicScores[q.topic] = { score:0, total:0 };
+    topicScores[q.topic].total++;
+    if (ok) topicScores[q.topic].score++;
+  });
+
+  const safeId = studentName.replace(/[^a-zA-Z0-9]/g,'_') + '_' + Date.now();
+  const classKey = classCode.toLowerCase().replace(/[^a-z0-9]/g,'');
+  db.ref(`worksheets/${todayKey()}/${classKey}/${safeId}`).set({
+    name: studentName,
+    score, total: questions.length,
+    percentage: Math.round(score/questions.length*100),
+    submittedAt: Date.now(),
+    topicScores, answers: userAnswers, correct
+  });
+
+  showResults(score, topicScores);
+}
+
+function showResults(score, topicScores) {
+  const total = questions.length;
+  const pct = Math.round(score/total*100);
+  document.getElementById('res-score').textContent = score;
+  document.getElementById('res-total').textContent = `/ ${total}`;
+  const msg = pct>=80 ? 'Excellent work!' : pct>=60 ? 'Good effort!' : pct>=40 ? 'Keep practising!' : "Don't give up!";
+  document.getElementById('res-heading').textContent = msg;
+  document.getElementById('res-sub').textContent = `${pct}% — Your results have been sent to your teacher.`;
+
+  document.getElementById('res-breakdown').innerHTML =
+    '<h3>Topic breakdown</h3>' +
+    Object.entries(topicScores).map(([topic, ts]) => {
+      const tp = Math.round(ts.score/ts.total*100);
+      const cls = tp>=75?'g':tp>=50?'y':'r';
+      return `<div class="brow">
+        <span class="bname">${topic}</span>
+        <div class="mini"><div class="minifill ${cls}" style="width:${tp}%"></div></div>
+        <span class="bscore">${ts.score}/${ts.total}</span>
+      </div>`;
+    }).join('');
+
+  showScreen('done');
+  window.scrollTo(0,0);
+}
+
+// ── Screen nav ────────────────────────────────────────────────────────────────
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(`screen-${name}`).classList.add('active');
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('start-btn').addEventListener('click', () => {
+    studentName = document.getElementById('inp-name').value.trim();
+    classCode   = document.getElementById('inp-class').value.trim().toUpperCase();
+    const err   = document.getElementById('start-err');
+    if (!studentName || !classCode) { err.style.display='block'; return; }
+    err.style.display = 'none';
+    renderWorksheet();
+  });
+  document.getElementById('submit-btn').addEventListener('click', submitWorksheet);
+  document.getElementById('inp-name').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('inp-class').focus(); });
+  document.getElementById('inp-class').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('start-btn').click(); });
+});
+</script>
+</body>
+</html>
