@@ -359,6 +359,53 @@ function genRegularPolygon() {
   };
 }
 
+function genExteriorAngle() {
+  const valid = [3,4,5,6,8,9,10,12,15,18,20,24,30,36,40,45,60,72,90,120];
+  const s = valid[ri(0, valid.length-1)];
+  const ext = 360/s;
+  const names = {3:'equilateral triangle',4:'square',5:'regular pentagon',6:'regular hexagon',8:'regular octagon',9:'regular nonagon',10:'regular decagon',12:'regular 12-sided polygon',15:'regular 15-sided polygon',18:'regular 18-sided polygon',20:'regular 20-sided polygon'};
+  const name = names[s] || `regular ${s}-sided polygon`;
+  const correct = `${ext}°`;
+  const wrongs = [ext+10, ext-5, (360-2*ext)].filter(x=>x>0&&x!==ext&&x<360);
+  while (wrongs.length < 3) wrongs.push(ext + (wrongs.length+1)*5);
+  const opts = shuffle([correct, ...wrongs.slice(0,3).map(x=>`${x}°`)]);
+  return {
+    topic: 'Angles in Polygons',
+    q: `Find the <strong>exterior angle</strong> of a <strong>${name}</strong>.`,
+    options: opts, answer: opts.indexOf(correct)
+  };
+}
+
+function genSidesFromExterior() {
+  const validExt = [120,90,72,60,45,40,36,30,24,20,18,15,12,10,9,8,6,5,4,3];
+  const ext = validExt[ri(0, validExt.length-1)];
+  const sides = 360/ext;
+  const correct = `${sides}`;
+  const wrongs = [sides+1, sides-1, sides+2].filter(x=>x>2&&x!==sides);
+  while (wrongs.length < 3) wrongs.push(sides + (wrongs.length+1));
+  const opts = shuffle([correct, ...wrongs.slice(0,3).map(String)]);
+  return {
+    topic: 'Angles in Polygons',
+    q: `A regular polygon has an exterior angle of <strong>${ext}°</strong>.<br>How many sides does the polygon have?`,
+    options: opts, answer: opts.indexOf(correct)
+  };
+}
+
+function genSidesFromInterior() {
+  const validSides = [3,4,5,6,8,9,10,12,15,18,20];
+  const s = validSides[ri(0, validSides.length-1)];
+  const interior = Math.round((s-2)*180/s);
+  const correct = `${s}`;
+  const wrongs = [s+1, s-1, s+2].filter(x=>x>2&&x!==s);
+  while (wrongs.length < 3) wrongs.push(s + (wrongs.length+1));
+  const opts = shuffle([correct, ...wrongs.slice(0,3).map(String)]);
+  return {
+    topic: 'Angles in Polygons',
+    q: `A regular polygon has an interior angle of <strong>${interior}°</strong>.<br>How many sides does the polygon have?`,
+    options: opts, answer: opts.indexOf(correct)
+  };
+}
+
 function genParallelLines() {
   const angle = ri(35,145);
   const kind = ri(0,2);
@@ -432,6 +479,66 @@ function genConversionGraph() {
   };
 }
 
+function genConversionGraphOffScale() {
+  const configs = [
+    { from:'miles', to:'km',   rate:1.6,  maxX:10, xStep:2 },
+    { from:'£',     to:'€',    rate:1.18, maxX:20, xStep:5 },
+    { from:'kg',    to:'lb',   rate:2.2,  maxX:10, xStep:2 },
+  ];
+  const cfg = configs[ri(0, configs.length-1)];
+  // Reference point that IS on the graph
+  const refX = cfg.xStep * ri(1, Math.floor(cfg.maxX/cfg.xStep));
+  const refY = parseFloat((refX * cfg.rate).toFixed(1));
+  // Ask for a multiple that is OFF the graph
+  const mult = ri(3,6);
+  const askX = refX * mult;
+  const answerY = parseFloat((askX * cfg.rate).toFixed(1));
+
+  const W=280, H=200, PL=45, PB=35, PT=12, PR=15;
+  const GW=W-PL-PR, GH=H-PB-PT;
+  const maxY = cfg.maxX * cfg.rate;
+  const tx = v => PL + (v/cfg.maxX)*GW;
+  const ty = v => H - PB - (v/maxY)*GH;
+
+  let g = '';
+  for (let x = 0; x <= cfg.maxX; x += cfg.xStep) {
+    const sx = tx(x);
+    g += `<line x1="${sx}" y1="${PT}" x2="${sx}" y2="${H-PB}" stroke="#e2e8f0" stroke-width="1"/>`;
+    g += `<text x="${sx}" y="${H-PB+13}" text-anchor="middle" font-size="9" fill="#94a3b8">${x}</text>`;
+  }
+  const yTicks = 5;
+  for (let i = 0; i <= yTicks; i++) {
+    const yv = (maxY/yTicks)*i, sy = ty(yv);
+    g += `<line x1="${PL}" y1="${sy}" x2="${W-PR}" y2="${sy}" stroke="#e2e8f0" stroke-width="1"/>`;
+    g += `<text x="${PL-4}" y="${sy+3.5}" text-anchor="end" font-size="9" fill="#94a3b8">${Math.round(yv)}</text>`;
+  }
+  g += `<line x1="${PL}" y1="${PT}" x2="${PL}" y2="${H-PB}" stroke="#cbd5e1" stroke-width="1.5"/>`;
+  g += `<line x1="${PL}" y1="${H-PB}" x2="${W-PR}" y2="${H-PB}" stroke="#cbd5e1" stroke-width="1.5"/>`;
+  g += `<line x1="${tx(0)}" y1="${ty(0)}" x2="${tx(cfg.maxX)}" y2="${ty(maxY)}" stroke="#2563eb" stroke-width="2.5"/>`;
+  // Highlight the reference point on the graph
+  const rx=tx(refX), ry=ty(refY);
+  g += `<line x1="${rx}" y1="${H-PB}" x2="${rx}" y2="${ry}" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.8"/>`;
+  g += `<line x1="${PL}" y1="${ry}" x2="${rx}" y2="${ry}" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.8"/>`;
+  g += `<circle cx="${rx}" cy="${ry}" r="4" fill="#10b981"/>`;
+  g += `<text x="${PL+GW/2}" y="${H}" text-anchor="middle" font-size="10" fill="#64748b">${cfg.from}</text>`;
+  g += `<text x="10" y="${PT+GH/2}" text-anchor="middle" font-size="10" fill="#64748b" transform="rotate(-90,10,${PT+GH/2})">${cfg.to}</text>`;
+  const svg = `<svg width="${W}" height="${H}" style="border:1px solid #e2e8f0;border-radius:10px;background:#fafafa;display:block;margin:0.8rem 0">${g}</svg>`;
+
+  const correct = `${answerY} ${cfg.to}`;
+  const wrongs = [
+    `${parseFloat((answerY + cfg.rate * refX).toFixed(1))} ${cfg.to}`,
+    `${parseFloat((answerY - cfg.rate * refX).toFixed(1))} ${cfg.to}`,
+    `${parseFloat((refY * mult + cfg.rate).toFixed(1))} ${cfg.to}`,
+  ].filter(x => x !== correct && !x.startsWith('-'));
+  while (wrongs.length < 3) wrongs.push(`${answerY + wrongs.length + 1} ${cfg.to}`);
+  const opts = shuffle([correct, ...wrongs.slice(0,3)]);
+  return {
+    topic: 'Conversion Graphs',
+    q: `The graph shows that <strong>${refX} ${cfg.from} = ${refY} ${cfg.to}</strong>.<br>Use this to work out <strong>${askX} ${cfg.from}</strong> in ${cfg.to}.<br><small style="color:var(--mid)">(${askX} ${cfg.from} is not shown on the graph)</small>${svg}`,
+    options: opts, answer: opts.indexOf(correct)
+  };
+}
+
 function genSimplifyRatio() {
   const pairs = [[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5],[1,6],[5,6],[1,7],[2,7],[3,7],[4,7],[5,7]];
   const [p,q] = pairs[ri(0,pairs.length-1)];
@@ -491,12 +598,14 @@ function generateQuestions() {
   qs.push(genImproperToMixed()); qs.push(genImproperToMixed());
   qs.push(genMixedToImproper()); qs.push(genMixedToImproper());
   qs.push(genFracAdd()); qs.push(genFracSubtract()); qs.push(genFracMultiply());
-  // Angles polygons (3)
-  qs.push(genPolygonSum()); qs.push(genPolygonSum()); qs.push(genRegularPolygon());
+  // Angles polygons (6: sum, interior, exterior, sides from ext, sides from int)
+  qs.push(genPolygonSum()); qs.push(genPolygonSum());
+  qs.push(genRegularPolygon()); qs.push(genExteriorAngle());
+  qs.push(genSidesFromExterior()); qs.push(genSidesFromInterior());
   // Parallel lines (3)
   qs.push(genParallelLines()); qs.push(genParallelLines()); qs.push(genParallelLines());
-  // Conversion graphs (2)
-  qs.push(genConversionGraph()); qs.push(genConversionGraph());
+  // Conversion graphs (3: 2 on-scale, 1 off-scale)
+  qs.push(genConversionGraph()); qs.push(genConversionGraph()); qs.push(genConversionGraphOffScale());
   // Ratio (5)
   qs.push(genSimplifyRatio()); qs.push(genSimplifyRatio());
   qs.push(genShareRatio()); qs.push(genShareRatio());
