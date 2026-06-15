@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Times Tables &amp; Division Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --navy:#0f172a; --blue:#1e40af; --blue-light:#3b82f6;
+    --gold:#f59e0b; --gold-dark:#d97706; --gold-light:#fde68a;
+    --white:#ffffff; --grey-50:#f8fafc; --grey-100:#f1f5f9;
+    --grey-200:#e2e8f0; --grey-300:#cbd5e1; --grey-500:#64748b; --grey-700:#334155;
+    --green:#16a34a; --green-bg:#dcfce7; --red:#dc2626; --red-bg:#fee2e2;
+    --radius:16px; --shadow:0 4px 24px rgba(15,23,42,0.10); --shadow-lg:0 8px 40px rgba(15,23,42,0.15);
+  }
+  body{font-family:'Inter',sans-serif;color:var(--navy);
+    background:var(--grey-100);min-height:100vh;line-height:1.5;
+    display:flex;flex-direction:column;align-items:center;padding:20px 16px 40px;}
+  .brand{color:var(--navy);font-weight:800;font-size:1.5rem;margin-bottom:4px;letter-spacing:-.02em;}
+  .brand span{color:var(--grey-500);}
+  .tagline{color:var(--grey-500);font-size:.9rem;margin-bottom:22px;font-weight:500;}
+  .card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-lg);
+    width:100%;max-width:540px;padding:28px 26px;}
+  h2{font-size:1.35rem;font-weight:800;margin-bottom:4px;}
+  .sub{color:var(--grey-500);font-size:.92rem;margin-bottom:20px;}
+  .label{font-weight:700;font-size:.95rem;margin:18px 0 8px;display:flex;align-items:center;gap:7px;}
+  .label:first-of-type{margin-top:0;}
+
+  /* table chooser */
+  .tables{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:9px;}
+  .tbtn{border:2px solid var(--grey-200);background:var(--grey-50);border-radius:12px;
+    padding:12px 0;font-size:1.1rem;font-weight:800;cursor:pointer;transition:.12s;color:var(--grey-700);}
+  .tbtn:hover{border-color:var(--blue-light);}
+  .tbtn.on{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:var(--shadow);}
+  .quick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+  .quick button{border:1px solid var(--grey-300);background:#fff;border-radius:20px;
+    padding:6px 13px;font-size:.82rem;font-weight:600;cursor:pointer;color:var(--grey-700);}
+  .quick button:hover{background:var(--grey-100);}
+
+  /* segmented options */
+  .seg{display:flex;gap:8px;flex-wrap:wrap;}
+  .seg button{flex:1;min-width:90px;border:2px solid var(--grey-200);background:var(--grey-50);
+    border-radius:12px;padding:11px 8px;font-size:.92rem;font-weight:700;cursor:pointer;
+    color:var(--grey-700);transition:.12s;}
+  .seg button:hover{border-color:var(--blue-light);}
+  .seg button.on{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+
+  .start{width:100%;margin-top:26px;background:var(--gold);color:var(--navy);border:none;
+    border-radius:14px;padding:16px;font-size:1.15rem;font-weight:800;cursor:pointer;
+    transition:.15s;box-shadow:var(--shadow);}
+  .start:hover{background:var(--gold-dark);transform:translateY(-2px);}
+  .start:disabled{background:var(--grey-200);color:var(--grey-500);cursor:not-allowed;transform:none;box-shadow:none;}
+
+  /* progress bar */
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .qcount{font-weight:700;color:var(--grey-500);font-size:.9rem;}
+  .streak{font-weight:800;font-size:.95rem;color:var(--gold-dark);}
+  .pbar{height:10px;background:var(--grey-100);border-radius:99px;overflow:hidden;margin-bottom:24px;}
+  .pfill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue-light));
+    border-radius:99px;width:0;transition:width .3s;}
+
+  /* question */
+  .question{text-align:center;font-size:3rem;font-weight:800;margin:8px 0 4px;letter-spacing:.01em;}
+  .qhint{text-align:center;color:var(--grey-500);font-size:.9rem;margin-bottom:18px;min-height:1.2em;}
+
+  /* array visual */
+  #array{display:flex;flex-direction:column;gap:6px;align-items:center;margin:0 auto 20px;min-height:0;}
+  .arow{display:flex;gap:6px;}
+  .dot{width:18px;height:18px;border-radius:50%;background:var(--gold);box-shadow:inset 0 -2px 2px rgba(0,0,0,.12);}
+
+  /* answer area */
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .choice{border:2px solid var(--grey-200);background:var(--grey-50);border-radius:14px;
+    padding:20px 0;font-size:1.6rem;font-weight:800;cursor:pointer;transition:.1s;color:var(--navy);}
+  .choice:hover:not(:disabled){border-color:var(--blue-light);background:#fff;}
+  .choice:disabled{cursor:default;}
+  .choice.correct{background:var(--green-bg);border-color:var(--green);color:var(--green);}
+  .choice.wrong{background:var(--red-bg);border-color:var(--red);color:var(--red);}
+
+  .typewrap{display:flex;flex-direction:column;align-items:center;gap:14px;}
+  #answer{width:160px;text-align:center;font-size:2.2rem;font-weight:800;padding:12px;
+    border:2px solid var(--grey-300);border-radius:14px;color:var(--navy);font-family:inherit;}
+  #answer:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(30,64,175,.15);}
+  #answer.correct{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+  #answer.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red);}
+  .check{background:var(--blue);color:#fff;border:none;border-radius:14px;padding:14px 40px;
+    font-size:1.05rem;font-weight:800;cursor:pointer;transition:.15s;}
+  .check:hover{background:var(--navy);}
+
+  .feedback{text-align:center;font-weight:800;font-size:1.15rem;margin-top:18px;min-height:1.5em;}
+  .feedback.good{color:var(--green);}
+  .feedback.bad{color:var(--red);}
+  .next{display:block;margin:14px auto 0;background:var(--gold);color:var(--navy);border:none;
+    border-radius:14px;padding:13px 36px;font-size:1.05rem;font-weight:800;cursor:pointer;transition:.15s;}
+  .next:hover{background:var(--gold-dark);}
+
+  .tools{display:flex;justify-content:center;gap:10px;margin-top:22px;}
+  .tools button{background:none;border:1px solid var(--grey-300);border-radius:20px;
+    padding:7px 14px;font-size:.82rem;font-weight:600;color:var(--grey-700);cursor:pointer;}
+  .tools button:hover{background:var(--grey-100);}
+  .tools button.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+  /* results */
+  .score-big{text-align:center;font-size:3.6rem;font-weight:800;margin:6px 0;}
+  .stars{text-align:center;font-size:2.4rem;margin-bottom:14px;letter-spacing:6px;}
+  .msg{text-align:center;font-size:1.05rem;font-weight:600;margin-bottom:20px;color:var(--grey-700);}
+  .review{background:var(--grey-50);border-radius:12px;padding:16px;margin-bottom:8px;}
+  .review h3{font-size:.95rem;margin-bottom:10px;color:var(--grey-700);}
+  .review-list{display:flex;flex-wrap:wrap;gap:8px;}
+  .review-list span{background:var(--red-bg);color:var(--red);border-radius:8px;
+    padding:6px 11px;font-weight:700;font-size:.9rem;}
+  .allgood{color:var(--green);font-weight:700;text-align:center;padding:8px;}
+  .hide{display:none !important;}
+  footer{color:var(--grey-500);font-size:.78rem;margin-top:22px;text-align:center;max-width:540px;}
+</style>
+</head>
+<body>
+  <div class="brand">Times Tables <span>&amp; Division</span></div>
+  <div class="tagline">Practice</div>
+
+  <!-- ============ SETUP ============ -->
+  <div class="card" id="setup">
+    <h2>Let's practise! 💪</h2>
+    <p class="sub">Pick your tables and how you want to practise.</p>
+
+    <div class="label">1. Which tables?</div>
+    <div class="quick">
+      <button data-quick="easy">⭐ Easy start (2, 5, 10)</button>
+      <button data-quick="build">📈 Building up (3, 4, 6)</button>
+      <button data-quick="all">All of them</button>
+      <button data-quick="none">Clear</button>
+    </div>
+    <div class="tables" id="tables"></div>
+
+    <div class="label">2. What do you want to do?</div>
+    <div class="seg" id="mode">
+      <button data-mode="mult" class="on">× Multiply</button>
+      <button data-mode="div">÷ Divide</button>
+      <button data-mode="mixed">Mix of both</button>
+    </div>
+
+    <div class="label">3. How do you answer?</div>
+    <div class="seg" id="style">
+      <button data-style="choice" class="on">Pick the answer</button>
+      <button data-style="type">Type the answer</button>
+    </div>
+
+    <div class="label">4. Challenge length</div>
+    <div class="seg" id="length">
+      <button data-kind="count" data-val="10" class="on">10 questions</button>
+      <button data-kind="count" data-val="20">20 questions</button>
+      <button data-kind="time" data-val="60">⏱ 1 minute</button>
+      <button data-kind="time" data-val="120">⏱ 2 minutes</button>
+    </div>
+    <p class="sub" id="lenHint" style="margin:8px 0 0">Answer a set number of questions at your own pace.</p>
+
+    <button class="start" id="startBtn">Start ▶</button>
+  </div>
+
+  <!-- ============ QUIZ ============ -->
+  <div class="card hide" id="quiz">
+    <div class="topbar">
+      <span class="qcount" id="qcount">Question 1 of 10</span>
+      <span class="streak" id="streak"></span>
+    </div>
+    <div class="pbar"><div class="pfill" id="pfill"></div></div>
+
+    <div class="question" id="question">6 × 4</div>
+    <div class="qhint" id="qhint"></div>
+    <div id="array"></div>
+
+    <div class="choices hide" id="choices"></div>
+    <div class="typewrap hide" id="typewrap">
+      <input id="answer" type="number" inputmode="numeric" autocomplete="off" />
+      <button class="check" id="checkBtn">Check</button>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+    <button class="next hide" id="nextBtn">Next ▶</button>
+
+    <div class="tools">
+      <button id="arrayToggle">👀 Show dots</button>
+      <button id="quitBtn">✕ Finish early</button>
+    </div>
+  </div>
+
+  <!-- ============ RESULTS ============ -->
+  <div class="card hide" id="results">
+    <h2 style="text-align:center">All done! 🎉</h2>
+    <div class="score-big" id="scoreBig">8 / 10</div>
+    <div class="stars" id="starsRow">⭐⭐⭐</div>
+    <div class="msg" id="resultMsg"></div>
+    <div class="review">
+      <h3>📌 Facts to practise next time:</h3>
+      <div id="reviewList" class="review-list"></div>
+    </div>
+    <button class="start" id="againBtn" style="margin-top:18px">Practise again ▶</button>
+    <button class="next" id="homeBtn" style="background:var(--grey-100);color:var(--grey-700);margin-top:10px">⚙ Change settings</button>
+  </div>
+
+  <footer>Tip: green means correct, red shows the right answer — every mistake is a chance to learn!</footer>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  // ---- state ----
+  var selectedTables = [2,5,10];
+  var mode = "mult";       // mult | div | mixed
+  var style = "choice";    // choice | type
+  var qTotal = 10;
+  var timed = false;       // timed challenge instead of fixed count
+  var timeLimit = 60;      // seconds, when timed
+  var showArray = false;
+
+  var questions = [];
+  var currentQ = null;
+  var idx = 0;
+  var correct = 0;
+  var attempted = 0;
+  var streak = 0;
+  var answered = false;
+  var wrongFacts = [];
+  var timeLeft = 0;
+  var timerInterval = null;
+  var autoTimer = null;    // auto-advance after a typed answer
+
+  // ---- build table buttons ----
+  var tablesEl = $("tables");
+  for(var n=2;n<=12;n++){
+    (function(num){
+      var b = document.createElement("button");
+      b.className = "tbtn" + (selectedTables.indexOf(num)>-1 ? " on":"");
+      b.textContent = num;
+      b.dataset.num = num;
+      b.onclick = function(){
+        var i = selectedTables.indexOf(num);
+        if(i>-1){ selectedTables.splice(i,1); b.classList.remove("on"); }
+        else { selectedTables.push(num); b.classList.add("on"); }
+        updateStart();
+      };
+      tablesEl.appendChild(b);
+    })(n);
+  }
+  function refreshTableButtons(){
+    var btns = tablesEl.querySelectorAll(".tbtn");
+    btns.forEach(function(b){
+      b.classList.toggle("on", selectedTables.indexOf(+b.dataset.num)>-1);
+    });
+    updateStart();
+  }
+
+  // quick picks
+  document.querySelectorAll("[data-quick]").forEach(function(b){
+    b.onclick = function(){
+      var q = b.dataset.quick;
+      if(q==="easy") selectedTables=[2,5,10];
+      else if(q==="build") selectedTables=[3,4,6];
+      else if(q==="all") selectedTables=[2,3,4,5,6,7,8,9,10,11,12];
+      else selectedTables=[];
+      refreshTableButtons();
+    };
+  });
+
+  // segmented controls helper
+  function wireSeg(containerId, attr, setter){
+    var c = $(containerId);
+    c.querySelectorAll("button").forEach(function(b){
+      b.onclick = function(){
+        c.querySelectorAll("button").forEach(function(x){x.classList.remove("on");});
+        b.classList.add("on");
+        setter(b.dataset[attr]);
+      };
+    });
+  }
+  wireSeg("mode","mode",function(v){mode=v;});
+  wireSeg("style","style",function(v){style=v;});
+
+  // length control: count-based or timed
+  $("length").querySelectorAll("button").forEach(function(b){
+    b.onclick = function(){
+      $("length").querySelectorAll("button").forEach(function(x){x.classList.remove("on");});
+      b.classList.add("on");
+      if(b.dataset.kind==="time"){
+        timed = true; timeLimit = +b.dataset.val;
+        $("lenHint").textContent = "Beat the clock — get as many right as you can before time runs out!";
+      } else {
+        timed = false; qTotal = +b.dataset.val;
+        $("lenHint").textContent = "Answer a set number of questions at your own pace.";
+      }
+    };
+  });
+
+  function updateStart(){
+    $("startBtn").disabled = selectedTables.length===0;
+  }
+  updateStart();
+
+  // ---- question generation ----
+  function rint(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function shuffle(a){ for(var i=a.length-1;i>0;i--){var j=rint(0,i);var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+
+  function makeOneQuestion(){
+    var t = selectedTables[rint(0,selectedTables.length-1)];
+    var k = rint(1,12);
+    var thisMode = mode==="mixed" ? (Math.random()<0.5?"mult":"div") : mode;
+    var prompt, ans, key;
+    if(thisMode==="mult"){
+      prompt = t + " × " + k; ans = t*k; key = "m"+t+"x"+k;
+    } else {
+      // division: (t*k) ÷ t = k
+      prompt = (t*k) + " ÷ " + t; ans = k; key = "d"+(t*k)+"x"+t;
+    }
+    return { prompt:prompt, ans:ans, mode:thisMode, a:t, b:k, key:key };
+  }
+  function makeQuestions(){
+    var list = [];
+    var seen = {};
+    var guard = 0;
+    while(list.length < qTotal && guard < 2000){
+      guard++;
+      var q = makeOneQuestion();
+      // avoid duplicates while the pool is large enough to allow it
+      if(seen[q.key] && Object.keys(seen).length < pool()) continue;
+      seen[q.key]=true;
+      list.push(q);
+    }
+    return list;
+  }
+  function pool(){ return selectedTables.length*12; }
+
+  function makeChoices(q){
+    var set = {};
+    set[q.ans]=true;
+    var opts=[q.ans];
+    var guard=0;
+    while(opts.length<4 && guard<60){
+      guard++;
+      var delta = rint(-5,5);
+      var cand;
+      if(q.mode==="mult"){
+        // plausible wrong answers: off-by-one multiples or near misses
+        cand = Math.random()<0.5 ? q.a*(q.b+ (Math.random()<0.5?1:-1)) : q.ans+delta;
+      } else {
+        cand = q.ans + (Math.random()<0.6 ? (Math.random()<0.5?1:-1)*rint(1,3) : delta);
+      }
+      if(cand>0 && !set[cand]){ set[cand]=true; opts.push(cand); }
+    }
+    return shuffle(opts);
+  }
+
+  // ---- array visual ----
+  function renderArray(q){
+    var el = $("array");
+    el.innerHTML="";
+    if(!showArray){ return; }
+    // show a rows x b columns array. For division, show total split into rows of divisor.
+    var rows, cols;
+    if(q.mode==="mult"){ rows=q.a; cols=q.b; }
+    else { cols=q.a; rows=q.ans; } // total = rows*cols, grouped by divisor q.a
+    rows=Math.min(rows,12); cols=Math.min(cols,12);
+    for(var r=0;r<rows;r++){
+      var row=document.createElement("div"); row.className="arow";
+      for(var c=0;c<cols;c++){
+        var d=document.createElement("div"); d.className="dot"; row.appendChild(d);
+      }
+      el.appendChild(row);
+    }
+  }
+
+  // ---- timer (timed mode) ----
+  function startTimer(){
+    stopTimer();
+    updateTimerUI();
+    timerInterval = setInterval(function(){
+      timeLeft--;
+      updateTimerUI();
+      if(timeLeft<=0){ stopTimer(); showResults(); }
+    },1000);
+  }
+  function stopTimer(){ if(timerInterval){ clearInterval(timerInterval); timerInterval=null; } }
+  function updateTimerUI(){
+    var m=Math.floor(timeLeft/60), s=timeLeft%60;
+    $("qcount").textContent = "⏱ "+m+":"+(s<10?"0":"")+s;
+    var pf=$("pfill");
+    pf.style.width = Math.max(0,(timeLeft/timeLimit*100))+"%";
+    pf.style.background = timeLeft<=10 ? "linear-gradient(90deg,#dc2626,#f87171)"
+                                       : "linear-gradient(90deg,var(--blue),var(--blue-light))";
+  }
+  function updateStatusUI(){
+    if(timed){
+      $("streak").textContent = "Score: "+correct + (streak>=2 ? "  🔥"+streak : "");
+    } else {
+      $("streak").textContent = streak>=2 ? ("🔥 "+streak+" in a row!") : "";
+    }
+  }
+
+  // ---- flow ----
+  function startQuiz(){
+    stopTimer(); clearTimeout(autoTimer);
+    idx=0; correct=0; attempted=0; streak=0; wrongFacts=[];
+    $("setup").classList.add("hide");
+    $("results").classList.add("hide");
+    $("quiz").classList.remove("hide");
+    if(timed){
+      timeLeft = timeLimit;
+      currentQ = makeOneQuestion();
+    } else {
+      questions = makeQuestions();
+      currentQ = questions[0];
+    }
+    showQuestion();
+  }
+
+  function showQuestion(){
+    answered=false;
+    var q = currentQ;
+    if(timed){
+      startTimer();              // clock runs only while they're answering
+    } else {
+      $("qcount").textContent = "Question "+(idx+1)+" of "+questions.length;
+      $("pfill").style.width = (idx/questions.length*100)+"%";
+      $("pfill").style.background = "linear-gradient(90deg,var(--blue),var(--blue-light))";
+    }
+    updateStatusUI();
+    $("question").textContent = q.prompt;
+    $("qhint").textContent = "";
+    $("feedback").textContent=""; $("feedback").className="feedback";
+    $("nextBtn").classList.add("hide");
+    renderArray(q);
+
+    if(style==="choice"){
+      $("typewrap").classList.add("hide");
+      $("choices").classList.remove("hide");
+      var box=$("choices"); box.innerHTML="";
+      makeChoices(q).forEach(function(opt){
+        var b=document.createElement("button");
+        b.className="choice"; b.textContent=opt;
+        b.onclick=function(){ submit(opt,b); };
+        box.appendChild(b);
+      });
+    } else {
+      $("choices").classList.add("hide");
+      $("typewrap").classList.remove("hide");
+      var inp=$("answer"); inp.value=""; inp.className=""; inp.disabled=false;
+      $("checkBtn").classList.remove("hide");
+      setTimeout(function(){ inp.focus(); },50);
+    }
+  }
+
+  function submit(value, btnEl){
+    if(answered) return;
+    answered=true;
+    attempted++;
+    if(timed) stopTimer();       // pause the clock during the check/feedback phase
+    var q=currentQ;
+    var isRight = (+value===q.ans);
+    if(isRight){
+      correct++; streak++;
+      $("feedback").textContent = pick(["Correct! ✅","Brilliant! ⭐","Spot on! 🎯","Well done! 👏","Yes! 💪"]);
+      $("feedback").className="feedback good";
+    } else {
+      streak=0;
+      wrongFacts.push(q.prompt+" = "+q.ans);
+      $("feedback").textContent = "Not quite — "+q.prompt+" = "+q.ans;
+      $("feedback").className="feedback bad";
+    }
+    updateStatusUI();
+
+    if(style==="choice"){
+      $("choices").querySelectorAll(".choice").forEach(function(b){
+        b.disabled=true;
+        if(+b.textContent===q.ans) b.classList.add("correct");
+        else if(b===btnEl) b.classList.add("wrong");
+      });
+    } else {
+      var inp=$("answer"); inp.disabled=true;
+      inp.className = isRight ? "correct":"wrong";
+      $("checkBtn").classList.add("hide");
+    }
+    if(style==="type"){
+      // one keypress checks; we move on by ourselves once they've seen the result
+      clearTimeout(autoTimer);
+      autoTimer = setTimeout(advance, isRight ? 850 : 1900);
+    } else {
+      $("nextBtn").classList.remove("hide");
+      $("nextBtn").focus();
+    }
+  }
+
+  function advance(){
+    clearTimeout(autoTimer); autoTimer=null;
+    nextQuestion();
+  }
+
+  function pick(arr){ return arr[rint(0,arr.length-1)]; }
+
+  function nextQuestion(){
+    if(timed){
+      if(timeLeft<=0) return;          // clock already ended the round
+      currentQ = makeOneQuestion();
+      showQuestion();
+      return;
+    }
+    idx++;
+    if(idx>=questions.length){ showResults(); }
+    else { currentQ = questions[idx]; showQuestion(); }
+  }
+
+  function showResults(){
+    stopTimer(); clearTimeout(autoTimer);
+    $("quiz").classList.add("hide");
+    $("results").classList.remove("hide");
+
+    if(timed){
+      var label = timeLimit===60 ? "1 minute" : (timeLimit/60)+" minutes";
+      var perMin = correct/(timeLimit/60);
+      var tstars = perMin>=12?3 : perMin>=7?2 : perMin>=1?1 : 0;
+      $("scoreBig").textContent = correct;
+      $("starsRow").textContent = "⭐⭐⭐".slice(0,tstars) || "☆";
+      var acc = attempted ? Math.round(correct/attempted*100) : 0;
+      $("resultMsg").textContent = "correct in "+label+"! ("+acc+"% accuracy) "
+        + (perMin>=12 ? "Lightning fast! ⚡ Can you beat it?"
+         : perMin>=7  ? "Great pace — try to beat that next time! 💪"
+         : "Keep practising and watch your score climb! 🙂");
+    } else {
+      var total=attempted;
+      $("scoreBig").textContent = correct+" / "+total;
+      var pct = total ? correct/total : 0;
+      var stars = pct>=0.9?3 : pct>=0.6?2 : pct>=0.3?1 : 0;
+      $("starsRow").textContent = "⭐⭐⭐".slice(0,stars) || "☆";
+      $("resultMsg").textContent = pct>=0.9 ? "Amazing work — you've really got these! 🌟"
+        : pct>=0.6 ? "Great effort! A little more practice and you'll nail it. 💪"
+        : pct>=0.3 ? "Good try — keep going, you're getting there! 🙂"
+        : "Every expert started here. Let's practise these again together. 🤝";
+    }
+
+    var rl=$("reviewList"); rl.innerHTML="";
+    var uniq=[]; wrongFacts.forEach(function(f){ if(uniq.indexOf(f)<0) uniq.push(f); });
+    if(uniq.length===0){
+      rl.innerHTML='<div class="allgood">No mistakes — nothing to review! 🎉</div>';
+    } else {
+      uniq.forEach(function(f){ var s=document.createElement("span"); s.textContent=f; rl.appendChild(s); });
+    }
+  }
+
+  // ---- buttons ----
+  $("startBtn").onclick = startQuiz;
+  $("nextBtn").onclick = nextQuestion;
+  $("checkBtn").onclick = function(){
+    var v=$("answer").value.trim();
+    if(v==="") { $("answer").focus(); return; }
+    submit(v,null);
+  };
+  $("answer").addEventListener("keydown",function(e){
+    if(e.key==="Enter"){ e.preventDefault(); if(answered) advance(); else $("checkBtn").click(); }
+  });
+  document.addEventListener("keydown",function(e){
+    if(e.key==="Enter" && answered && !$("nextBtn").classList.contains("hide") && style==="choice"){
+      e.preventDefault(); nextQuestion();
+    }
+  });
+
+  $("arrayToggle").onclick = function(){
+    showArray=!showArray;
+    this.classList.toggle("on",showArray);
+    this.textContent = showArray ? "🙈 Hide dots" : "👀 Show dots";
+    if(!$("quiz").classList.contains("hide")) renderArray(currentQ);
+  };
+  $("quitBtn").onclick = function(){
+    stopTimer(); clearTimeout(autoTimer);
+    if(attempted===0){ goHome(); return; }
+    showResults();
+  };
+  $("againBtn").onclick = startQuiz;
+  $("homeBtn").onclick = goHome;
+  function goHome(){
+    stopTimer(); clearTimeout(autoTimer);
+    $("results").classList.add("hide");
+    $("quiz").classList.add("hide");
+    $("setup").classList.remove("hide");
+  }
+})();
+</script>
+</body>
+</html>
