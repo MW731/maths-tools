@@ -409,6 +409,7 @@
     if(timed){
       timeLeft = timeLimit;
       currentQ = makeOneQuestion();
+      startTimer();                // one continuous clock for the whole sprint
     } else {
       questions = makeQuestions();
       currentQ = questions[0];
@@ -420,7 +421,7 @@
     answered=false;
     var q = currentQ;
     if(timed){
-      startTimer();              // clock runs only while they're answering
+      updateTimerUI();           // continuous clock — just refresh the display
     } else {
       $("qcount").textContent = "Question "+(idx+1)+" of "+questions.length;
       $("pfill").style.width = (idx/questions.length*100)+"%";
@@ -454,18 +455,27 @@
 
   function submit(value, btnEl){
     if(answered) return;
-    answered=true;
-    attempted++;
-    if(timed) stopTimer();       // pause the clock during the check/feedback phase
     var q=currentQ;
     var isRight = (+value===q.ans);
+
+    // record the result (used for the score and the end-of-round review)
+    attempted++;
+    if(isRight){ correct++; streak++; }
+    else { streak=0; wrongFacts.push(q.prompt+" = "+q.ans); }
+
+    if(timed){
+      // sprint mode: no per-question feedback, no pause — straight to the next one
+      updateStatusUI();
+      nextQuestion();
+      return;
+    }
+
+    // untimed mode: show correct/wrong feedback, then advance
+    answered=true;
     if(isRight){
-      correct++; streak++;
       $("feedback").textContent = pick(["Correct! ✅","Brilliant! ⭐","Spot on! 🎯","Well done! 👏","Yes! 💪"]);
       $("feedback").className="feedback good";
     } else {
-      streak=0;
-      wrongFacts.push(q.prompt+" = "+q.ans);
       $("feedback").textContent = "Not quite — "+q.prompt+" = "+q.ans;
       $("feedback").className="feedback bad";
     }
