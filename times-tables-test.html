@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Times Tables Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --navy:#0f172a; --blue:#1e40af; --blue-light:#3b82f6;
+    --gold:#f59e0b; --gold-dark:#d97706;
+    --white:#ffffff; --grey-50:#f8fafc; --grey-100:#f1f5f9;
+    --grey-200:#e2e8f0; --grey-300:#cbd5e1; --grey-500:#64748b; --grey-700:#334155;
+    --radius:20px; --shadow:0 4px 24px rgba(15,23,42,0.10); --shadow-lg:0 8px 40px rgba(15,23,42,0.18);
+  }
+  body{font-family:'Inter',sans-serif;color:var(--navy);
+    background:var(--grey-100);min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;padding:24px 16px 48px;}
+
+  /* ---- brand ---- */
+  .brand{font-weight:800;font-size:1.4rem;margin-bottom:2px;letter-spacing:-.02em;}
+  .brand span{color:var(--grey-500);}
+  .tagline{color:var(--grey-500);font-size:.85rem;margin-bottom:24px;font-weight:500;}
+
+  /* ---- card ---- */
+  .card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-lg);
+    width:100%;max-width:580px;padding:32px 28px;}
+
+  /* ---- setup ---- */
+  h2{font-size:1.3rem;font-weight:800;margin-bottom:4px;}
+  .sub{color:var(--grey-500);font-size:.9rem;margin-bottom:22px;}
+  .label{font-weight:700;font-size:.93rem;margin:20px 0 8px;display:flex;align-items:center;gap:6px;}
+  .label:first-of-type{margin-top:0;}
+
+  .seg{display:flex;gap:8px;flex-wrap:wrap;}
+  .seg button{flex:1;min-width:110px;border:2px solid var(--grey-200);background:var(--grey-50);
+    border-radius:12px;padding:12px 8px;font-size:.9rem;font-weight:700;cursor:pointer;
+    color:var(--grey-700);transition:.12s;}
+  .seg button:hover{border-color:var(--blue-light);}
+  .seg button.on{background:var(--blue);border-color:var(--blue);color:#fff;}
+
+  /* number-of-questions stepper */
+  .stepper{display:flex;align-items:center;gap:14px;margin-top:4px;}
+  .stepper button{width:44px;height:44px;border-radius:50%;border:2px solid var(--grey-200);
+    background:var(--grey-50);font-size:1.4rem;font-weight:700;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;color:var(--navy);transition:.12s;}
+  .stepper button:hover{border-color:var(--blue-light);}
+  .stepper .qnum{font-size:2rem;font-weight:900;min-width:60px;text-align:center;}
+
+  .start{width:100%;margin-top:28px;background:var(--gold);color:var(--navy);border:none;
+    border-radius:14px;padding:17px;font-size:1.15rem;font-weight:800;cursor:pointer;
+    transition:.15s;box-shadow:var(--shadow);}
+  .start:hover{background:var(--gold-dark);transform:translateY(-2px);}
+
+  /* ---- quiz ---- */
+  .progress{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .prog-label{font-weight:700;color:var(--grey-500);font-size:.95rem;}
+  .prog-frac{font-weight:800;font-size:1rem;color:var(--navy);}
+  .pbar{height:12px;background:var(--grey-100);border-radius:99px;overflow:hidden;margin-bottom:36px;}
+  .pfill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue-light));
+    border-radius:99px;transition:width .35s;}
+
+  .q-type-badge{display:inline-block;background:var(--grey-100);color:var(--grey-500);
+    font-size:.78rem;font-weight:700;border-radius:20px;padding:4px 12px;margin-bottom:20px;
+    letter-spacing:.04em;text-transform:uppercase;}
+
+  .question-big{text-align:center;font-size:clamp(3.2rem,10vw,5.5rem);font-weight:900;
+    letter-spacing:.01em;margin:0 0 12px;line-height:1.1;}
+
+  /* the □ box styling */
+  .box{display:inline-block;width:.75em;height:.82em;border:5px solid var(--navy);
+    border-radius:8px;vertical-align:-.08em;margin:0 .05em;}
+
+  .q-equals{font-size:clamp(1.6rem,5vw,2.8rem);font-weight:800;text-align:center;
+    color:var(--grey-400);margin-bottom:40px;}
+
+  .btn-row{display:flex;gap:14px;justify-content:center;margin-top:8px;}
+  .btn-next{background:var(--gold);color:var(--navy);border:none;border-radius:14px;
+    padding:16px 52px;font-size:1.15rem;font-weight:800;cursor:pointer;transition:.15s;
+    box-shadow:var(--shadow);}
+  .btn-next:hover{background:var(--gold-dark);transform:translateY(-2px);}
+  .btn-skip{background:none;border:2px solid var(--grey-200);border-radius:14px;
+    padding:16px 28px;font-size:1rem;font-weight:700;cursor:pointer;color:var(--grey-500);transition:.12s;}
+  .btn-skip:hover{border-color:var(--grey-400);}
+
+  /* ---- done ---- */
+  .done-icon{text-align:center;font-size:3.5rem;margin:8px 0;}
+  .done-msg{text-align:center;font-size:1.1rem;font-weight:600;color:var(--grey-700);margin-bottom:28px;}
+  .done-big{text-align:center;font-size:2.8rem;font-weight:900;margin-bottom:6px;}
+
+  .hide{display:none !important;}
+  footer{color:var(--grey-500);font-size:.78rem;margin-top:24px;text-align:center;max-width:580px;}
+</style>
+</head>
+<body>
+
+<div class="brand">Times Tables <span>Test</span></div>
+<div class="tagline">Teacher question display</div>
+
+<!-- ===== SETUP ===== -->
+<div class="card" id="setup">
+  <h2>Set up the test</h2>
+  <p class="sub">Configure the questions, then go full screen for the class.</p>
+
+  <div class="label">1. Question types</div>
+  <div class="seg" id="modeBtn">
+    <button data-mode="mult" class="on">× Multiply</button>
+    <button data-mode="div">÷ Divide</button>
+    <button data-mode="missing">□ Missing number</button>
+    <button data-mode="all">All types</button>
+  </div>
+
+  <div class="label">2. Number of questions</div>
+  <div class="stepper">
+    <button id="qDown">−</button>
+    <div class="qnum" id="qNumDisplay">20</div>
+    <button id="qUp">+</button>
+    <span style="color:var(--grey-500);font-size:.9rem;font-weight:600;">questions</span>
+  </div>
+
+  <button class="start" id="startBtn">Start Test ▶</button>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<div class="card hide" id="quiz">
+  <div class="progress">
+    <span class="prog-label">Question</span>
+    <span class="prog-frac" id="progFrac">1 / 20</span>
+  </div>
+  <div class="pbar"><div class="pfill" id="pfill" style="width:0%"></div></div>
+
+  <div style="text-align:center;">
+    <span class="q-type-badge" id="typeBadge">Multiply</span>
+  </div>
+  <div class="question-big" id="questionEl">6 × 4</div>
+  <div class="q-equals" id="equalsEl">= ?</div>
+
+  <div class="btn-row">
+    <button class="btn-skip" id="skipBtn">Skip ↩</button>
+    <button class="btn-next" id="nextBtn">Next ▶</button>
+  </div>
+</div>
+
+<!-- ===== DONE ===== -->
+<div class="card hide" id="done">
+  <div class="done-icon">🎉</div>
+  <div class="done-big" id="doneBig">All 20 questions done!</div>
+  <div class="done-msg">Test complete — well done everyone!</div>
+  <button class="start" id="againBtn">New Test ▶</button>
+  <button class="start" id="setupBtn"
+    style="background:var(--grey-100);color:var(--grey-700);margin-top:10px;box-shadow:none;">
+    ⚙ Change settings
+  </button>
+</div>
+
+<footer>Press <strong>→</strong> or <strong>Space</strong> to go to the next question. Press <strong>F11</strong> for full screen.</footer>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  var mode = "mult";
+  var qTotal = 20;
+  var questions = [];
+  var idx = 0;
+
+  // ---- stepper ----
+  $("qDown").onclick = function(){
+    if(qTotal > 5) { qTotal -= 5; $("qNumDisplay").textContent = qTotal; }
+  };
+  $("qUp").onclick = function(){
+    if(qTotal < 50) { qTotal += 5; $("qNumDisplay").textContent = qTotal; }
+  };
+
+  // ---- mode buttons ----
+  $("modeBtn").querySelectorAll("button").forEach(function(b){
+    b.onclick = function(){
+      $("modeBtn").querySelectorAll("button").forEach(function(x){ x.classList.remove("on"); });
+      b.classList.add("on");
+      mode = b.dataset.mode;
+    };
+  });
+
+  // ---- question generation ----
+  function rint(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function shuffle(a){
+    for(var i=a.length-1;i>0;i--){
+      var j=rint(0,i); var t=a[i]; a[i]=a[j]; a[j]=t;
+    }
+    return a;
+  }
+
+  var BADGES = { mult:"Multiply", div:"Divide", missing:"Missing number" };
+
+  function pickType(){
+    if(mode==="all") return ["mult","div","missing"][rint(0,2)];
+    return mode;
+  }
+
+  function makeQ(){
+    var type = pickType();
+    var a = rint(1,12);
+    var b = rint(1,12);
+    var product = a * b;
+
+    if(type==="mult"){
+      return { html: a + " &times; " + b, equals:"= ?", badge:BADGES.mult };
+    }
+    if(type==="div"){
+      // always whole-number result: product ÷ a = b
+      return { html: product + " &divide; " + a, equals:"= ?", badge:BADGES.div };
+    }
+    // missing number — three variants
+    var variant = rint(0,2);
+    if(variant===0){
+      // a × □ = product
+      return { html: a + " &times; <span class='box'></span>", equals:"= " + product, badge:BADGES.missing };
+    }
+    if(variant===1){
+      // □ × b = product
+      return { html: "<span class='box'></span> &times; " + b, equals:"= " + product, badge:BADGES.missing };
+    }
+    // product ÷ □ = b  (answer is a)
+    return { html: product + " &divide; <span class='box'></span>", equals:"= " + b, badge:BADGES.missing };
+  }
+
+  function buildQuestions(){
+    var list = [];
+    for(var i=0;i<qTotal;i++) list.push(makeQ());
+    return list;
+  }
+
+  // ---- start ----
+  $("startBtn").onclick = function(){
+    questions = buildQuestions();
+    idx = 0;
+    $("setup").classList.add("hide");
+    $("done").classList.add("hide");
+    $("quiz").classList.remove("hide");
+    showQ();
+  };
+
+  function showQ(){
+    var q = questions[idx];
+    $("progFrac").textContent = (idx+1) + " / " + questions.length;
+    $("pfill").style.width = (idx / questions.length * 100) + "%";
+    $("typeBadge").textContent = q.badge;
+    $("questionEl").innerHTML = q.html;
+    $("equalsEl").textContent = q.equals;
+    $("nextBtn").textContent = idx < questions.length - 1 ? "Next ▶" : "Finish ✓";
+  }
+
+  function advance(){
+    idx++;
+    if(idx >= questions.length){
+      $("quiz").classList.add("hide");
+      $("done").classList.remove("hide");
+      $("doneBig").textContent = "All " + questions.length + " questions done!";
+      $("pfill").style.width = "100%";
+    } else {
+      showQ();
+    }
+  }
+
+  $("nextBtn").onclick = advance;
+  $("skipBtn").onclick = advance;
+
+  // keyboard: Space or → to advance
+  document.addEventListener("keydown", function(e){
+    if($("quiz").classList.contains("hide")) return;
+    if(e.key === " " || e.key === "ArrowRight"){
+      e.preventDefault();
+      advance();
+    }
+  });
+
+  $("againBtn").onclick = function(){
+    $("done").classList.add("hide");
+    questions = buildQuestions();
+    idx = 0;
+    $("quiz").classList.remove("hide");
+    showQ();
+  };
+  $("setupBtn").onclick = function(){
+    $("done").classList.add("hide");
+    $("quiz").classList.add("hide");
+    $("setup").classList.remove("hide");
+  };
+})();
+</script>
+</body>
+</html>
