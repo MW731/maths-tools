@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Times Tables &amp; Division Practice</title>
+<title>Maths Practice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
@@ -14,6 +14,7 @@
     --white:#ffffff; --grey-50:#f8fafc; --grey-100:#f1f5f9;
     --grey-200:#e2e8f0; --grey-300:#cbd5e1; --grey-500:#64748b; --grey-700:#334155;
     --green:#16a34a; --green-bg:#dcfce7; --red:#dc2626; --red-bg:#fee2e2;
+    --purple:#7c3aed; --purple-bg:#ede9fe;
     --radius:16px; --shadow:0 4px 24px rgba(15,23,42,0.10); --shadow-lg:0 8px 40px rgba(15,23,42,0.15);
   }
   body{font-family:'Inter',sans-serif;color:var(--navy);
@@ -21,7 +22,17 @@
     display:flex;flex-direction:column;align-items:center;padding:20px 16px 40px;}
   .brand{color:var(--navy);font-weight:800;font-size:1.5rem;margin-bottom:4px;letter-spacing:-.02em;}
   .brand span{color:var(--grey-500);}
-  .tagline{color:var(--grey-500);font-size:.9rem;margin-bottom:22px;font-weight:500;}
+  .tagline{color:var(--grey-500);font-size:.9rem;font-weight:500;}
+
+  /* ---- top tabs ---- */
+  .tab-bar{display:flex;gap:0;width:100%;max-width:540px;margin:16px 0 18px;
+    background:var(--white);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;}
+  .tab-bar button{flex:1;border:none;background:transparent;padding:13px 6px;
+    font-size:.82rem;font-weight:700;color:var(--grey-500);cursor:pointer;transition:.15s;line-height:1.3;}
+  .tab-bar button:hover{background:var(--grey-100);}
+  .tab-bar button.active{background:var(--navy);color:#fff;}
+  .tab-bar button:not(:last-child){border-right:1px solid var(--grey-100);}
+
   .card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-lg);
     width:100%;max-width:540px;padding:28px 26px;}
   h2{font-size:1.35rem;font-weight:800;margin-bottom:4px;}
@@ -115,149 +126,405 @@
   .allgood{color:var(--green);font-weight:700;text-align:center;padding:8px;}
   .hide{display:none !important;}
   footer{color:var(--grey-500);font-size:.78rem;margin-top:22px;text-align:center;max-width:540px;}
+
+  /* ---- fraction display ---- */
+  .frac{display:inline-flex;flex-direction:column;align-items:center;font-weight:800;line-height:1.1;vertical-align:middle;}
+  .frac .num{border-bottom:3px solid currentColor;padding:0 4px 2px;}
+  .frac .den{padding:2px 4px 0;}
+  .frac-big{font-size:2.2rem;}
+  .frac-med{font-size:1.4rem;}
+  .frac-sm{font-size:1.1rem;}
+
+  /* fraction question area */
+  .fq-center{text-align:center;margin:14px 0 20px;line-height:2;}
+
+  /* ordering drag area */
+  .order-bank{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:14px 0 10px;min-height:52px;}
+  .order-slots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0 18px;}
+  .order-item{background:var(--grey-50);border:2px solid var(--grey-300);border-radius:12px;
+    padding:10px 18px;font-weight:800;font-size:1.05rem;cursor:grab;user-select:none;transition:.12s;}
+  .order-item:hover{border-color:var(--blue-light);}
+  .order-item.dragging{opacity:.4;}
+  .order-slot{min-width:72px;min-height:52px;border:2px dashed var(--grey-300);border-radius:12px;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem;
+    background:var(--grey-50);transition:.12s;}
+  .order-slot.over{border-color:var(--blue);background:var(--purple-bg);}
+  .order-slot.filled{border-style:solid;border-color:var(--grey-300);background:#fff;}
+  .order-slot.slot-correct{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+  .order-slot.slot-wrong{border-color:var(--red);background:var(--red-bg);color:var(--red);}
+  .order-direction{text-align:center;color:var(--grey-500);font-size:.88rem;font-weight:600;margin-bottom:6px;}
+
+  /* type-answer pair inputs for fractions */
+  .frac-inputs{display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .frac-input-wrap{display:inline-flex;flex-direction:column;align-items:center;}
+  .frac-input-wrap input{width:80px;text-align:center;font-size:1.6rem;font-weight:800;
+    padding:8px 4px;border:2px solid var(--grey-300);border-radius:10px;font-family:inherit;color:var(--navy);}
+  .frac-input-wrap input:focus{outline:none;border-color:var(--blue);}
+  .frac-input-wrap input.correct{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+  .frac-input-wrap input.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red);}
+  .frac-line{width:80px;height:3px;background:var(--navy);border-radius:2px;margin:3px 0;}
+
+  /* multi-choice for fractions — wider text */
+  .choices-frac{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .choice-frac{border:2px solid var(--grey-200);background:var(--grey-50);border-radius:14px;
+    padding:16px 8px;font-size:1.1rem;font-weight:800;cursor:pointer;transition:.1s;color:var(--navy);
+    text-align:center;line-height:1.6;}
+  .choice-frac:hover:not(:disabled){border-color:var(--blue-light);background:#fff;}
+  .choice-frac:disabled{cursor:default;}
+  .choice-frac.correct{background:var(--green-bg);border-color:var(--green);color:var(--green);}
+  .choice-frac.wrong{background:var(--red-bg);border-color:var(--red);color:var(--red);}
+
+  /* compare buttons */
+  .cmp-buttons{display:flex;gap:16px;justify-content:center;margin-top:8px;}
+  .cmp-btn{border:2px solid var(--grey-200);background:var(--grey-50);border-radius:14px;
+    padding:16px 32px;font-size:2rem;font-weight:800;cursor:pointer;transition:.1s;color:var(--navy);}
+  .cmp-btn:hover:not(:disabled){border-color:var(--blue-light);background:#fff;}
+  .cmp-btn:disabled{cursor:default;}
+  .cmp-btn.correct{background:var(--green-bg);border-color:var(--green);color:var(--green);}
+  .cmp-btn.wrong{background:var(--red-bg);border-color:var(--red);color:var(--red);}
 </style>
 </head>
 <body>
-  <div class="brand">Times Tables <span>&amp; Division</span></div>
-  <div class="tagline">Practice</div>
+  <div class="brand">Maths <span>Practice</span></div>
+  <div class="tagline">Build your skills step by step</div>
 
-  <!-- ============ SETUP ============ -->
-  <div class="card" id="setup">
-    <h2>Let's practise! 💪</h2>
-    <p class="sub">Pick your tables and how you want to practise.</p>
-
-    <div class="label">1. Which tables?</div>
-    <div class="quick">
-      <button data-quick="easy">⭐ Easy start (2, 5, 10)</button>
-      <button data-quick="build">📈 Building up (3, 4, 6)</button>
-      <button data-quick="all">All of them</button>
-      <button data-quick="none">Clear</button>
-    </div>
-    <div class="tables" id="tables"></div>
-
-    <div class="label">2. What do you want to do?</div>
-    <div class="seg" id="mode">
-      <button data-mode="mult" class="on">× Multiply</button>
-      <button data-mode="div">÷ Divide</button>
-      <button data-mode="mixed">Mix of both</button>
-    </div>
-
-    <div class="label">3. How do you answer?</div>
-    <div class="seg" id="style">
-      <button data-style="choice" class="on">Pick the answer</button>
-      <button data-style="type">Type the answer</button>
-    </div>
-
-    <div class="label">4. Challenge length</div>
-    <div class="seg" id="length">
-      <button data-kind="count" data-val="10" class="on">10 questions</button>
-      <button data-kind="count" data-val="20">20 questions</button>
-      <button data-kind="time" data-val="60">⏱ 1 minute</button>
-      <button data-kind="time" data-val="120">⏱ 2 minutes</button>
-    </div>
-    <p class="sub" id="lenHint" style="margin:8px 0 0">Answer a set number of questions at your own pace.</p>
-
-    <button class="start" id="startBtn">Start ▶</button>
+  <div class="tab-bar">
+    <button id="tabTT" class="active" onclick="switchTab('tt')">× ÷<br>Tables</button>
+    <button id="tabFrac" onclick="switchTab('frac')">½<br>Fractions</button>
+    <button id="tabFDP" onclick="switchTab('fdp')">%<br>FDP</button>
+    <button id="tabOrder" onclick="switchTab('order')">↕<br>Ordering</button>
   </div>
 
-  <!-- ============ QUIZ ============ -->
-  <div class="card hide" id="quiz">
-    <div class="topbar">
-      <span class="qcount" id="qcount">Question 1 of 10</span>
-      <span class="streak" id="streak"></span>
+  <!-- ==================== TIMES TABLES ==================== -->
+  <div id="sectionTT">
+
+    <!-- SETUP -->
+    <div class="card" id="setup">
+      <h2>Let's practise! 💪</h2>
+      <p class="sub">Pick your tables and how you want to practise.</p>
+
+      <div class="label">1. Which tables?</div>
+      <div class="quick">
+        <button data-quick="easy">⭐ Easy start (2, 5, 10)</button>
+        <button data-quick="build">📈 Building up (3, 4, 6)</button>
+        <button data-quick="all">All of them</button>
+        <button data-quick="none">Clear</button>
+      </div>
+      <div class="tables" id="tables"></div>
+
+      <div class="label">2. What do you want to do?</div>
+      <div class="seg" id="mode">
+        <button data-mode="mult" class="on">× Multiply</button>
+        <button data-mode="div">÷ Divide</button>
+        <button data-mode="mixed">Mix of both</button>
+      </div>
+
+      <div class="label">3. How do you answer?</div>
+      <div class="seg" id="style">
+        <button data-style="choice" class="on">Pick the answer</button>
+        <button data-style="type">Type the answer</button>
+      </div>
+
+      <div class="label">4. Challenge length</div>
+      <div class="seg" id="length">
+        <button data-kind="count" data-val="10" class="on">10 questions</button>
+        <button data-kind="count" data-val="20">20 questions</button>
+        <button data-kind="time" data-val="60">⏱ 1 minute</button>
+        <button data-kind="time" data-val="120">⏱ 2 minutes</button>
+      </div>
+      <p class="sub" id="lenHint" style="margin:8px 0 0">Answer a set number of questions at your own pace.</p>
+
+      <button class="start" id="startBtn">Start ▶</button>
     </div>
-    <div class="pbar"><div class="pfill" id="pfill"></div></div>
 
-    <div class="question" id="question">6 × 4</div>
-    <div class="qhint" id="qhint"></div>
-    <div id="array"></div>
+    <!-- QUIZ -->
+    <div class="card hide" id="quiz">
+      <div class="topbar">
+        <span class="qcount" id="qcount">Question 1 of 10</span>
+        <span class="streak" id="streak"></span>
+      </div>
+      <div class="pbar"><div class="pfill" id="pfill"></div></div>
 
-    <div class="choices hide" id="choices"></div>
-    <div class="typewrap hide" id="typewrap">
-      <input id="answer" type="number" inputmode="numeric" autocomplete="off" />
-      <button class="check" id="checkBtn">Check</button>
+      <div class="question" id="question">6 × 4</div>
+      <div class="qhint" id="qhint"></div>
+      <div id="array"></div>
+
+      <div class="choices hide" id="choices"></div>
+      <div class="typewrap hide" id="typewrap">
+        <input id="answer" type="number" inputmode="numeric" autocomplete="off" />
+        <button class="check" id="checkBtn">Check</button>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+      <button class="next hide" id="nextBtn">Next ▶</button>
+
+      <div class="tools">
+        <button id="arrayToggle">👀 Show dots</button>
+        <button id="quitBtn">✕ Finish early</button>
+      </div>
     </div>
 
-    <div class="feedback" id="feedback"></div>
-    <button class="next hide" id="nextBtn">Next ▶</button>
-
-    <div class="tools">
-      <button id="arrayToggle">👀 Show dots</button>
-      <button id="quitBtn">✕ Finish early</button>
+    <!-- RESULTS -->
+    <div class="card hide" id="results">
+      <h2 style="text-align:center">All done! 🎉</h2>
+      <div class="score-big" id="scoreBig">8 / 10</div>
+      <div class="stars" id="starsRow">⭐⭐⭐</div>
+      <div class="msg" id="resultMsg"></div>
+      <div class="review">
+        <h3>📌 Facts to practise next time:</h3>
+        <div id="reviewList" class="review-list"></div>
+      </div>
+      <button class="start" id="againBtn" style="margin-top:18px">Practise again ▶</button>
+      <button class="next" id="homeBtn" style="background:var(--grey-100);color:var(--grey-700);margin-top:10px">⚙ Change settings</button>
     </div>
-  </div>
 
-  <!-- ============ RESULTS ============ -->
-  <div class="card hide" id="results">
-    <h2 style="text-align:center">All done! 🎉</h2>
-    <div class="score-big" id="scoreBig">8 / 10</div>
-    <div class="stars" id="starsRow">⭐⭐⭐</div>
-    <div class="msg" id="resultMsg"></div>
-    <div class="review">
-      <h3>📌 Facts to practise next time:</h3>
-      <div id="reviewList" class="review-list"></div>
+  </div><!-- /sectionTT -->
+
+  <!-- ==================== FRACTIONS ==================== -->
+  <div id="sectionFrac" class="hide">
+
+    <!-- SETUP -->
+    <div class="card" id="frac-setup">
+      <h2>Fractions Practice 🍕</h2>
+      <p class="sub">Choose what you want to work on.</p>
+
+      <div class="label">1. Topic</div>
+      <div class="seg" id="frac-topic">
+        <button data-ftopic="simplify" class="on">Simplify</button>
+        <button data-ftopic="equivalent">Equivalent</button>
+        <button data-ftopic="compare">Compare</button>
+        <button data-ftopic="all">🎲 All 3</button>
+      </div>
+
+      <div class="label">2. Difficulty</div>
+      <div class="seg" id="frac-diff">
+        <button data-fdiff="easy" class="on">Easy</button>
+        <button data-fdiff="medium">Medium</button>
+        <button data-fdiff="hard">Hard</button>
+      </div>
+
+      <div class="label">3. Challenge length</div>
+      <div class="seg" id="frac-length">
+        <button data-flen="10" class="on">10 questions</button>
+        <button data-flen="20">20 questions</button>
+      </div>
+
+      <button class="start" id="frac-startBtn">Start ▶</button>
     </div>
-    <button class="start" id="againBtn" style="margin-top:18px">Practise again ▶</button>
-    <button class="next" id="homeBtn" style="background:var(--grey-100);color:var(--grey-700);margin-top:10px">⚙ Change settings</button>
-  </div>
+
+    <!-- QUIZ -->
+    <div class="card hide" id="frac-quiz">
+      <div class="topbar">
+        <span class="qcount" id="frac-qcount">Question 1 of 10</span>
+        <span class="streak" id="frac-streak"></span>
+      </div>
+      <div class="pbar"><div class="pfill" id="frac-pfill"></div></div>
+
+      <div id="frac-question-area"></div>
+      <div class="feedback" id="frac-feedback"></div>
+      <button class="next hide" id="frac-nextBtn">Next ▶</button>
+
+      <div class="tools">
+        <button id="frac-quitBtn">✕ Finish early</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="card hide" id="frac-results">
+      <h2 style="text-align:center">All done! 🎉</h2>
+      <div class="score-big" id="frac-scoreBig"></div>
+      <div class="stars" id="frac-starsRow"></div>
+      <div class="msg" id="frac-resultMsg"></div>
+      <div class="review">
+        <h3>📌 Questions to revisit:</h3>
+        <div id="frac-reviewList" class="review-list"></div>
+      </div>
+      <button class="start" id="frac-againBtn" style="margin-top:18px">Practise again ▶</button>
+      <button class="next" id="frac-homeBtn" style="background:var(--grey-100);color:var(--grey-700);margin-top:10px">⚙ Change settings</button>
+    </div>
+
+  </div><!-- /sectionFrac -->
+
+  <!-- ==================== FDP & ORDERING ==================== -->
+  <div id="sectionFDP" class="hide">
+
+    <!-- SETUP -->
+    <div class="card" id="fdp-setup">
+      <h2>FDP Conversion 📊</h2>
+      <p class="sub">Convert between fractions, decimals and percentages.</p>
+
+      <div class="label">1. Topic</div>
+      <div class="seg" id="fdp-topic">
+        <button data-ftopic="fd" class="on">Fractions ↔ Decimals</button>
+        <button data-ftopic="dp">Decimals ↔ %</button>
+        <button data-ftopic="fp">Fractions ↔ %</button>
+        <button data-ftopic="mixed">🎲 Mixed</button>
+      </div>
+
+      <div class="label">2. Difficulty</div>
+      <div class="seg" id="fdp-diff">
+        <button data-fdiff="easy" class="on">Easy</button>
+        <button data-fdiff="medium">Medium</button>
+        <button data-fdiff="hard">Hard</button>
+      </div>
+
+      <div class="label">3. Challenge length</div>
+      <div class="seg" id="fdp-length">
+        <button data-flen="10" class="on">10 questions</button>
+        <button data-flen="20">20 questions</button>
+      </div>
+
+      <button class="start" id="fdp-startBtn">Start ▶</button>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="card hide" id="fdp-quiz">
+      <div class="topbar">
+        <span class="qcount" id="fdp-qcount">Question 1 of 10</span>
+        <span class="streak" id="fdp-streak"></span>
+      </div>
+      <div class="pbar"><div class="pfill" id="fdp-pfill"></div></div>
+
+      <div id="fdp-question-area"></div>
+      <div class="feedback" id="fdp-feedback"></div>
+      <button class="next hide" id="fdp-nextBtn">Next ▶</button>
+
+      <div class="tools">
+        <button id="fdp-quitBtn">✕ Finish early</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="card hide" id="fdp-results">
+      <h2 style="text-align:center">All done! 🎉</h2>
+      <div class="score-big" id="fdp-scoreBig"></div>
+      <div class="stars" id="fdp-starsRow"></div>
+      <div class="msg" id="fdp-resultMsg"></div>
+      <div class="review">
+        <h3>📌 Questions to revisit:</h3>
+        <div id="fdp-reviewList" class="review-list"></div>
+      </div>
+      <button class="start" id="fdp-againBtn" style="margin-top:18px">Practise again ▶</button>
+      <button class="next" id="fdp-homeBtn" style="background:var(--grey-100);color:var(--grey-700);margin-top:10px">⚙ Change settings</button>
+    </div>
+
+  </div><!-- /sectionFDP -->
+
+  <!-- ==================== ORDERING ==================== -->
+  <div id="sectionOrder" class="hide">
+
+    <!-- SETUP -->
+    <div class="card" id="ord-setup">
+      <h2>Ordering Values ↕</h2>
+      <p class="sub">Put fractions, decimals and percentages in order.</p>
+
+      <div class="label">1. Difficulty</div>
+      <div class="seg" id="ord-diff">
+        <button data-fdiff="easy" class="on">Easy</button>
+        <button data-fdiff="medium">Medium</button>
+        <button data-fdiff="hard">Hard</button>
+      </div>
+
+      <div class="label">2. Challenge length</div>
+      <div class="seg" id="ord-length">
+        <button data-flen="10" class="on">10 questions</button>
+        <button data-flen="20">20 questions</button>
+      </div>
+
+      <button class="start" id="ord-startBtn">Start ▶</button>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="card hide" id="ord-quiz">
+      <div class="topbar">
+        <span class="qcount" id="ord-qcount">Question 1 of 10</span>
+        <span class="streak" id="ord-streak"></span>
+      </div>
+      <div class="pbar"><div class="pfill" id="ord-pfill"></div></div>
+
+      <div id="ord-question-area"></div>
+      <div class="feedback" id="ord-feedback"></div>
+      <button class="next hide" id="ord-nextBtn">Next ▶</button>
+
+      <div class="tools">
+        <button id="ord-quitBtn">✕ Finish early</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="card hide" id="ord-results">
+      <h2 style="text-align:center">All done! 🎉</h2>
+      <div class="score-big" id="ord-scoreBig"></div>
+      <div class="stars" id="ord-starsRow"></div>
+      <div class="msg" id="ord-resultMsg"></div>
+      <div class="review">
+        <h3>📌 Questions to revisit:</h3>
+        <div id="ord-reviewList" class="review-list"></div>
+      </div>
+      <button class="start" id="ord-againBtn" style="margin-top:18px">Practise again ▶</button>
+      <button class="next" id="ord-homeBtn" style="background:var(--grey-100);color:var(--grey-700);margin-top:10px">⚙ Change settings</button>
+    </div>
+
+  </div><!-- /sectionOrder -->
 
   <footer>Tip: green means correct, red shows the right answer — every mistake is a chance to learn!</footer>
 
 <script>
 (function(){
-  "use strict";
-  var $ = function(id){ return document.getElementById(id); };
+"use strict";
+var $ = function(id){ return document.getElementById(id); };
+function rint(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+function shuffle(a){ for(var i=a.length-1;i>0;i--){var j=rint(0,i);var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+function pick(arr){ return arr[rint(0,arr.length-1)]; }
+function gcd(a,b){ return b===0?a:gcd(b,a%b); }
 
-  // ---- state ----
-  var selectedTables = [2,5,10];
-  var mode = "mult";       // mult | div | mixed
-  var style = "choice";    // choice | type
-  var qTotal = 10;
-  var timed = false;       // timed challenge instead of fixed count
-  var timeLimit = 60;      // seconds, when timed
-  var showArray = false;
+/* ---- HTML fraction helper ---- */
+function fracHTML(n,d,cls){
+  cls=cls||"frac-big";
+  return '<span class="frac '+cls+'"><span class="num">'+n+'</span><span class="den">'+d+'</span></span>';
+}
 
-  var questions = [];
-  var currentQ = null;
-  var idx = 0;
-  var correct = 0;
-  var attempted = 0;
-  var streak = 0;
-  var answered = false;
-  var wrongFacts = [];
-  var timeLeft = 0;
-  var timerInterval = null;
-  var autoTimer = null;    // auto-advance after a typed answer
+/* ===================== TAB SWITCHING ===================== */
+function switchTab(tab){
+  var map={tt:"TT",frac:"Frac",fdp:"FDP",order:"Order"};
+  Object.keys(map).forEach(function(t){
+    $("section"+map[t]).classList.toggle("hide", t!==tab);
+    $("tab"+map[t]).classList.toggle("active", t===tab);
+  });
+}
+window.switchTab = switchTab;
 
-  // ---- build table buttons ----
-  var tablesEl = $("tables");
+/* ===================== TIMES TABLES ===================== */
+(function(){
+  var selectedTables=[2,5,10];
+  var mode="mult", style="choice", qTotal=10, timed=false, timeLimit=60, showArray=false;
+  var questions=[], currentQ=null, idx=0, correct=0, attempted=0, streak=0;
+  var answered=false, wrongFacts=[], timeLeft=0, timerInterval=null, autoTimer=null;
+
+  var tablesEl=$("tables");
   for(var n=2;n<=12;n++){
     (function(num){
-      var b = document.createElement("button");
-      b.className = "tbtn" + (selectedTables.indexOf(num)>-1 ? " on":"");
-      b.textContent = num;
-      b.dataset.num = num;
-      b.onclick = function(){
-        var i = selectedTables.indexOf(num);
-        if(i>-1){ selectedTables.splice(i,1); b.classList.remove("on"); }
-        else { selectedTables.push(num); b.classList.add("on"); }
+      var b=document.createElement("button");
+      b.className="tbtn"+(selectedTables.indexOf(num)>-1?" on":"");
+      b.textContent=num; b.dataset.num=num;
+      b.onclick=function(){
+        var i=selectedTables.indexOf(num);
+        if(i>-1){selectedTables.splice(i,1);b.classList.remove("on");}
+        else{selectedTables.push(num);b.classList.add("on");}
         updateStart();
       };
       tablesEl.appendChild(b);
     })(n);
   }
   function refreshTableButtons(){
-    var btns = tablesEl.querySelectorAll(".tbtn");
-    btns.forEach(function(b){
-      b.classList.toggle("on", selectedTables.indexOf(+b.dataset.num)>-1);
+    tablesEl.querySelectorAll(".tbtn").forEach(function(b){
+      b.classList.toggle("on",selectedTables.indexOf(+b.dataset.num)>-1);
     });
     updateStart();
   }
-
-  // quick picks
   document.querySelectorAll("[data-quick]").forEach(function(b){
-    b.onclick = function(){
-      var q = b.dataset.quick;
+    b.onclick=function(){
+      var q=b.dataset.quick;
       if(q==="easy") selectedTables=[2,5,10];
       else if(q==="build") selectedTables=[3,4,6];
       else if(q==="all") selectedTables=[2,3,4,5,6,7,8,9,10,11,12];
@@ -266,221 +533,124 @@
     };
   });
 
-  // segmented controls helper
-  function wireSeg(containerId, attr, setter){
-    var c = $(containerId);
+  function wireSeg(containerId,attr,setter){
+    var c=$(containerId);
     c.querySelectorAll("button").forEach(function(b){
-      b.onclick = function(){
+      b.onclick=function(){
         c.querySelectorAll("button").forEach(function(x){x.classList.remove("on");});
-        b.classList.add("on");
-        setter(b.dataset[attr]);
+        b.classList.add("on"); setter(b.dataset[attr]);
       };
     });
   }
   wireSeg("mode","mode",function(v){mode=v;});
   wireSeg("style","style",function(v){style=v;});
 
-  // length control: count-based or timed
   $("length").querySelectorAll("button").forEach(function(b){
-    b.onclick = function(){
+    b.onclick=function(){
       $("length").querySelectorAll("button").forEach(function(x){x.classList.remove("on");});
       b.classList.add("on");
-      if(b.dataset.kind==="time"){
-        timed = true; timeLimit = +b.dataset.val;
-        $("lenHint").textContent = "Beat the clock — get as many right as you can before time runs out!";
-      } else {
-        timed = false; qTotal = +b.dataset.val;
-        $("lenHint").textContent = "Answer a set number of questions at your own pace.";
-      }
+      if(b.dataset.kind==="time"){timed=true;timeLimit=+b.dataset.val;$("lenHint").textContent="Beat the clock — get as many right as you can!";}
+      else{timed=false;qTotal=+b.dataset.val;$("lenHint").textContent="Answer a set number of questions at your own pace.";}
     };
   });
 
-  function updateStart(){
-    $("startBtn").disabled = selectedTables.length===0;
-  }
+  function updateStart(){$("startBtn").disabled=selectedTables.length===0;}
   updateStart();
 
-  // ---- question generation ----
-  function rint(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
-  function shuffle(a){ for(var i=a.length-1;i>0;i--){var j=rint(0,i);var t=a[i];a[i]=a[j];a[j]=t;} return a; }
-
   function makeOneQuestion(){
-    var t = selectedTables[rint(0,selectedTables.length-1)];
-    var k = rint(1,12);
-    var thisMode = mode==="mixed" ? (Math.random()<0.5?"mult":"div") : mode;
-    var prompt, ans, key;
-    if(thisMode==="mult"){
-      prompt = t + " × " + k; ans = t*k; key = "m"+t+"x"+k;
-    } else {
-      // division: (t*k) ÷ t = k
-      prompt = (t*k) + " ÷ " + t; ans = k; key = "d"+(t*k)+"x"+t;
-    }
-    return { prompt:prompt, ans:ans, mode:thisMode, a:t, b:k, key:key };
+    var t=selectedTables[rint(0,selectedTables.length-1)], k=rint(1,12);
+    var thisMode=mode==="mixed"?(Math.random()<0.5?"mult":"div"):mode;
+    var prompt,ans,key;
+    if(thisMode==="mult"){prompt=t+" × "+k;ans=t*k;key="m"+t+"x"+k;}
+    else{prompt=(t*k)+" ÷ "+t;ans=k;key="d"+(t*k)+"x"+t;}
+    return{prompt,ans,mode:thisMode,a:t,b:k,key};
   }
+  function pool(){return selectedTables.length*12;}
   function makeQuestions(){
-    var list = [];
-    var seen = {};
-    var guard = 0;
-    while(list.length < qTotal && guard < 2000){
-      guard++;
-      var q = makeOneQuestion();
-      // avoid duplicates while the pool is large enough to allow it
-      if(seen[q.key] && Object.keys(seen).length < pool()) continue;
-      seen[q.key]=true;
-      list.push(q);
+    var list=[],seen={},guard=0;
+    while(list.length<qTotal&&guard<2000){
+      guard++;var q=makeOneQuestion();
+      if(seen[q.key]&&Object.keys(seen).length<pool()) continue;
+      seen[q.key]=true;list.push(q);
     }
     return list;
   }
-  function pool(){ return selectedTables.length*12; }
-
   function makeChoices(q){
-    var set = {};
-    set[q.ans]=true;
-    var opts=[q.ans];
-    var guard=0;
-    while(opts.length<4 && guard<60){
-      guard++;
-      var delta = rint(-5,5);
-      var cand;
-      if(q.mode==="mult"){
-        // plausible wrong answers: off-by-one multiples or near misses
-        cand = Math.random()<0.5 ? q.a*(q.b+ (Math.random()<0.5?1:-1)) : q.ans+delta;
-      } else {
-        cand = q.ans + (Math.random()<0.6 ? (Math.random()<0.5?1:-1)*rint(1,3) : delta);
-      }
-      if(cand>0 && !set[cand]){ set[cand]=true; opts.push(cand); }
+    var set={};set[q.ans]=true;var opts=[q.ans],guard=0;
+    while(opts.length<4&&guard<60){
+      guard++;var delta=rint(-5,5),cand;
+      if(q.mode==="mult") cand=Math.random()<0.5?q.a*(q.b+(Math.random()<0.5?1:-1)):q.ans+delta;
+      else cand=q.ans+(Math.random()<0.6?(Math.random()<0.5?1:-1)*rint(1,3):delta);
+      if(cand>0&&!set[cand]){set[cand]=true;opts.push(cand);}
     }
     return shuffle(opts);
   }
-
-  // ---- array visual ----
   function renderArray(q){
-    var el = $("array");
-    el.innerHTML="";
-    if(!showArray){ return; }
-    // show a rows x b columns array. For division, show total split into rows of divisor.
-    var rows, cols;
-    if(q.mode==="mult"){ rows=q.a; cols=q.b; }
-    else { cols=q.a; rows=q.ans; } // total = rows*cols, grouped by divisor q.a
-    rows=Math.min(rows,12); cols=Math.min(cols,12);
+    var el=$("array"); el.innerHTML="";
+    if(!showArray) return;
+    var rows,cols;
+    if(q.mode==="mult"){rows=q.a;cols=q.b;}else{cols=q.a;rows=q.ans;}
+    rows=Math.min(rows,12);cols=Math.min(cols,12);
     for(var r=0;r<rows;r++){
-      var row=document.createElement("div"); row.className="arow";
-      for(var c=0;c<cols;c++){
-        var d=document.createElement("div"); d.className="dot"; row.appendChild(d);
-      }
+      var row=document.createElement("div");row.className="arow";
+      for(var c=0;c<cols;c++){var d=document.createElement("div");d.className="dot";row.appendChild(d);}
       el.appendChild(row);
     }
   }
-
-  // ---- timer (timed mode) ----
   function startTimer(){
-    stopTimer();
-    updateTimerUI();
-    timerInterval = setInterval(function(){
-      timeLeft--;
-      updateTimerUI();
-      if(timeLeft<=0){ stopTimer(); showResults(); }
-    },1000);
+    stopTimer();updateTimerUI();
+    timerInterval=setInterval(function(){timeLeft--;updateTimerUI();if(timeLeft<=0){stopTimer();showResults();}},1000);
   }
-  function stopTimer(){ if(timerInterval){ clearInterval(timerInterval); timerInterval=null; } }
+  function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null;}}
   function updateTimerUI(){
-    var m=Math.floor(timeLeft/60), s=timeLeft%60;
-    $("qcount").textContent = "⏱ "+m+":"+(s<10?"0":"")+s;
+    var m=Math.floor(timeLeft/60),s=timeLeft%60;
+    $("qcount").textContent="⏱ "+m+":"+(s<10?"0":"")+s;
     var pf=$("pfill");
-    pf.style.width = Math.max(0,(timeLeft/timeLimit*100))+"%";
-    pf.style.background = timeLeft<=10 ? "linear-gradient(90deg,#dc2626,#f87171)"
-                                       : "linear-gradient(90deg,var(--blue),var(--blue-light))";
+    pf.style.width=Math.max(0,(timeLeft/timeLimit*100))+"%";
+    pf.style.background=timeLeft<=10?"linear-gradient(90deg,#dc2626,#f87171)":"linear-gradient(90deg,var(--blue),var(--blue-light))";
   }
   function updateStatusUI(){
-    if(timed){
-      $("streak").textContent = "Score: "+correct + (streak>=2 ? "  🔥"+streak : "");
-    } else {
-      $("streak").textContent = streak>=2 ? ("🔥 "+streak+" in a row!") : "";
-    }
+    if(timed)$("streak").textContent="Score: "+correct+(streak>=2?"  🔥"+streak:"");
+    else $("streak").textContent=streak>=2?("🔥 "+streak+" in a row!"):"";
   }
-
-  // ---- flow ----
   function startQuiz(){
-    stopTimer(); clearTimeout(autoTimer);
-    idx=0; correct=0; attempted=0; streak=0; wrongFacts=[];
-    $("setup").classList.add("hide");
-    $("results").classList.add("hide");
-    $("quiz").classList.remove("hide");
-    if(timed){
-      timeLeft = timeLimit;
-      currentQ = makeOneQuestion();
-      startTimer();                // one continuous clock for the whole sprint
-    } else {
-      questions = makeQuestions();
-      currentQ = questions[0];
-    }
+    stopTimer();clearTimeout(autoTimer);
+    idx=0;correct=0;attempted=0;streak=0;wrongFacts=[];
+    $("setup").classList.add("hide");$("results").classList.add("hide");$("quiz").classList.remove("hide");
+    if(timed){timeLeft=timeLimit;currentQ=makeOneQuestion();startTimer();}
+    else{questions=makeQuestions();currentQ=questions[0];}
     showQuestion();
   }
-
   function showQuestion(){
-    answered=false;
-    var q = currentQ;
-    if(timed){
-      updateTimerUI();           // continuous clock — just refresh the display
-    } else {
-      $("qcount").textContent = "Question "+(idx+1)+" of "+questions.length;
-      $("pfill").style.width = (idx/questions.length*100)+"%";
-      $("pfill").style.background = "linear-gradient(90deg,var(--blue),var(--blue-light))";
-    }
+    answered=false;var q=currentQ;
+    if(timed){updateTimerUI();}
+    else{$("qcount").textContent="Question "+(idx+1)+" of "+questions.length;$("pfill").style.width=(idx/questions.length*100)+"%";$("pfill").style.background="linear-gradient(90deg,var(--blue),var(--blue-light))";}
     updateStatusUI();
-    $("question").textContent = q.prompt;
-    $("qhint").textContent = "";
-    $("feedback").textContent=""; $("feedback").className="feedback";
-    $("nextBtn").classList.add("hide");
-    renderArray(q);
-
+    $("question").textContent=q.prompt;$("qhint").textContent="";
+    $("feedback").textContent="";$("feedback").className="feedback";
+    $("nextBtn").classList.add("hide");renderArray(q);
     if(style==="choice"){
-      $("typewrap").classList.add("hide");
-      $("choices").classList.remove("hide");
-      var box=$("choices"); box.innerHTML="";
+      $("typewrap").classList.add("hide");$("choices").classList.remove("hide");
+      var box=$("choices");box.innerHTML="";
       makeChoices(q).forEach(function(opt){
-        var b=document.createElement("button");
-        b.className="choice"; b.textContent=opt;
-        b.onclick=function(){ submit(opt,b); };
-        box.appendChild(b);
+        var b=document.createElement("button");b.className="choice";b.textContent=opt;
+        b.onclick=function(){submit(opt,b);};box.appendChild(b);
       });
     } else {
-      $("choices").classList.add("hide");
-      $("typewrap").classList.remove("hide");
-      var inp=$("answer"); inp.value=""; inp.className=""; inp.disabled=false;
-      $("checkBtn").classList.remove("hide");
-      setTimeout(function(){ inp.focus(); },50);
+      $("choices").classList.add("hide");$("typewrap").classList.remove("hide");
+      var inp=$("answer");inp.value="";inp.className="";inp.disabled=false;
+      $("checkBtn").classList.remove("hide");setTimeout(function(){inp.focus();},50);
     }
   }
-
-  function submit(value, btnEl){
+  function submit(value,btnEl){
     if(answered) return;
-    var q=currentQ;
-    var isRight = (+value===q.ans);
-
-    // record the result (used for the score and the end-of-round review)
-    attempted++;
-    if(isRight){ correct++; streak++; }
-    else { streak=0; wrongFacts.push(q.prompt+" = "+q.ans); }
-
-    if(timed){
-      // sprint mode: no per-question feedback, no pause — straight to the next one
-      updateStatusUI();
-      nextQuestion();
-      return;
-    }
-
-    // untimed mode: show correct/wrong feedback, then advance
+    var q=currentQ,isRight=(+value===q.ans);
+    attempted++;if(isRight){correct++;streak++;}else{streak=0;wrongFacts.push(q.prompt+" = "+q.ans);}
+    if(timed){updateStatusUI();nextQuestion();return;}
     answered=true;
-    if(isRight){
-      $("feedback").textContent = pick(["Correct! ✅","Brilliant! ⭐","Spot on! 🎯","Well done! 👏","Yes! 💪"]);
-      $("feedback").className="feedback good";
-    } else {
-      $("feedback").textContent = "Not quite — "+q.prompt+" = "+q.ans;
-      $("feedback").className="feedback bad";
-    }
+    if(isRight){$("feedback").textContent=pick(["Correct! ✅","Brilliant! ⭐","Spot on! 🎯","Well done! 👏","Yes! 💪"]);$("feedback").className="feedback good";}
+    else{$("feedback").textContent="Not quite — "+q.prompt+" = "+q.ans;$("feedback").className="feedback bad";}
     updateStatusUI();
-
     if(style==="choice"){
       $("choices").querySelectorAll(".choice").forEach(function(b){
         b.disabled=true;
@@ -488,112 +658,586 @@
         else if(b===btnEl) b.classList.add("wrong");
       });
     } else {
-      var inp=$("answer"); inp.disabled=true;
-      inp.className = isRight ? "correct":"wrong";
+      var inp=$("answer");inp.disabled=true;inp.className=isRight?"correct":"wrong";
       $("checkBtn").classList.add("hide");
     }
-    if(style==="type"){
-      // one keypress checks; we move on by ourselves once they've seen the result
-      clearTimeout(autoTimer);
-      autoTimer = setTimeout(advance, isRight ? 850 : 1900);
-    } else {
-      $("nextBtn").classList.remove("hide");
-      $("nextBtn").focus();
-    }
+    if(style==="type"){clearTimeout(autoTimer);autoTimer=setTimeout(advance,isRight?850:1900);}
+    else{$("nextBtn").classList.remove("hide");$("nextBtn").focus();}
   }
-
-  function advance(){
-    clearTimeout(autoTimer); autoTimer=null;
-    nextQuestion();
-  }
-
-  function pick(arr){ return arr[rint(0,arr.length-1)]; }
-
+  function advance(){clearTimeout(autoTimer);autoTimer=null;nextQuestion();}
   function nextQuestion(){
-    if(timed){
-      if(timeLeft<=0) return;          // clock already ended the round
-      currentQ = makeOneQuestion();
-      showQuestion();
-      return;
-    }
-    idx++;
-    if(idx>=questions.length){ showResults(); }
-    else { currentQ = questions[idx]; showQuestion(); }
+    if(timed){if(timeLeft<=0)return;currentQ=makeOneQuestion();showQuestion();return;}
+    idx++;if(idx>=questions.length)showResults();else{currentQ=questions[idx];showQuestion();}
   }
-
   function showResults(){
-    stopTimer(); clearTimeout(autoTimer);
-    $("quiz").classList.add("hide");
-    $("results").classList.remove("hide");
-
+    stopTimer();clearTimeout(autoTimer);
+    $("quiz").classList.add("hide");$("results").classList.remove("hide");
     if(timed){
-      var label = timeLimit===60 ? "1 minute" : (timeLimit/60)+" minutes";
-      var perMin = correct/(timeLimit/60);
-      var tstars = perMin>=12?3 : perMin>=7?2 : perMin>=1?1 : 0;
-      $("scoreBig").textContent = correct;
-      $("starsRow").textContent = "⭐⭐⭐".slice(0,tstars) || "☆";
-      var acc = attempted ? Math.round(correct/attempted*100) : 0;
-      $("resultMsg").textContent = "correct in "+label+"! ("+acc+"% accuracy) "
-        + (perMin>=12 ? "Lightning fast! ⚡ Can you beat it?"
-         : perMin>=7  ? "Great pace — try to beat that next time! 💪"
-         : "Keep practising and watch your score climb! 🙂");
+      var perMin=correct/(timeLimit/60),tstars=perMin>=12?3:perMin>=7?2:perMin>=1?1:0;
+      var label=timeLimit===60?"1 minute":(timeLimit/60)+" minutes";
+      $("scoreBig").textContent=correct;$("starsRow").textContent="⭐⭐⭐".slice(0,tstars)||"☆";
+      var acc=attempted?Math.round(correct/attempted*100):0;
+      $("resultMsg").textContent="correct in "+label+"! ("+acc+"% accuracy) "+(perMin>=12?"Lightning fast! ⚡":perMin>=7?"Great pace! 💪":"Keep climbing! 🙂");
     } else {
-      var total=attempted;
-      $("scoreBig").textContent = correct+" / "+total;
-      var pct = total ? correct/total : 0;
-      var stars = pct>=0.9?3 : pct>=0.6?2 : pct>=0.3?1 : 0;
-      $("starsRow").textContent = "⭐⭐⭐".slice(0,stars) || "☆";
-      $("resultMsg").textContent = pct>=0.9 ? "Amazing work — you've really got these! 🌟"
-        : pct>=0.6 ? "Great effort! A little more practice and you'll nail it. 💪"
-        : pct>=0.3 ? "Good try — keep going, you're getting there! 🙂"
-        : "Every expert started here. Let's practise these again together. 🤝";
+      var total=attempted,pct=total?correct/total:0,stars=pct>=0.9?3:pct>=0.6?2:pct>=0.3?1:0;
+      $("scoreBig").textContent=correct+" / "+total;$("starsRow").textContent="⭐⭐⭐".slice(0,stars)||"☆";
+      $("resultMsg").textContent=pct>=0.9?"Amazing — you've really got these! 🌟":pct>=0.6?"Great effort! 💪":pct>=0.3?"Good try — keep going! 🙂":"Every expert started here. Let's try again! 🤝";
     }
+    var rl=$("reviewList");rl.innerHTML="";
+    var uniq=[];wrongFacts.forEach(function(f){if(uniq.indexOf(f)<0)uniq.push(f);});
+    if(uniq.length===0){rl.innerHTML='<div class="allgood">No mistakes — nothing to review! 🎉</div>';}
+    else{uniq.forEach(function(f){var s=document.createElement("span");s.textContent=f;rl.appendChild(s);});}
+  }
 
-    var rl=$("reviewList"); rl.innerHTML="";
-    var uniq=[]; wrongFacts.forEach(function(f){ if(uniq.indexOf(f)<0) uniq.push(f); });
-    if(uniq.length===0){
-      rl.innerHTML='<div class="allgood">No mistakes — nothing to review! 🎉</div>';
+  $("startBtn").onclick=startQuiz;
+  $("nextBtn").onclick=nextQuestion;
+  $("checkBtn").onclick=function(){var v=$("answer").value.trim();if(v===""){$("answer").focus();return;}submit(v,null);};
+  $("answer").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();if(answered)advance();else $("checkBtn").click();}});
+  document.addEventListener("keydown",function(e){if(e.key==="Enter"&&answered&&!$("nextBtn").classList.contains("hide")&&style==="choice"){e.preventDefault();nextQuestion();}});
+  $("arrayToggle").onclick=function(){showArray=!showArray;this.classList.toggle("on",showArray);this.textContent=showArray?"🙈 Hide dots":"👀 Show dots";if(!$("quiz").classList.contains("hide"))renderArray(currentQ);};
+  $("quitBtn").onclick=function(){stopTimer();clearTimeout(autoTimer);if(attempted===0)goHome();else showResults();};
+  $("againBtn").onclick=startQuiz;$("homeBtn").onclick=goHome;
+  function goHome(){stopTimer();clearTimeout(autoTimer);$("results").classList.add("hide");$("quiz").classList.add("hide");$("setup").classList.remove("hide");}
+})();
+
+/* ===================== FRACTIONS ===================== */
+(function(){
+  var fracTopic="simplify", fracDiff="easy", fracTotal=10;
+  var fIdx=0, fCorrect=0, fAttempted=0, fStreak=0, fWrong=[], fQuestions=[], fCurrentQ=null, fAnswered=false;
+
+  /* segmented wiring */
+  function wireSeg(id, attr, setter){
+    var c=$(id); c.querySelectorAll("button").forEach(function(b){
+      b.onclick=function(){c.querySelectorAll("button").forEach(function(x){x.classList.remove("on");});b.classList.add("on");setter(b.dataset[attr]);};
+    });
+  }
+  wireSeg("frac-topic","ftopic",function(v){fracTopic=v;});
+  wireSeg("frac-diff","fdiff",function(v){fracDiff=v;});
+  $("frac-length").querySelectorAll("button").forEach(function(b){
+    b.onclick=function(){$("frac-length").querySelectorAll("button").forEach(function(x){x.classList.remove("on");});b.classList.add("on");fracTotal=+b.dataset.flen;};
+  });
+
+  /* --- question generators --- */
+  function simplifyPairs(diff){
+    // returns {n,d} where n/d can be simplified, and {sn,sd} is the simplified form
+    var pairs={
+      easy:[[2,4],[3,6],[4,8],[6,8],[2,6],[4,6],[6,9],[3,9],[4,10],[5,10],[6,10],[8,10],[2,8],[3,12],[4,12],[6,12],[8,12]],
+      medium:[[4,16],[6,15],[8,12],[9,12],[10,15],[6,18],[8,20],[12,16],[9,15],[10,25],[12,18],[14,21],[15,20],[6,21],[8,24],[10,30]],
+      hard:[[12,30],[14,35],[18,24],[15,35],[16,36],[21,28],[24,36],[18,42],[20,45],[15,45],[24,40],[18,30],[22,33],[16,40],[25,60],[21,35]]
+    };
+    var pool=pairs[diff]||pairs.easy;
+    var pair=pick(pool);
+    var n=pair[0],d=pair[1],g=gcd(n,d);
+    return{n,d,sn:n/g,sd:d/g};
+  }
+  function equivalentQ(diff){
+    // give a/b, find the equivalent with multiplier applied to either n or d
+    var bases={easy:[[1,2],[1,3],[1,4],[2,3],[3,4]],medium:[[2,5],[3,5],[1,6],[5,6],[3,7],[2,7]],hard:[[3,8],[5,8],[4,9],[5,9],[7,10],[3,11]]};
+    var pool=bases[diff]||bases.easy;
+    var base=pick(pool);
+    var n=base[0],d=base[1];
+    var mult=rint(2,6);
+    // ask for numerator OR denominator
+    var askNum=Math.random()<0.5;
+    if(askNum){return{n,d,mult,target:n*mult,targetD:d*mult,ask:"num",givenD:d*mult};}
+    else{return{n,d,mult,target:n*mult,targetD:d*mult,ask:"den",givenN:n*mult};}
+  }
+  function compareQ(diff){
+    var pool;
+    if(diff==="easy") pool=[[1,2,1,3],[2,3,3,4],[1,4,1,3],[3,4,2,3],[1,2,3,4],[1,3,2,5],[2,5,3,7],[1,4,2,7]];
+    else if(diff==="medium") pool=[[3,5,4,7],[5,8,3,5],[2,3,5,8],[4,9,3,7],[5,6,7,9],[3,8,4,11],[5,7,4,6],[7,10,5,7]];
+    else pool=[[7,11,5,8],[8,13,5,9],[9,14,7,11],[11,17,7,12],[5,9,6,11],[8,15,7,13],[9,16,8,15],[13,20,9,14]];
+    var r=pick(pool);
+    var n1=r[0],d1=r[1],n2=r[2],d2=r[3];
+    var v1=n1/d1,v2=n2/d2;
+    var sym=v1>v2?">":(v1<v2?"<":"=");
+    return{n1,d1,n2,d2,answer:sym};
+  }
+  function makeSimplifyChoices(q){
+    var correct=q.sn+"/"+q.sd;
+    var opts=[correct];
+    var tries=0;
+    while(opts.length<4&&tries<60){
+      tries++;
+      var offN=q.sn+rint(-2,2),offD=q.sd+rint(-2,2);
+      if(offN<=0||offD<=0||offN===offD) continue;
+      var cand=offN+"/"+offD;
+      if(opts.indexOf(cand)<0) opts.push(cand);
+    }
+    return shuffle(opts);
+  }
+
+  function makeFracQuestion(){
+    var topic=fracTopic==="all"?pick(["simplify","equivalent","compare"]):fracTopic;
+    if(topic==="simplify"){
+      var q=simplifyPairs(fracDiff);
+      q.type="simplify"; return q;
+    } else if(topic==="equivalent"){
+      var q=equivalentQ(fracDiff);
+      q.type="equivalent"; return q;
     } else {
-      uniq.forEach(function(f){ var s=document.createElement("span"); s.textContent=f; rl.appendChild(s); });
+      var q=compareQ(fracDiff);
+      q.type="compare"; return q;
     }
   }
 
-  // ---- buttons ----
-  $("startBtn").onclick = startQuiz;
-  $("nextBtn").onclick = nextQuestion;
-  $("checkBtn").onclick = function(){
-    var v=$("answer").value.trim();
-    if(v==="") { $("answer").focus(); return; }
-    submit(v,null);
-  };
-  $("answer").addEventListener("keydown",function(e){
-    if(e.key==="Enter"){ e.preventDefault(); if(answered) advance(); else $("checkBtn").click(); }
-  });
-  document.addEventListener("keydown",function(e){
-    if(e.key==="Enter" && answered && !$("nextBtn").classList.contains("hide") && style==="choice"){
-      e.preventDefault(); nextQuestion();
+  /* --- rendering --- */
+  function renderFracQuestion(q){
+    var area=$("frac-question-area"); area.innerHTML="";
+    fAnswered=false;
+    $("frac-feedback").textContent=""; $("frac-feedback").className="feedback";
+    $("frac-nextBtn").classList.add("hide");
+
+    if(q.type==="simplify"){
+      area.innerHTML='<div class="fq-center"><p style="color:var(--grey-500);font-weight:600;margin-bottom:10px">Simplify this fraction fully:</p>'
+        +'<div style="font-size:2.8rem;font-weight:800;margin:10px 0">'+fracHTML(q.n,q.d,"frac-big")+'</div></div>'
+        +'<div class="choices-frac" id="frac-choices"></div>';
+      var box=$("frac-choices");
+      makeSimplifyChoices(q).forEach(function(opt){
+        var parts=opt.split("/");
+        var b=document.createElement("button"); b.className="choice-frac";
+        b.innerHTML=fracHTML(parts[0],parts[1],"frac-med");
+        b.onclick=function(){fracSubmit(opt===q.sn+"/"+q.sd, "The answer is "+fracHTMLplain(q.sn,q.sd), b, $("frac-choices").querySelectorAll(".choice-frac"), opt===q.sn+"/"+q.sd);};
+        box.appendChild(b);
+      });
+
+    } else if(q.type==="equivalent"){
+      var prompt="";
+      if(q.ask==="num"){
+        prompt='<p style="color:var(--grey-500);font-weight:600;margin-bottom:10px">Fill in the missing numerator:</p>'
+          +'<div style="font-size:2rem;font-weight:800;margin:10px 0;display:flex;align-items:center;gap:16px;justify-content:center">'
+          +fracHTML(q.n,q.d,"frac-big")+' = '+fracHTML("?",q.givenD,"frac-big")+'</div>';
+      } else {
+        prompt='<p style="color:var(--grey-500);font-weight:600;margin-bottom:10px">Fill in the missing denominator:</p>'
+          +'<div style="font-size:2rem;font-weight:800;margin:10px 0;display:flex;align-items:center;gap:16px;justify-content:center">'
+          +fracHTML(q.n,q.d,"frac-big")+' = '+fracHTML(q.givenN,"?","frac-big")+'</div>';
+      }
+      var correctAns=(q.ask==="num")?q.target:q.targetD;
+      area.innerHTML='<div class="fq-center">'+prompt+'</div>'
+        +'<div class="typewrap" style="margin-top:8px">'
+        +'<input id="frac-ans-inp" type="number" inputmode="numeric" style="width:120px;text-align:center;font-size:2rem;font-weight:800;padding:10px;border:2px solid var(--grey-300);border-radius:14px;font-family:inherit" />'
+        +'<button class="check" id="frac-check-btn">Check</button></div>';
+      var inp=$("frac-ans-inp");
+      inp.focus();
+      var doCheck=function(){
+        if(fAnswered) return;
+        var v=+inp.value;
+        var ok=(v===correctAns);
+        inp.className=ok?"correct":"wrong";
+        inp.disabled=true; $("frac-check-btn").classList.add("hide");
+        fracSubmit(ok,"The answer is "+correctAns,null,null,ok);
+      };
+      $("frac-check-btn").onclick=doCheck;
+      inp.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();doCheck();}});
+
+    } else { // compare
+      area.innerHTML='<div class="fq-center">'
+        +'<p style="color:var(--grey-500);font-weight:600;margin-bottom:14px">Which symbol goes in the middle?</p>'
+        +'<div style="font-size:2.4rem;font-weight:800;display:flex;align-items:center;gap:18px;justify-content:center">'
+        +fracHTML(q.n1,q.d1,"frac-big")
+        +'<span style="color:var(--grey-300);font-size:2.4rem">?</span>'
+        +fracHTML(q.n2,q.d2,"frac-big")+'</div></div>'
+        +'<div class="cmp-buttons"><button class="cmp-btn" data-sym="&lt;">&lt;</button>'
+        +'<button class="cmp-btn" data-sym="=">=</button>'
+        +'<button class="cmp-btn" data-sym="&gt;">&gt;</button></div>';
+      var wrongMsg="The answer is "+fracHTMLplain(q.n1,q.d1)+" "+q.answer+" "+fracHTMLplain(q.n2,q.d2);
+      area.querySelectorAll(".cmp-btn").forEach(function(b){
+        b.onclick=function(){
+          if(fAnswered) return;
+          var sym=b.dataset.sym;
+          var ok=(sym===q.answer);
+          fracSubmit(ok, wrongMsg, b, area.querySelectorAll(".cmp-btn"), ok, q.answer);
+        };
+      });
     }
+  }
+
+  function fracHTMLplain(n,d){ return n+"/"+d; }
+
+  function fracSubmit(isRight, wrongMsg, clickedBtn, allBtns, ok, correctSym){
+    if(fAnswered) return;
+    fAnswered=true; fAttempted++;
+    if(isRight){fCorrect++;fStreak++;}else{fStreak=0;fWrong.push(wrongMsg);}
+    if(isRight){
+      $("frac-feedback").textContent=pick(["Correct! ✅","Brilliant! ⭐","Spot on! 🎯","Well done! 👏"]);
+      $("frac-feedback").className="feedback good";
+    } else {
+      $("frac-feedback").innerHTML="Not quite — "+wrongMsg;
+      $("frac-feedback").className="feedback bad";
+    }
+    $("frac-streak").textContent=fStreak>=2?"🔥 "+fStreak+" in a row!":"";
+    // highlight buttons
+    if(allBtns){
+      allBtns.forEach(function(b){
+        b.disabled=true;
+        var sym=b.dataset.sym;
+        if(sym!==undefined){
+          if(sym===correctSym) b.classList.add("correct");
+          else if(b===clickedBtn) b.classList.add("wrong");
+        } else {
+          // fraction choice buttons
+          if(b===clickedBtn){ b.classList.add(ok?"correct":"wrong"); }
+        }
+      });
+    }
+    $("frac-nextBtn").classList.remove("hide"); $("frac-nextBtn").focus();
+  }
+
+  function fracUpdateProgress(){
+    $("frac-qcount").textContent="Question "+(fIdx+1)+" of "+fQuestions.length;
+    $("frac-pfill").style.width=(fIdx/fQuestions.length*100)+"%";
+  }
+
+  function fracStart(){
+    fIdx=0;fCorrect=0;fAttempted=0;fStreak=0;fWrong=[];
+    fQuestions=[];
+    for(var i=0;i<fracTotal;i++) fQuestions.push(makeFracQuestion());
+    $("frac-setup").classList.add("hide");$("frac-results").classList.add("hide");$("frac-quiz").classList.remove("hide");
+    fCurrentQ=fQuestions[0]; fracUpdateProgress(); renderFracQuestion(fCurrentQ);
+  }
+  function fracNext(){
+    fIdx++;
+    if(fIdx>=fQuestions.length){fracShowResults();return;}
+    fCurrentQ=fQuestions[fIdx]; fracUpdateProgress(); renderFracQuestion(fCurrentQ);
+  }
+  function fracShowResults(){
+    $("frac-quiz").classList.add("hide");$("frac-results").classList.remove("hide");
+    var pct=fAttempted?fCorrect/fAttempted:0, stars=pct>=0.9?3:pct>=0.6?2:pct>=0.3?1:0;
+    $("frac-scoreBig").textContent=fCorrect+" / "+fAttempted;
+    $("frac-starsRow").textContent="⭐⭐⭐".slice(0,stars)||"☆";
+    $("frac-resultMsg").textContent=pct>=0.9?"Fraction master! 🌟":pct>=0.6?"Great work! 💪":pct>=0.3?"Good try — keep practising! 🙂":"These are tricky — let's try again! 🤝";
+    var rl=$("frac-reviewList"); rl.innerHTML="";
+    var uniq=[];fWrong.forEach(function(f){if(uniq.indexOf(f)<0)uniq.push(f);});
+    if(uniq.length===0) rl.innerHTML='<div class="allgood">No mistakes! 🎉</div>';
+    else uniq.forEach(function(f){var s=document.createElement("span");s.innerHTML=f;rl.appendChild(s);});
+  }
+  function fracHome(){$("frac-results").classList.add("hide");$("frac-quiz").classList.add("hide");$("frac-setup").classList.remove("hide");}
+
+  $("frac-startBtn").onclick=fracStart;
+  $("frac-nextBtn").onclick=fracNext;
+  $("frac-quitBtn").onclick=function(){if(fAttempted===0)fracHome();else fracShowResults();};
+  $("frac-againBtn").onclick=fracStart;
+  $("frac-homeBtn").onclick=fracHome;
+})();
+
+/* ===================== FDP CONVERSION ===================== */
+(function(){
+  var fdpTopic="fd", fdpDiff="easy", fdpTotal=10;
+  var fIdx=0, fCorrect=0, fAttempted=0, fStreak=0, fWrong=[], fQuestions=[], fCurrentQ=null, fAnswered=false;
+
+  function wireSeg(id, attr, setter){
+    var c=$(id); c.querySelectorAll("button").forEach(function(b){
+      b.onclick=function(){c.querySelectorAll("button").forEach(function(x){x.classList.remove("on");});b.classList.add("on");setter(b.dataset[attr]);};
+    });
+  }
+  wireSeg("fdp-topic","ftopic",function(v){fdpTopic=v;});
+  wireSeg("fdp-diff","fdiff",function(v){fdpDiff=v;});
+  $("fdp-length").querySelectorAll("button").forEach(function(b){
+    b.onclick=function(){$("fdp-length").querySelectorAll("button").forEach(function(x){x.classList.remove("on");});b.classList.add("on");fdpTotal=+b.dataset.flen;};
   });
 
-  $("arrayToggle").onclick = function(){
-    showArray=!showArray;
-    this.classList.toggle("on",showArray);
-    this.textContent = showArray ? "🙈 Hide dots" : "👀 Show dots";
-    if(!$("quiz").classList.contains("hide")) renderArray(currentQ);
+  /* --- FDP conversion question banks --- */
+  /* Each entry: {frac, dec, pct} — we pick two and ask for the third */
+  var fdpBanks={
+    easy:[
+      {frac:"1/2",dec:"0.5",pct:"50%"},{frac:"1/4",dec:"0.25",pct:"25%"},{frac:"3/4",dec:"0.75",pct:"75%"},
+      {frac:"1/10",dec:"0.1",pct:"10%"},{frac:"1/5",dec:"0.2",pct:"20%"},{frac:"2/5",dec:"0.4",pct:"40%"},
+      {frac:"3/5",dec:"0.6",pct:"60%"},{frac:"4/5",dec:"0.8",pct:"80%"},{frac:"1/100",dec:"0.01",pct:"1%"},
+      {frac:"1/20",dec:"0.05",pct:"5%"},{frac:"3/10",dec:"0.3",pct:"30%"},{frac:"7/10",dec:"0.7",pct:"70%"}
+    ],
+    medium:[
+      {frac:"1/3",dec:"0.333...",pct:"33⅓%"},{frac:"2/3",dec:"0.666...",pct:"66⅔%"},
+      {frac:"1/8",dec:"0.125",pct:"12.5%"},{frac:"3/8",dec:"0.375",pct:"37.5%"},
+      {frac:"5/8",dec:"0.625",pct:"62.5%"},{frac:"7/8",dec:"0.875",pct:"87.5%"},
+      {frac:"1/6",dec:"0.1666...",pct:"16⅔%"},{frac:"5/6",dec:"0.8333...",pct:"83⅓%"},
+      {frac:"2/25",dec:"0.08",pct:"8%"},{frac:"9/20",dec:"0.45",pct:"45%"},
+      {frac:"11/20",dec:"0.55",pct:"55%"},{frac:"7/20",dec:"0.35",pct:"35%"}
+    ],
+    hard:[
+      {frac:"7/40",dec:"0.175",pct:"17.5%"},{frac:"9/40",dec:"0.225",pct:"22.5%"},
+      {frac:"11/40",dec:"0.275",pct:"27.5%"},{frac:"13/40",dec:"0.325",pct:"32.5%"},
+      {frac:"17/40",dec:"0.425",pct:"42.5%"},{frac:"19/40",dec:"0.475",pct:"47.5%"},
+      {frac:"1/9",dec:"0.111...",pct:"11⅑%"},{frac:"2/9",dec:"0.222...",pct:"22²⁄₉%"},
+      {frac:"4/9",dec:"0.444...",pct:"44⁴⁄₉%"},{frac:"5/9",dec:"0.555...",pct:"55⁵⁄₉%"},
+      {frac:"7/9",dec:"0.777...",pct:"77⁷⁄₉%"},{frac:"8/9",dec:"0.888...",pct:"88⁸⁄₉%"}
+    ]
   };
-  $("quitBtn").onclick = function(){
-    stopTimer(); clearTimeout(autoTimer);
-    if(attempted===0){ goHome(); return; }
-    showResults();
-  };
-  $("againBtn").onclick = startQuiz;
-  $("homeBtn").onclick = goHome;
-  function goHome(){
-    stopTimer(); clearTimeout(autoTimer);
-    $("results").classList.add("hide");
-    $("quiz").classList.add("hide");
-    $("setup").classList.remove("hide");
+
+  function makeFDPConvertQ(){
+    var bank=fdpBanks[fdpDiff]||fdpBanks.easy;
+    var entry=pick(bank);
+    // choose the pair of types involved based on the selected topic
+    var pairMap={fd:["frac","dec"],dp:["dec","pct"],fp:["frac","pct"]};
+    var pair;
+    if(fdpTopic==="mixed") pair=pick([["frac","dec"],["dec","pct"],["frac","pct"]]);
+    else pair=pairMap[fdpTopic]||pairMap.fd;
+    // randomly decide which of the pair is given and which is asked
+    if(Math.random()<0.5) pair=[pair[1],pair[0]];
+    var given=pair[0], ask=pair[1];
+    var labels={frac:"fraction",dec:"decimal",pct:"percentage"};
+    return{type:"fdp-convert",entry,given,ask,label:labels[ask]};
   }
+
+  function makeFDPQuestion(){ return makeFDPConvertQ(); }
+
+  /* --- rendering --- */
+  function renderFDPQuestion(q){
+    var area=$("fdp-question-area"); area.innerHTML="";
+    fAnswered=false;
+    $("fdp-feedback").textContent=""; $("fdp-feedback").className="feedback";
+    $("fdp-nextBtn").classList.add("hide");
+
+    var e=q.entry;
+    var givenLabels={frac:"Fraction",dec:"Decimal",pct:"Percentage"};
+    var html='<div class="fq-center">'
+      +'<p style="color:var(--grey-500);font-weight:600;margin-bottom:12px">Convert this <strong>'+givenLabels[q.given].toLowerCase()+'</strong> to a <strong>'+q.label+'</strong>:</p>'
+      +'<div style="display:flex;justify-content:center;margin-bottom:18px">'
+      +'<div style="background:var(--grey-50);border:2px solid var(--grey-200);border-radius:12px;padding:14px 28px;text-align:center">'
+      +'<div style="font-size:.75rem;color:var(--grey-500);font-weight:600;margin-bottom:4px">'+givenLabels[q.given]+'</div>'
+      +'<div style="font-size:1.9rem;font-weight:800">'+renderValue(q.given,e)+'</div></div></div></div>';
+
+    var correct=e[q.ask];
+    var opts=buildFDPChoices(q.ask,e,fdpDiff);
+    html+='<div class="choices-frac" id="fdp-choices"></div>';
+    area.innerHTML=html;
+    var box=$("fdp-choices");
+    opts.forEach(function(opt){
+      var b=document.createElement("button"); b.className="choice-frac";
+      b.innerHTML=renderValue(q.ask,{frac:opt,dec:opt,pct:opt});
+      b.onclick=function(){
+        if(fAnswered) return;
+        var ok=(opt===correct);
+        $("fdp-choices").querySelectorAll(".choice-frac").forEach(function(x){
+          x.disabled=true;
+          if(x===b) x.classList.add(ok?"correct":"wrong");
+          else if(x.dataset.opt===correct) x.classList.add("correct");
+        });
+        fdpSubmit(ok,"The "+q.label+" is "+correct);
+      };
+      b.dataset.opt=opt;
+      box.appendChild(b);
+    });
+  }
+
+  function renderValue(type, entry){
+    if(type==="frac"){
+      var parts=entry.frac.split("/");
+      if(parts.length===2) return fracHTML(parts[0],parts[1],"frac-med");
+      return entry.frac;
+    } else if(type==="dec") return entry.dec;
+    else return entry.pct;
+  }
+
+  function buildFDPChoices(ask, entry, diff){
+    var correct=entry[ask];
+    var all=fdpBanks[diff].map(function(e){return e[ask];});
+    var opts=[correct];
+    shuffle(all);
+    all.forEach(function(v){if(opts.length<4&&opts.indexOf(v)<0) opts.push(v);});
+    while(opts.length<4) opts.push("?"); // fallback
+    return shuffle(opts);
+  }
+
+  function fdpSubmit(isRight, wrongMsg){
+    if(fAnswered) return;
+    fAnswered=true; fAttempted++;
+    if(isRight){fCorrect++;fStreak++;}else{fStreak=0;fWrong.push(wrongMsg);}
+    if(isRight){$("fdp-feedback").textContent=pick(["Correct! ✅","Brilliant! ⭐","Spot on! 🎯","Well done! 👏"]);$("fdp-feedback").className="feedback good";}
+    else{$("fdp-feedback").textContent="Not quite — "+wrongMsg;$("fdp-feedback").className="feedback bad";}
+    $("fdp-streak").textContent=fStreak>=2?"🔥 "+fStreak+" in a row!":"";
+    $("fdp-nextBtn").classList.remove("hide"); $("fdp-nextBtn").focus();
+  }
+
+  function fdpUpdateProgress(){
+    $("fdp-qcount").textContent="Question "+(fIdx+1)+" of "+fQuestions.length;
+    $("fdp-pfill").style.width=(fIdx/fQuestions.length*100)+"%";
+  }
+  function fdpStart(){
+    fIdx=0;fCorrect=0;fAttempted=0;fStreak=0;fWrong=[];fQuestions=[];
+    for(var i=0;i<fdpTotal;i++) fQuestions.push(makeFDPQuestion());
+    $("fdp-setup").classList.add("hide");$("fdp-results").classList.add("hide");$("fdp-quiz").classList.remove("hide");
+    fCurrentQ=fQuestions[0]; fdpUpdateProgress(); renderFDPQuestion(fCurrentQ);
+  }
+  function fdpNext(){
+    fIdx++;
+    if(fIdx>=fQuestions.length){fdpShowResults();return;}
+    fCurrentQ=fQuestions[fIdx]; fdpUpdateProgress(); renderFDPQuestion(fCurrentQ);
+  }
+  function fdpShowResults(){
+    $("fdp-quiz").classList.add("hide");$("fdp-results").classList.remove("hide");
+    var pct=fAttempted?fCorrect/fAttempted:0, stars=pct>=0.9?3:pct>=0.6?2:pct>=0.3?1:0;
+    $("fdp-scoreBig").textContent=fCorrect+" / "+fAttempted;
+    $("fdp-starsRow").textContent="⭐⭐⭐".slice(0,stars)||"☆";
+    $("fdp-resultMsg").textContent=pct>=0.9?"FDP master! 🌟":pct>=0.6?"Great work! 💪":pct>=0.3?"Good try! 🙂":"Let's practise more! 🤝";
+    var rl=$("fdp-reviewList"); rl.innerHTML="";
+    var uniq=[];fWrong.forEach(function(f){if(uniq.indexOf(f)<0)uniq.push(f);});
+    if(uniq.length===0) rl.innerHTML='<div class="allgood">No mistakes! 🎉</div>';
+    else uniq.forEach(function(f){var s=document.createElement("span");s.textContent=f;rl.appendChild(s);});
+  }
+  function fdpHome(){$("fdp-results").classList.add("hide");$("fdp-quiz").classList.add("hide");$("fdp-setup").classList.remove("hide");}
+
+  $("fdp-startBtn").onclick=fdpStart;
+  $("fdp-nextBtn").onclick=fdpNext;
+  $("fdp-quitBtn").onclick=function(){if(fAttempted===0)fdpHome();else fdpShowResults();};
+  $("fdp-againBtn").onclick=fdpStart;
+  $("fdp-homeBtn").onclick=fdpHome;
+})();
+
+/* ===================== ORDERING ===================== */
+(function(){
+  var ordDiff="easy", ordTotal=10;
+  var oIdx=0, oCorrect=0, oAttempted=0, oStreak=0, oWrong=[], oQuestions=[], oCurrentQ=null, oAnswered=false;
+
+  function wireSeg(id, attr, setter){
+    var c=$(id); c.querySelectorAll("button").forEach(function(b){
+      b.onclick=function(){c.querySelectorAll("button").forEach(function(x){x.classList.remove("on");});b.classList.add("on");setter(b.dataset[attr]);};
+    });
+  }
+  wireSeg("ord-diff","fdiff",function(v){ordDiff=v;});
+  $("ord-length").querySelectorAll("button").forEach(function(b){
+    b.onclick=function(){$("ord-length").querySelectorAll("button").forEach(function(x){x.classList.remove("on");});b.classList.add("on");ordTotal=+b.dataset.flen;};
+  });
+
+  function makeOrderQ(){
+    var sets={
+      easy:[
+        [{v:0.5,label:"1/2"},{v:0.25,label:"25%"},{v:0.1,label:"0.1"},{v:0.75,label:"3/4"}],
+        [{v:0.2,label:"1/5"},{v:0.5,label:"50%"},{v:0.3,label:"0.3"},{v:0.8,label:"4/5"}],
+        [{v:0.1,label:"10%"},{v:0.4,label:"2/5"},{v:0.6,label:"0.6"},{v:0.9,label:"9/10"}],
+      ],
+      medium:[
+        [{v:0.125,label:"1/8"},{v:0.25,label:"25%"},{v:0.375,label:"3/8"},{v:0.5,label:"0.5"}],
+        [{v:0.333,label:"1/3"},{v:0.5,label:"50%"},{v:0.667,label:"2/3"},{v:0.75,label:"0.75"}],
+        [{v:0.2,label:"20%"},{v:0.35,label:"7/20"},{v:0.45,label:"0.45"},{v:0.55,label:"11/20"}],
+      ],
+      hard:[
+        [{v:0.175,label:"7/40"},{v:0.2,label:"20%"},{v:0.225,label:"9/40"},{v:0.25,label:"0.25"}],
+        [{v:0.111,label:"1/9"},{v:0.125,label:"12.5%"},{v:0.2,label:"1/5"},{v:0.25,label:"0.25"}],
+        [{v:0.333,label:"1/3"},{v:0.375,label:"37.5%"},{v:0.4,label:"2/5"},{v:0.425,label:"17/40"}],
+      ]
+    };
+    var pool=sets[ordDiff]||sets.easy;
+    var items=pick(pool).slice();
+    var asc=Math.random()<0.5;
+    var sorted=items.slice().sort(function(a,b){return asc?a.v-b.v:b.v-a.v;});
+    return{items:shuffle(items.slice()),sorted,asc};
+  }
+
+  var dragSrc=null;
+  function addDragSrc(el){
+    el.addEventListener("dragstart",function(e){dragSrc=el;el.classList.add("dragging");e.dataTransfer.effectAllowed="move";});
+    el.addEventListener("dragend",function(){el.classList.remove("dragging");});
+  }
+  function addDropTarget(slot){
+    slot.addEventListener("dragover",function(e){e.preventDefault();slot.classList.add("over");});
+    slot.addEventListener("dragleave",function(){slot.classList.remove("over");});
+    slot.addEventListener("drop",function(e){
+      e.preventDefault(); slot.classList.remove("over");
+      if(!dragSrc||oAnswered) return;
+      if(slot.dataset.filled){
+        var bankEl=document.createElement("div");
+        bankEl.className="order-item";bankEl.textContent=slot.textContent;bankEl.draggable=true;
+        bankEl.dataset.label=slot.textContent;bankEl.dataset.val=slot.dataset.filled;
+        addDragSrc(bankEl);
+        $("ord-bank").appendChild(bankEl);
+      }
+      slot.textContent=dragSrc.dataset.label;
+      slot.dataset.filled=dragSrc.dataset.val;
+      slot.classList.add("filled");
+      if(dragSrc.classList.contains("order-slot")){
+        dragSrc.textContent=""; delete dragSrc.dataset.filled; dragSrc.classList.remove("filled");
+      } else { dragSrc.remove(); }
+      dragSrc=null;
+    });
+  }
+
+  function renderOrderQuestion(q){
+    var area=$("ord-question-area"); area.innerHTML="";
+    oAnswered=false;
+    $("ord-feedback").textContent=""; $("ord-feedback").className="feedback";
+    $("ord-nextBtn").classList.add("hide");
+
+    area.innerHTML='<div class="order-direction">Drag to put these in order: <strong>'+(q.asc?"smallest → largest":"largest → smallest")+'</strong></div>'
+      +'<div class="order-bank" id="ord-bank"></div>'
+      +'<div style="text-align:center;color:var(--grey-500);font-size:.82rem;margin:4px 0">↓ drag into the boxes below ↓</div>'
+      +'<div class="order-slots" id="ord-slots"></div>'
+      +'<div style="text-align:center"><button class="check" id="ord-order-check">Check order</button></div>';
+
+    var bank=$("ord-bank");
+    q.items.forEach(function(item){
+      var el=document.createElement("div");
+      el.className="order-item"; el.textContent=item.label;
+      el.draggable=true; el.dataset.label=item.label; el.dataset.val=item.v;
+      addDragSrc(el); bank.appendChild(el);
+    });
+    var slots=$("ord-slots");
+    for(var i=0;i<q.sorted.length;i++){
+      var slot=document.createElement("div");
+      slot.className="order-slot"; slot.dataset.pos=i;
+      addDropTarget(slot); slots.appendChild(slot);
+    }
+    $("ord-order-check").onclick=function(){
+      if(oAnswered) return;
+      var slotEls=$("ord-slots").querySelectorAll(".order-slot");
+      var allFilled=true;
+      slotEls.forEach(function(s){if(!s.dataset.filled) allFilled=false;});
+      if(!allFilled){$("ord-feedback").textContent="Fill all boxes first!";$("ord-feedback").className="feedback bad";return;}
+      var ok=true;
+      slotEls.forEach(function(s,i){
+        var correct=(+s.dataset.filled===q.sorted[i].v);
+        s.classList.add(correct?"slot-correct":"slot-wrong");
+        if(!correct) ok=false;
+      });
+      var ans=q.sorted.map(function(x){return x.label;}).join(" → ");
+      ordSubmit(ok,"Correct order: "+ans);
+      $("ord-order-check").disabled=true;
+    };
+  }
+
+  function ordSubmit(isRight, wrongMsg){
+    if(oAnswered) return;
+    oAnswered=true; oAttempted++;
+    if(isRight){oCorrect++;oStreak++;}else{oStreak=0;oWrong.push(wrongMsg);}
+    if(isRight){$("ord-feedback").textContent=pick(["Correct! ✅","Brilliant! ⭐","Spot on! 🎯","Well done! 👏"]);$("ord-feedback").className="feedback good";}
+    else{$("ord-feedback").textContent="Not quite — "+wrongMsg;$("ord-feedback").className="feedback bad";}
+    $("ord-streak").textContent=oStreak>=2?"🔥 "+oStreak+" in a row!":"";
+    $("ord-nextBtn").classList.remove("hide"); $("ord-nextBtn").focus();
+  }
+  function ordUpdateProgress(){
+    $("ord-qcount").textContent="Question "+(oIdx+1)+" of "+oQuestions.length;
+    $("ord-pfill").style.width=(oIdx/oQuestions.length*100)+"%";
+  }
+  function ordStart(){
+    oIdx=0;oCorrect=0;oAttempted=0;oStreak=0;oWrong=[];oQuestions=[];
+    for(var i=0;i<ordTotal;i++) oQuestions.push(makeOrderQ());
+    $("ord-setup").classList.add("hide");$("ord-results").classList.add("hide");$("ord-quiz").classList.remove("hide");
+    oCurrentQ=oQuestions[0]; ordUpdateProgress(); renderOrderQuestion(oCurrentQ);
+  }
+  function ordNext(){
+    oIdx++;
+    if(oIdx>=oQuestions.length){ordShowResults();return;}
+    oCurrentQ=oQuestions[oIdx]; ordUpdateProgress(); renderOrderQuestion(oCurrentQ);
+  }
+  function ordShowResults(){
+    $("ord-quiz").classList.add("hide");$("ord-results").classList.remove("hide");
+    var pct=oAttempted?oCorrect/oAttempted:0, stars=pct>=0.9?3:pct>=0.6?2:pct>=0.3?1:0;
+    $("ord-scoreBig").textContent=oCorrect+" / "+oAttempted;
+    $("ord-starsRow").textContent="⭐⭐⭐".slice(0,stars)||"☆";
+    $("ord-resultMsg").textContent=pct>=0.9?"Ordering master! 🌟":pct>=0.6?"Great work! 💪":pct>=0.3?"Good try! 🙂":"Let's practise more! 🤝";
+    var rl=$("ord-reviewList"); rl.innerHTML="";
+    var uniq=[];oWrong.forEach(function(f){if(uniq.indexOf(f)<0)uniq.push(f);});
+    if(uniq.length===0) rl.innerHTML='<div class="allgood">No mistakes! 🎉</div>';
+    else uniq.forEach(function(f){var s=document.createElement("span");s.textContent=f;rl.appendChild(s);});
+  }
+  function ordHome(){$("ord-results").classList.add("hide");$("ord-quiz").classList.add("hide");$("ord-setup").classList.remove("hide");}
+
+  $("ord-startBtn").onclick=ordStart;
+  $("ord-nextBtn").onclick=ordNext;
+  $("ord-quitBtn").onclick=function(){if(oAttempted===0)ordHome();else ordShowResults();};
+  $("ord-againBtn").onclick=ordStart;
+  $("ord-homeBtn").onclick=ordHome;
+})();
+
 })();
 </script>
 </body>
